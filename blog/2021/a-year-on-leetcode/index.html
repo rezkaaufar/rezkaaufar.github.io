@@ -187,6 +187,7 @@
   <li>I used approximate nearest neighbor in a recommendation system. I now know that approximate nearest neighbor is essentially a <a href="https://www.slideshare.net/erikbern/approximate-nearest-neighbor-methods-and-vector-models-nyc-ml-meetup" target="blank">binary search</a> under the hood.</li>
   <li>I now know that indexing a DB leads to a faster join time because it essentially sorts the index column so that when one join the complexity becomes O(n log m) instead of O(nm) (since it uses binary search). It can even be faster if the DB has hash index O(1).</li>
   <li>Working on feature engineering for machine learning model, I used bisect python library to derive a feature that is conditioned on another columns (my problem is similar to <a href="https://stackoverflow.com/questions/45092267/spark-window-function-referencing-different-columns-for-range" target="blank">this</a>). The solution that I can use with the built-in function (both in pandas and pyspark) led me to memory problems so I have to precompute it. Hence binary search came into rescue and it saved me tons of time.</li>
+  <li>I coded a recursive function to traverse a taxonomy upward. I did this on my job!</li>
 </ul>
 
 <p>To end this post, I am grateful that I went down this leetcode rabbit hole. Knowing foundational programming has been transformative for me. It makes me a better coder (self-proclaimed). It has also became a habit of mine to at least work on a problem once a week. I intend to keep this up, so fingers crossed for me!</p>
