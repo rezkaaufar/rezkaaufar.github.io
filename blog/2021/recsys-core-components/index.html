@@ -286,10 +286,72 @@
     </div>
 </div>
 
-<p><em>Recsys core components. Source: <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="blank">James Kirk’s slides</a></em></p>
+<p><em>Common architecture of a recommender system. Source: <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="blank">James Kirk’s slides</a></em></p>
 
-<p>It is easier for me to understand recsys based on image above. Almost every recsys model can fit into the aforementioned core components, including: user-based and item-based model that do not need training,<br />
-collaborative filtering, content-based model, hybrid model, etc.</p>
+<p>There we have it: the architecture of recommender systems. Let’s try to design a recommender system based on some cases:</p>
+
+<p>For you page. The example case is to recommend item on a homepage personalized for every user:</p>
+<ul>
+  <li>Interaction matrix: user-item (binary or continuous)</li>
+  <li>User features: indicator, metadata</li>
+  <li>Item features: indicator, metadata</li>
+  <li>User representation: linear</li>
+  <li>Item representation: linear</li>
+  <li>Learning objective: RMSE, binary cross entropy, WARP, BPE</li>
+  <li>Prediction function: dot product, cosine similarity</li>
+</ul>
+
+<p>Similar items. The example case is to recommend item given another item:</p>
+<ul>
+  <li>Interaction matrix: item-item (binary or continuous)</li>
+  <li>User features: indicator, metadata</li>
+  <li>Item features: same as user features</li>
+  <li>User representation: linear</li>
+  <li>Item representation: linear</li>
+  <li>Learning objective: RMSE, binary cross entropy, WARP, BPE</li>
+  <li>Prediction function: dot product, cosine similarity</li>
+</ul>
+
+<p>With this architecture, we can also incorporate more complex feature representation into the system. For example, if we want to utilize the social graph between user-user, then we can introduce graph neural network that takes an input of user graph (user features) and outputs the representation to be further processed (user representation).</p>
+
+<p><a href="https://arxiv.org/pdf/1902.07243.pdf">For you page</a> utilizing social graph structure:</p>
+<ul>
+  <li>Interaction matrix: user-item (binary or continuous)</li>
+  <li>User features: user-user graph</li>
+  <li>Item features: indicator, metadata, etc</li>
+  <li>User representation: graph neural network</li>
+  <li>Item representation: linear</li>
+  <li>Learning objective: custom RMSE</li>
+  <li>Prediction function: feed forward neural network</li>
+</ul>
+
+<p>Simpler recsys such as user-based and item-based that does not require training also fits in this architecture. Let’s take a look:</p>
+
+<p>User-based recsys:</p>
+<ul>
+  <li>Interaction matrix: user-item</li>
+  <li>User Features: Indicator but we use the row in the interaction matrix</li>
+  <li>Item Features: -</li>
+  <li>User representation: -</li>
+  <li>Item representation: -</li>
+  <li>Learning objective: -</li>
+  <li>Prediction function: dot product, cosine similarity. to predict the rating of an item \(y\) that user \(x\) hasn’t seen, we query top \(k\) users that are similar to user \(x\) (have rated item \(y\)) and calculate the weighted average of the ratings.</li>
+</ul>
+
+<p>Item-based recsys:</p>
+<ul>
+  <li>Interaction matrix: user-item</li>
+  <li>User Features: -</li>
+  <li>Item Features: Indicator but we use the column in the interaction matrix</li>
+  <li>User representation: -</li>
+  <li>Item representation: -</li>
+  <li>Learning objective: -</li>
+  <li>Prediction function: dot product, cosine similarity. to predict the rating of an item \(y\) that user \(x\) hasn’t seen, we query top \(k\) users that are similar to item \(y\) (\(y\) has been rated by user \(x\)) and calculate the weighted average of the ratings.</li>
+</ul>
+
+<h2 id="is-there-a-recsys-model-that-does-not-fit-into-this-architecture">Is there a recsys model that does not fit into this architecture?</h2>
+
+<p>Yes! In some cases we can use the interaction matrix to design the training data and not use it as our label. You can find some of the examples <a href="https://eugeneyan.com/writing/recommender-systems-graph-and-nlp-pytorch/">here</a> where the author tries to create a pseudo-sentences of products to then be fed into a word2vec training. This setting does not use the interaction matrix as the label.</p>
 
 <p>Thanks for reading! Contact me on twitter if you spot any mistake.</p>
 
