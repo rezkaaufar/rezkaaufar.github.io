@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<title>Rezka  Leonandya | Understanding the language of causal model</title>
+<meta name="description" content="Rezka's Personal Website and Blog
+">
+
+<!-- Open Graph -->
+
+
+<!-- Bootstrap & MDB -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha512-MoRNloxbStBcD8z3M/2BmnT+rg4IsMxPkXaGh2zD6LGNNFE80W3onsAhRcMAMrSoyWL9xD7Ert0men7vR8LUZg==" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" integrity="sha512-RO38pBRxYH3SoOprtPTD86JFOclM51/XTIdEPh5j8sj4tp8jmQIx26twG52UaLi//hQldfrh7e51WzP9wuP32Q==" crossorigin="anonymous" />
+
+<!-- Fonts & Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"  integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.0/css/academicons.min.css" integrity="sha512-W4yqoT1+8NLkinBLBZko+dFB2ZbHsYLDdr50VElllRcNt2Q4/GSs6u71UHKxB7S6JEMCp5Ve4xjh3eGQl/HRvg==" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+<!-- Code Syntax Highlighting -->
+<link rel="stylesheet" href="https://gitcdn.link/repo/jwarby/jekyll-pygments-themes/master/github.css" />
+
+<!-- Styles -->
+<link rel="shortcut icon" href="/assets/img/favicon.ico">
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<link rel="canonical" href="/blog/2021/language-of-causal-model/">
+
+<!-- JQuery -->
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+
+
+<!-- Theming-->
+
+  <script src="/assets/js/theme.js"></script>
+  <!-- Load DarkMode JS -->
+<script src="/assets/js/dark_mode.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-192945533-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-192945533-1');
+  </script>
+
+
+
+
+    
+<!-- MathJax -->
+<script type="text/javascript">
+  window.MathJax = {
+    tex: {
+      tags: 'ams'
+    }
+  };
+</script>
+<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js"></script>
+<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+
+  </head>
+
+  <body class="fixed-top-nav ">
+
+    <!-- Header -->
+
+    <header>
+
+    <!-- Nav Bar -->
+    <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+    <div class="container">
+      
+      <a class="navbar-brand title font-weight-lighter" href="/">
+       <span class="font-weight-bold">Rezka</span>   Leonandya
+      </a>
+      
+      <!-- Navbar Toggle -->
+      <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar top-bar"></span>
+        <span class="icon-bar middle-bar"></span>
+        <span class="icon-bar bottom-bar"></span>
+      </button>
+      <div class="collapse navbar-collapse text-right" id="navbarNav">
+        <ul class="navbar-nav ml-auto flex-nowrap">
+          <!-- About -->
+          <li class="nav-item ">
+            <a class="nav-link" href="/">
+              about
+              
+            </a>
+          </li>
+          
+          <!-- Blog -->
+          <li class="nav-item active">
+            <a class="nav-link" href="/blog/">
+              blog
+              
+            </a>
+          </li>
+          
+          <!-- Other pages -->
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          <li class="nav-item ">
+              <a class="nav-link" href="/publications/">
+                publications
+                
+              </a>
+          </li>
+          
+          
+          
+          <li class="nav-item ">
+              <a class="nav-link" href="/assets/pdf/resume.pdf">
+                resume
+                
+              </a>
+          </li>
+          
+          
+          
+            <div class = "toggle-container">
+              <a id = "light-toggle">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+              </a>
+            </div>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+</header>
+
+
+    <!-- Content -->
+
+    <div class="container mt-5">
+      
+
+<div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Understanding the language of causal model</h1>
+    <p class="post-meta">July 9, 2021</p>
+  </header>
+
+  <article class="post-content">
+    <p>“Correlation does not imply causation”</p>
+
+<p>You might hear this jargon everywhere since it is quite pervasive if you work in data science/machine learning. Also, you might have seen this image about spurious correlation:</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/corr-col.png" />
+    </div>
+</div>
+<p><em>Figure 1: spurious correlation (<a href="https://www.kaggle.com/general/187094">source</a>)</em></p>
+
+<p>But what does it mean, really? What does “correlation does not imply causation” really mean? Given a data \(X\) and a target variable \(Y\), can we estimate direct causal effect? If so, how can we know that we have modeled causation in a correct way? Is there a formal way to capture this English statement? Yes!</p>
+
+<p>In causal inference, there are at least two formal ways to discuss causation: one is based on counterfactuals (or potential outcomes) and the other one is based on causal directed acyclic graph (or structural causal model). The latter involves Judea Pearl’s do-calculus. For the rest of this post I am going to use the former, which is the language of counterfactuals to draw the intuition.
+Okay, enough intro. The best way to start understanding why correlation \(\neq\) causation is to understand the simpson’s paradox.</p>
+
+<hr />
+
+<h1 id="simpsons-paradox">Simpson’s paradox</h1>
+
+<p>Imagine we are developing a treatment for both men and women. We want to know the causal effect of the treatment. Specifically, we want to draw a conclusion from the treatment with the following possibility:</p>
+<ul>
+  <li>Treatment is good for men (S1)</li>
+  <li>Treatment is good for women (S2)</li>
+  <li>Treatment is bad overall (S3)</li>
+</ul>
+
+<p>Now, simpson’s paradox occurs when people equate probabilistic statements with the statements (S1), (S2), and (S3) above. How does the probabilistic statements look like? Consider the data below</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/table-causal.png" />
+    </div>
+</div>
+<p><em>Table 1: illustrative data</em></p>
+
+<p>From the table, we have treatment \(T\) that is binary (given and not given), feature (or covariate) \(X\) that is also binary (men and women) and the outcome \(Y\) that is also binary (working and not working). The numbers in the column is the sum of treatment that is working (\(Y=1\)). Consequently, we have the probabilistic interpretation as follows:</p>
+
+<ul>
+  <li>
+    <p>\(P(Y=1 | T=1, X=1) = 0.15\) 
+(Group 1)</p>
+  </li>
+  <li>
+    <p>\(P(Y=1 | T=0, X=1) = 0.10\)
+(Group 2)</p>
+  </li>
+  <li>
+    <p>\(P(Y=1 | T=1, X=0) = 0.30\)
+(Group 3)</p>
+  </li>
+  <li>
+    <p>\(P(Y=1 | T=0, X=0) = 0.20\)
+(Group 4)</p>
+  </li>
+  <li>
+    <p>\(P(Y=1 | T=1) = 0.16\)
+(Group 5)</p>
+  </li>
+  <li>
+    <p>\(P(Y=1 | T=0) = 0.19\)
+(Group 6)</p>
+  </li>
+</ul>
+
+<p>From the probabilistic interpretation above, we can derive three key probabilistic statements:</p>
+
+<ul>
+  <li>
+    <p>\(P(Y=1 | T=1, X=1) - P(Y=1 | T=0, X=1) &gt; 0\)
+(P1)</p>
+  </li>
+  <li>
+    <p>\(P(Y=1 | T=1, X=0) - P(Y=1 | T=0, X=0) &gt; 0\)
+(P2)</p>
+  </li>
+  <li>
+    <p>\(P(Y=1 | T=1) - P(Y=1 | T=0) &lt; 0\)
+(P3)</p>
+  </li>
+</ul>
+
+<p>Remember: simpson’s paradox occur when people equate probabilistic statements (P1-P3) with the English statements (S1-S3). We see from the example above, all (P1), (P2), and (P3) are true. But in causal inference, it is NOT possible for (S1), (S2), and (S3) to all be true. If the treatment is good for both men and women (S1-S2), then it should not be possible that the overall treatment is bad (S3). But why does our observation says otherwise? Again, the error is in equating (P1-P3) with (S1-S3).</p>
+
+<p>How does this happen then? Is it because of the sample size that is not comparable between groups? Well we can still have more or less the same sample size and still fall to simpson’s paradox (<a href="https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s897-machine-learning-for-healthcare-spring-2019/lecture-notes/MIT6_S897S19_lec14note.pdf">example</a>). To understand why this is happening, we need to understand the effect of confounding variable.</p>
+
+<h1 id="confounding-variable">Confounding variable</h1>
+<p>Let’s take a closer look at Table 1. Do you notice a pattern in the treatment assignment? You can see that the there are more treated men than those who doesn’t receive treatment. On the other hand, there are less treated women than those who doesn’t receive treatment. We might wonder: gender probably affects the treatment assignment, therefore there are more men who received treatment than women, which led to non-comparable groups formed between men and woman. In this case, gender is a confounding variable. Confounding variable is a common cause that is both affecting the treatment and the treatment outcome. Usually confounding variable is unobserved.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/confound-graph.png" />
+    </div>
+</div>
+<p><em>Figure 2: directed acyclic graph illustrating confounding variable (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf">source</a>)</em></p>
+
+<p>There is an information flow between the treatment to the outcome via the confounding variable, resulting in (P1-P3) to all be true. In this case, \(X\) is the confounding variable: the gender.</p>
+
+<h1 id="correlation-does-not-imply-causation-in-a-formal-way">Correlation does not imply causation (in a formal way)</h1>
+<p>To capture the English statements (S1-S3) above, we use counterfactuals. We start by introducing \((Y1, Y0)\) where \(Y1\) is the outcome if one is treated and \(Y0\) is the outcome if one is not treated. We observe:</p>
+
+\[Y = T Y1 + (1 - T) Y0\]
+
+<p>To put it simply, \(Y1\) denotes the outcome I WOULD observe if I WERE to take the treatment, \(Y0\) denotes the outcome I WOULD observe if I WERE to not take the treatment, whereas \(Y\) denotes the outcome that I do observe just in the observational data. In reality, we never observe \(Y1\) and \(Y0\) in the observational data on any person, that is why when we derive conclusion DIRECTLY from Y, we observe the simpson’s paradox. We’ll see more details regarding counterfactuals in the next section.</p>
+
+<p>The correct translation of (S1-S3) is:</p>
+
+<ul>
+  <li>
+    <p>\(P(Y1=1 | X=1) - P(Y0=1 |X=1) &gt; 0\) 
+(C1)</p>
+  </li>
+  <li>
+    <p>\(P(Y1=1 | X=0) - P(Y0=1 |X=0) &gt; 0\) 
+(C2)</p>
+  </li>
+  <li>
+    <p>\(P(Y1=1) - P(Y0=1) &lt; 0\) 
+(C3)</p>
+  </li>
+</ul>
+
+<p>These three statements cannot be all true. If the first two statements hold, then:</p>
+
+\[P(Y1=1) - P(Y0=1) = \sum_{x=0}^1 [P(Y1=1 | X=x) - P(Y0=1 | X=x)] P(x)\]
+
+<p>This is why if the treatment is good for both men and women (S1-S2) , then it is not possible that the overall treatment is bad (S3).
+In summary:</p>
+
+<ul>
+  <li>(C1) = (E1) \(\neq\) (P1)</li>
+  <li>(C2) = (E2) \(\neq\) (P2)</li>
+  <li>(C3) = (E3) \(\neq\) (P3)</li>
+</ul>
+
+<p>and (E3) cannot be true if (E1) and/or (E2) hold.
+In general, we have:</p>
+
+\[P(Y=1 | T=1, X=1) - P(Y=1 | T=0, X=1) \neq P(Y1=1 | X=1) - P(Y0=1 |X=1)\]
+
+\[P(Y=1 | T=1, X=0) - P(Y=1 | T=0, X=0) \neq P(Y1=1 | X=0) - P(Y0=1 |X=0)\]
+
+\[P(Y=1 | T=1) - P(Y=1 | T=0) \neq P(Y1=1) - P(Y0=1)\]
+
+<p>In other words, correlation (left hand side) does not imply causation (right hand side). The left hand side can also be called the probabilistic quantity and the right hand side can be called causal quantity.</p>
+
+<h1 id="counterfactuals">Counterfactuals</h1>
+<p>I mentioned above that in order to capture the causal statements, we can use counterfactuals (or potential outcome). But what does it mean? In our binary treatment example, counterfactuals are the outcomes that we could have observed if we can give treatment and not give treatment to a person simultaneously. Ideally, to measure the true causal effect, we would want to put everyone in the population in both the treatment group and control group(s). Consider the men group in Table 1: the true causal effect is the difference between all 1450 people for the treatment group and all 1450 people for the control group. In other words, we want both the outcome for treatment and no treatment to be available for everyone. But in this case (and almost always) the counterfactuals cannot be observed, hence we take the naive difference between n=1400 and n=50.</p>
+
+<p>So how do we derive the correct causal effect then? How can we get \(Y1\) and \(Y0\) so that we can reliably say that my treatment has an effect? Do we have to fill in all the counterfactuals so that we have the same number of instances between groups? As far as I understand, there are two ways we can derive causal effect reliably:</p>
+<ul>
+  <li>Randomized controlled trial (or AB Test).</li>
+  <li>Conditioning on all possible confounding variables.
+The former usually does not involve in filling all the counterfactuals (which we’ll see more below). The latter approach is used in a situation where it is almost impossible to do randomized controlled trials (e.g. telling non-smoker to smoke to determine the causal effect of smoking to impotence). The latter is also mostly used on observational data. Furthermore, in the latter case we can take it further by filling the counterfactuals to get the best causal effect estimate.</li>
+</ul>
+
+<h1 id="randomized-controlled-trials">Randomized controlled trials</h1>
+<p>RCT/AB test removes the effects of confounding to the treatment. Directed edge from \(X-&gt;T\) is removed.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/rct-causal.png" />
+    </div>
+</div>
+<p><em>Figure 3: effects of RCT on the edge between confounding to treatment (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf">source</a>)</em></p>
+
+<p>This means that the treatment assignments are now purely random. Consequently, this makes \(T\) independent of \((Y1, Y0)\), or in other words, the treatment does not affect the potential outcome anymore. Note the difference: treatment \(T\) still affect the actual outcome \(Y\) but the treatment DOES NOT affect the potential outcome \(Y1\), \(Y0\). For more intuition regarding this I highly recommend checking out <a href="https://www.bradyneal.com/causal-inference-course">Brady Neal’s causal inference course</a>.
+With the independence, we have</p>
+
+\[P(Y=1 | T=1, X=x) = P(Y1 = 1 | X=x)\]
+
+<p>hence we can assume that the probabilistic quantity (P1-P1) is now the same as the causal quantity (C1-C3). Therefore, we can derive the causal effect directly from the probabilistic quantity and do your statistical test to determine whether it is significant (the usual AB Test). In RCT, afaik, we can sort of trust the outcome because of the randomized treatment assignment without having to approximate the counterfactuals.</p>
+
+<h1 id="observational-data">Observational data</h1>
+<p>In the case of most observational data, where the treatment assignment is not random, we can only recover the causal effect by CONDITIONING on all possible confounding variables.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/conditioning-causal.png" />
+    </div>
+</div>
+<p><em>Figure 4: effects of conditioning on confounding variable, blocking the path (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf">source</a>)</em></p>
+
+<p>Essentially, we want the independence between \(T\) and \((Y1, Y0)\) to happen here but we do this via conditioning on the confounding variables. We have:</p>
+
+\[(Y0,Y1) \perp T | X\]
+
+<p>This condition reduces the causal effect into a probabilisitic quantity. In the above example, if we assume that gender is our confounding variable, conditioning on it would yield:</p>
+
+<p>\(P(Y1 = 1) = \sum_x P(Y = 1 | T = 1, X=x) P(X=x)\)
+, where there is only one \(x\), namely gender</p>
+
+<p>Now, to further calculate the causal effect in a non-randomized observational data, it is common to approximate the unobserved counterfactuals with a prediction. In the men group above, we can train a model to predict the unobserved counterfactuals to fill the missing data points (so we have treated men n=1450, not treated men n=1450) and then predict the average treatment effect between the two groups. There are many ways to create this approximate causal model and they usually involve a lot of assumption. For more details I highly recommend to also check <a href="https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s897-machine-learning-for-healthcare-spring-2019/lecture-notes/MIT6_S897S19_lec14note.pdf">this MIT lecture notes</a>. The most important assumption is of no unmeasured confounders, which only holds when we observe all possible variables that influence both treatment decisions and potential outcomes. In reality, one has to consult with a domain expert to make sure that all variables that influence treatments and potential outcomes are observed.</p>
+
+<h1 id="application-in-industry">Application in industry</h1>
+<p>This is something that I am curious about, but unfortunately I haven’t found the opportunity that allowed me to implement causal inference in a work setting. So I can’t speak from experience. 
+Here are some examples of causal inference that I know can be beneficial in industry:</p>
+
+<h4 id="uplift-modeling">Uplift modeling</h4>
+<p>It is aimed at quantifying the treatment effect and identifying the characteristics of individuals most likely to benefit from the benefit. With this information, one thing we can do is to better choose individuals for the next cycle. The characteristics identification is essentially a prediction of counterfactuals for a customer in an experiment setting. Afaik, uplift can also be used to generate demand by giving user more targeted coupons or voucher. Uplift modeling can be used together with AB Test (offline) or multi armed bandit (online).</p>
+
+<h4 id="causal-dags-for-forecasting">Causal DAGs for forecasting</h4>
+<p>I do not know much about this since this is probably still a new field. One example that I know of is from Lyft (check this <a href="https://www.youtube.com/watch?v=5wbLy4SDuo4&amp;ab_channel=TheTWIMLAIPodcastwithSamCharrington">talk</a> from Sean Taylor). At Lyft, they create a causal DAGs with prior experimental evidence to model the causal effect of things. In the causal DAGs, there are:</p>
+
+<ul>
+  <li>pure parent nodes that they control (price level, how much we spend on driver incentives)</li>
+  <li>outcome nodes that they monitor (marketplace outcome, things that happen)</li>
+  <li>pure parent nodes that they do not control (how many people request driver organically)</li>
+</ul>
+
+<p>They seem to have another model (like policy variables) that produces plan. This plan is then inserted into the structural causal model to sort of simulate what would happen in the outcome nodes.</p>
+
+<p>If you know any other implementation of causal inference in industry, please do let me know!</p>
+
+<h1 id="recap-and-closing">Recap and closing</h1>
+<p>What this post covered:</p>
+
+<ul>
+  <li>Correlation vs causation in a formal way.</li>
+  <li>Counterfactuals as a causal language to capture causal effect correctly. By introducing potential outcomes \((Y1, Y0)\) we see where the failure is.</li>
+  <li>RCT and conditioning on confounding variables as a way to reliably calculate causal effect in an experiment.</li>
+</ul>
+
+<p>What this post doesn’t cover:</p>
+
+<ul>
+  <li>List of assumptions that need to hold for the counterfactuals to work.</li>
+  <li>Structural causal model (Pearl): another causal language to describe and capture causal effect.</li>
+</ul>
+
+<p>Thanks for reading this post! I am a noob in causal inference so please do inform me if there is an error or mistake on twitter <a href="https://twitter.com/rezkaaufar">@rezkaaufar</a></p>
+
+  </article>
+
+  
+
+</div>
+
+    </div>
+
+    <!-- Footer -->
+
+    
+<footer class="fixed-bottom">
+  <div class="container mt-0">
+    &copy; Copyright 2021 Rezka  Leonandya.
+    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
+
+    
+    
+  </div>
+</footer>
+
+
+
+  </body>
+
+  <!-- Bootsrap & MDB scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.4/umd/popper.min.js" integrity="sha512-eUQ9hGdLjBjY3F41CScH3UX+4JDSI9zXeroz7hJ+RteoCaY+GP/LDoM8AO+Pt+DRFw3nXqsjh9Zsts8hnYv8/A==" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha512-M5KW3ztuIICmVIhjSqXe01oV2bpe248gOxqmlcYrEzAvws7Pw3z6BK0iGbrwvdrUQUhi3eXgtxp5I8PDo9YfjQ==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/js/mdb.min.js" integrity="sha512-Mug9KHKmroQFMLm93zGrjhibM2z2Obg9l6qFG2qKjXEXkMp/VDkI4uju9m4QKPjWSwQ6O2qzZEnJDEeCw0Blcw==" crossorigin="anonymous"></script>
+
+  
+<!-- Mansory & imagesLoaded -->
+<script defer src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script defer src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+<script defer src="/assets/js/mansory.js" type="text/javascript"></script>
+
+
+  
+
+
+<!-- Load Common JS -->
+<script src="/assets/js/common.js"></script>
+
+
+</html>
