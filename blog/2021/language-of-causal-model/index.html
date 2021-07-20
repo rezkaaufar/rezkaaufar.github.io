@@ -323,9 +323,10 @@ In general, we have:</p>
 <p>So how do we derive the correct causal effect then? How can we get \(Y1\) and \(Y0\) so that we can reliably say that my treatment has an effect? Do we have to fill in all the counterfactuals so that we have the same number of instances between groups? As far as I understand, there are two ways we can derive causal effect reliably:</p>
 <ul>
   <li>Randomized controlled trial (or AB Test).</li>
-  <li>Conditioning on all possible confounding variables.
-The former usually does not involve in filling all the counterfactuals (which we’ll see more below). The latter approach is used in a situation where it is almost impossible to do randomized controlled trials (e.g. telling non-smoker to smoke to determine the causal effect of smoking to impotence). The latter is also mostly used on observational data. Furthermore, in the latter case we can take it further by filling the counterfactuals to get the best causal effect estimate.</li>
+  <li>Conditioning on all possible confounding variables.</li>
 </ul>
+
+<p>The former usually does not involve in filling all the counterfactuals (which we’ll see more below). The latter approach is used in a situation where it is almost impossible to do randomized controlled trials (e.g. telling non-smoker to smoke to determine the causal effect of smoking to impotence). The latter is also mostly used on observational data. Furthermore, in the latter case we can take it further by filling the counterfactuals to get the best causal effect estimate.</p>
 
 <h1 id="randomized-controlled-trials">Randomized controlled trials</h1>
 <p>RCT/AB test removes the effects of confounding to the treatment. Directed edge from \(X-&gt;T\) is removed.</p>
