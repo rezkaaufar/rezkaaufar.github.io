@@ -125,6 +125,8 @@
           
           
           
+          
+          
           <li class="nav-item ">
               <a class="nav-link" href="/publications/">
                 publications
@@ -177,10 +179,12 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/corr-col.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/corr-col.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 1: spurious correlation (<a href="https://www.kaggle.com/general/187094">source</a>)</em></p>
+<div class="caption">
+    Figure 1: spurious correlation (<a href="https://www.kaggle.com/general/187094">credits</a>)
+</div>
 
 <p>But what does it mean, really? What does “correlation does not imply causation” really mean? Given a data \(X\) and a target variable \(Y\), can we estimate direct causal effect? If so, how can we know that we have modeled causation in a correct way? Is there a formal way to capture this English statement? Yes!</p>
 
@@ -202,10 +206,12 @@ Okay, enough intro. The best way to start understanding why correlation \(\neq\)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/table-causal.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/table-causal.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Table 1: illustrative data</em></p>
+<div class="caption">
+    Table 1: illustrative data
+</div>
 
 <p>From the table, we have treatment \(T\) that is binary (given and not given), feature (or covariate) \(X\) that is also binary (men and women) and the outcome \(Y\) that is also binary (working and not working). The numbers in the column is the sum of treatment that is working (\(Y=1\)). Consequently, we have the probabilistic interpretation as follows:</p>
 
@@ -262,10 +268,12 @@ Okay, enough intro. The best way to start understanding why correlation \(\neq\)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/confound-graph.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/confound-graph.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 2: directed acyclic graph illustrating confounding variable (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf">source</a>)</em></p>
+<div class="caption">
+    Figure 2: directed acyclic graph illustrating confounding variable (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf">credits</a>)
+</div>
 
 <p>There is an information flow between the treatment to the outcome via the confounding variable, resulting in (P1-P3) to all be true. In this case, \(X\) is the confounding variable: the gender.</p>
 
@@ -333,10 +341,12 @@ In general, we have:</p>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/rct-causal.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/rct-causal.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 3: effects of RCT on the edge between confounding to treatment (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf">source</a>)</em></p>
+<div class="caption">
+    Figure 3: effects of RCT on the edge between confounding to treatment (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf">credits</a>)
+</div>
 
 <p>This means that the treatment assignments are now purely random. Consequently, this makes \(T\) independent of \((Y1, Y0)\), or in other words, the treatment does not affect the potential outcome anymore. Note the difference: treatment \(T\) still affect the actual outcome \(Y\) but the treatment DOES NOT affect the potential outcome \(Y1\), \(Y0\). For more intuition regarding this I highly recommend checking out <a href="https://www.bradyneal.com/causal-inference-course">Brady Neal’s causal inference course</a>.
 With the independence, we have</p>
@@ -350,10 +360,12 @@ With the independence, we have</p>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/conditioning-causal.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/conditioning-causal.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 4: effects of conditioning on confounding variable, blocking the path (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf">source</a>)</em></p>
+<div class="caption">
+    Figure 4: effects of conditioning on confounding variable, blocking the path (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf">credits</a>)
+</div>
 
 <p>Essentially, we want the independence between \(T\) and \((Y1, Y0)\) to happen here but we do this via conditioning on the confounding variables. We have:</p>
 
@@ -408,6 +420,19 @@ Here are some examples of causal inference that I know can be beneficial in indu
 
   </article>
 
+  
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+      var disqus_shortname  = 'rezka';
+      var disqus_identifier = '/blog/2021/language-of-causal-model';
+      var disqus_title      = "Understanding the language of causal model";
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   
 
 </div>

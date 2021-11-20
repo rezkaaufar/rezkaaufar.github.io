@@ -125,6 +125,8 @@
           
           
           
+          
+          
           <li class="nav-item ">
               <a class="nav-link" href="/publications/">
                 publications
@@ -178,19 +180,23 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-graph.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-graph.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 1: An example of a true causal graph between 5 variables</em></p>
+<div class="caption">
+    Figure 1: An example of a true causal graph between 5 variables
+</div>
 
 <p>Assume that we have data with these 5 variables in a spreadsheet style (think pandas dataframe) and we are tasked to find the effect on how exposure to sun (\(T\)) on the illness (\(Y\)). Without any knowledge of causal inference, we might think to just incorporate \(T\) as feature and create a linear regression model on the label \(Y\). Once we have the model, we use the coefficient to gauge and measure the relationship between exposure to sun and illness. If the coefficient is a positive number, then it tells us that there is a positive relationship, and vice versa if the coefficient is a negative number.</p>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-regression.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-regression.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" />
     </div>
 </div>
-<p><em>Figure 2: Results of two linear regressions using different features (<a href="https://www.youtube.com/watch?v=5JsFZbGqJzc&amp;t=1516s&amp;ab_channel=ODSAIGlobal">credits</a>)</em></p>
+<div class="caption">
+    Figure 2: Results of two linear regressions using different features. (<a href="https://www.youtube.com/watch?v=5JsFZbGqJzc&amp;t=1516s&amp;ab_channel=ODSAIGlobal">credits</a>)
+</div>
 
 <p>Looking at Figure 2 above, if we use \(T\) as the single feature to predict \(Y\), we got test RMSE of 10 and a coefficient of 0.99, meaning that there is a positive relationship between exposure to sun and illness. But if we were to add \(C\) (type of car owned) as feature, then we would have an even better test RMSE of 7.7, hinting that type of car owned is helpful in predictive power. But if we inspect the coefficient, we see that now \(T\) and \(Y\) have a negative relationship, whereas \(C\) and \(Y\) have a positive relationship. How can this happen? How can knowing the type of car owned results in more predictive power to illness? To the naked eye, this seems pretty unintuitive. But if we know the true causal graph we will immediately realized that knowing \(C\) indirectly tells us the age of the person, which gives it the predictive power to illness. This is another example of simpson’s paradox in a acyclic directed graph which we can use to distinguish flow of correlation vs causation.</p>
 
@@ -202,10 +208,12 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-example.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-example.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 3: Illustration of a bayesian network</em></p>
+<div class="caption">
+    Figure 3: Illustration of a bayesian network
+</div>
 
 <p>In a bayesian network, the value of a node is independent of the rest of the variables in the graph given its parents. The relationship between arbitrary nodes are not necessarily causal. Therefore, we need to assume that the directed edges are the actual causal effect. This is where the unconfoundedness assumption plays in SCM. We need to believe and be sure that the bayesian network that we build have no unmeasured confounders.</p>
 
@@ -214,10 +222,12 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-build.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-build.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 4: Steps to build a bayesian network</em></p>
+<div class="caption">
+    Figure 4: Steps to build a bayesian network
+</div>
 
 <p>Figure 4 above shows the steps in building a bayesian network:</p>
 <ul>
@@ -234,10 +244,12 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-trained.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-trained.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 5: A conditional probability distributions for each node in bayesian network</em></p>
+<div class="caption">
+    Figure 5: A conditional probability distributions for each node in bayesian network
+</div>
 
 <p>Figure 5 shows the illustration after fitting the parameters of our 3 variables on the observational data. Each node is governed by a conditional probability. If a variable does not have any parents, then it’s just its own probability.</p>
 
@@ -252,10 +264,12 @@ In conditioning, we can have a non-causal correlation flowing from one node to a
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-ass-caus.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-ass-caus.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 6: Association vs causation in a graph (<a href="https://www.bradyneal.com/causal-inference-course">credits</a>)</em></p>
+<div class="caption">
+    Figure 6: Association vs causation in a graph (<a href="https://www.bradyneal.com/causal-inference-course">credits</a>)
+</div>
 
 <p>The true causal effect from treatment \(T\) to outcome \(Y\) flows through \(M1\) and \(M2\). However, in the case above there are two other paths in which non-causal correlation can flow from \(T\) to \(Y\):</p>
 
@@ -274,10 +288,12 @@ In conditioning, we can have a non-causal correlation flowing from one node to a
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-cond-intv.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-cond-intv.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 7: Visual illustration on the difference between conditioning and intervening (<a href="https://www.bradyneal.com/causal-inference-course">credits</a>)</em></p>
+<div class="caption">
+    Figure 7: Visual illustration on the difference between conditioning and intervening (<a href="https://www.bradyneal.com/causal-inference-course">credits</a>)
+</div>
 
 <h2 id="intervention">Intervention</h2>
 <p>To gain insight from our model, we want to query our model under different observation. With intervention, we can replace the probability distributions of a certain state. If this state has a children, then we can simulate what would have happened to the children marginal probability if we do an intervention to the node. Unlike conditioning, intervention on a node will only affect its children according to the causal direction.
@@ -285,20 +301,23 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-before-intv.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-before-intv.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 8: Marginal probability of getting high or low grades before doing an intervention</em></p>
+<div class="caption">
+    Figure 8: Marginal probability of getting high or low grades before doing an intervention
+</div>
 
 <p>Figure 8 shows the calculation of the joint probability between Grade, Study, and School Support, and the marginal probability of Grade. Remember that \(P(S)\),  \(P(SS)\), and \(P(G \mid S, SS)\) are calculated from data. These are the parameters that we estimated after we have the causal structure. With the estimated parameter and causal structure, we calculate the marginal probability of Grade. This is the marginal probability that we learn from data before we do any intervention.</p>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-after-intv.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-after-intv.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
     </div>
 </div>
-<p><em>Figure 9: Marginal probability of getting high or low grades after doing an intervention on the study variable</em></p>
-
+<div class="caption">
+    Figure 9: Marginal probability of getting high or low grades after doing an intervention on the study variable
+</div>
 <p>Figure 9 shows how it would look like to Grade variable if we do an intervention on Study. Here we force \(P(S)\) to hold a certain value: in plain English we can interpret this as forcing everyone to Study. We can see after intervening, the marginal probability of Grade from 0.605 to 0.875 on the marginal probability \(P(G=High)\). This means that we can assume that if we nudge students to study more then it would yield better grades that is good for the school.</p>
 
 <p>Please note that when doing intervention, we assume that the change in the target variables marginal probability happens on the whole population. However, when we build the causal structure and fit the parameters for every variables, we do it on the observational data. So it’s important to make sure that we have enough data first. Ensuring that we have enough data is most commonly known as fulfilling the <a href="https://www.bradyneal.com/Introduction_to_Causal_Inference-Dec17_2020-Neal.pdf">positivity/overlap</a> assumption.</p>
@@ -318,6 +337,19 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
 
   </article>
 
+  
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+      var disqus_shortname  = 'rezka';
+      var disqus_identifier = '/blog/2021/structural-causal-model';
+      var disqus_title      = "Causal model with bayesian network";
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   
 
 </div>
