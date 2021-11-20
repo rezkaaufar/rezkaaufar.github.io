@@ -2,11 +2,19 @@
 <html>
 
   <head>
+    
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<title>Rezka  Leonandya | Core components of recommender systems</title>
+<title>
+
+  Rezka  Leonandya
+
+
+  | Core components of recommender systems
+
+</title>
 <meta name="description" content="Rezka's Personal Website and Blog
 ">
 
@@ -26,48 +34,17 @@
 <link rel="stylesheet" href="https://gitcdn.link/repo/jwarby/jekyll-pygments-themes/master/github.css" />
 
 <!-- Styles -->
-<link rel="shortcut icon" href="/assets/img/favicon.ico">
-<link rel="stylesheet" href="/assets/css/main.css">
 
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤡</text></svg>">
+
+<link rel="stylesheet" href="/assets/css/main.css">
 <link rel="canonical" href="/blog/2021/recsys-core-components/">
 
-<!-- JQuery -->
-<!-- jQuery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 
-
-<!-- Theming-->
-
-  <script src="/assets/js/theme.js"></script>
-  <!-- Load DarkMode JS -->
+<!-- Dark Mode -->
+<script src="/assets/js/theme.js"></script>
 <script src="/assets/js/dark_mode.js"></script>
 
-
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-192945533-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'UA-192945533-1');
-  </script>
-
-
-
-
-    
-<!-- MathJax -->
-<script type="text/javascript">
-  window.MathJax = {
-    tex: {
-      tags: 'ams'
-    }
-  };
-</script>
-<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js"></script>
-<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 
 
   </head>
@@ -82,7 +59,7 @@
     <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
     <div class="container">
       
-      <a class="navbar-brand title font-weight-lighter" href="/">
+      <a class="navbar-brand title font-weight-lighter" href="https://rezkaaufar.github.io/">
        <span class="font-weight-bold">Rezka</span>   Leonandya
       </a>
       
@@ -127,12 +104,23 @@
           
           
           
+          
+          
+          
+          
+          
+          
+          
+          
+          
           <li class="nav-item ">
               <a class="nav-link" href="/publications/">
                 publications
                 
               </a>
           </li>
+          
+          
           
           
           
@@ -145,8 +133,9 @@
           
           
           
-            <div class = "toggle-container">
-              <a id = "light-toggle">
+          
+            <div class="toggle-container">
+              <a id="light-toggle">
                   <i class="fas fa-moon"></i>
                   <i class="fas fa-sun"></i>
               </a>
@@ -165,15 +154,26 @@
     <div class="container mt-5">
       
 
+
+
+
+
 <div class="post">
 
   <header class="post-header">
     <h1 class="post-title">Core components of recommender systems</h1>
     <p class="post-meta">May 8, 2021</p>
+    <p class="post-tags">
+      <a href="/blog/2021"> <i class="fas fa-calendar fa-sm"></i> 2021 </a>
+      
+
+      
+
+    </p>
   </header>
 
   <article class="post-content">
-    <p>The way that recsys is usually taught by starting from its taxonomy (collaborative filtering, content based, hybrid based) is confusing to me at first. In this post I am going to take another path to explain recsys by discussing the core components first and then draw the connection to the recsys taxonomy. Essentially, the majority of recsys objective is to map items and users on the same vector space through a learning objectives so that we can determine items to give to users for a recommendation or which items to show in a similar items page. My post is mostly based on this wonderful talk by <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp">James Kirk from Spotify</a> so I highly recommend you to watch the video to gain further understanding.</p>
+    <p>The way that recsys is usually taught by starting from its taxonomy (collaborative filtering, content based, hybrid based) is confusing to me at first. In this post I am going to take another path to explain recsys by discussing the core components first and then draw the connection to the recsys taxonomy. Essentially, the majority of recsys objective is to map items and users on the same vector space through a learning objectives so that we can determine items to give to users for a recommendation or which items to show in a similar items page. My post is mostly based on this wonderful talk by <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="_blank" rel="noopener noreferrer">James Kirk from Spotify</a> so I highly recommend you to watch the video to gain further understanding.</p>
 
 <p>Main components of a recommendation system:</p>
 <ol>
@@ -186,7 +186,7 @@
 
 <p>Let’s go through it one by one!</p>
 
-<hr />
+<hr>
 
 <h2 id="interaction-matrix">Interaction Matrix</h2>
 <p>Interaction Matrix is the main components of a recsys, usually of \(M \times N\) size, where \(M\) is the number of users and \(N\) is the number of items. Note that user-item definition in a recsys is not restrictive to an actual user or item. The user is the receiving and acting entity on the recommendation, whereas the item is the passive entity that is being recommended to the user.</p>
@@ -200,17 +200,17 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/interaction-matrix.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/interaction-matrix.png">
     </div>
 </div>
 
-<p><em>Source: <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="blank">James Kirk’s slides</a></em></p>
+<p><em>Source: <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="_blank" rel="noopener noreferrer">James Kirk’s slides</a></em></p>
 
 <p>Interaction value should reflect what is the intended effect that we want to happen in our recommender system. For example, if we want users to purchase more given our recommender system, then we want our interaction value to be related to purchase. If we want users to engage more in our platform, then our interaction value should be related to engagement.</p>
 
 <p>We might also want to handle and preprocess our interaction matrix before using it. In some settings, users can give negative explicit interaction. Negative interactions can be a rich signals for the recsys to learn from but we need to be careful in handling them. Some loss functions such as learning-to-rank cannot accomodate negative signals. Interaction matrix is also usually sparse, so we need to handle missing value. In explicit interactions, we can’t just replace them with zeroes as it indicates that the user do not like the item. Hence we just go about modelling with sparse data. In implicit interactions, it is much safer to replace with zeroes as it indicates no action from the user (no views, no plays, etc).  Missing values are usually what we want to predict with our recsys: giving item recommendation to a particular user that hasn’t been interacted by the user.</p>
 
-<hr />
+<hr>
 
 <h2 id="useritem-features">User/Item Features</h2>
 <p>There are two types of features in a recsys:</p>
@@ -223,11 +223,11 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/user-item-features.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/user-item-features.png">
     </div>
 </div>
 
-<p><em>Source: <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="blank">James Kirk’s slides</a></em></p>
+<p><em>Source: <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="_blank" rel="noopener noreferrer">James Kirk’s slides</a></em></p>
 
 <ul>
   <li>Pure collaborative filtering is an approach where a recsys uses only indicator features.</li>
@@ -235,7 +235,7 @@
   <li>When both indicator and metadata features are used they’re known as a hybrid recsys.</li>
 </ul>
 
-<hr />
+<hr>
 
 <h2 id="useritem-representation-function">User/Item Representation Function</h2>
 <p>In recsys we want to find a good representation for the user and item. A representation is typically a low-dimensional vector that encodes information regarding the user and item. Getting the representation involves transforming the user/item features via a representation function. Some examples of representation function:</p>
@@ -247,7 +247,7 @@
 
 <p>Depending on the design, there are many ways to choose our representation function. Linear kernels are effective with both indicator and metadata features. Linear kernels are also a natural choice for matrix factorization problem. If we have an unstructured data, e.g., text/image that we want to utilize, we can use separate architecture like word2vec or autoencoder to get the text/image representation and then feed it into our recsys representation function. We can also use different representation function for different features, for example, linear kernels for indicator and metadata and passthrough for text/image (directly using representation output from the word2vec or autoencoder).</p>
 
-<hr />
+<hr>
 
 <h2 id="prediction-function">Prediction Function</h2>
 <p>A function that outputs the estimated items’ relevance to a particular user. This function converts user/item representation into a prediction. The prediction itself can vary depending on the design: it can be a score that tells us how relevant an item to a user but it can also be a relevance rank on several items for a particular user. Some examples of prediction function:</p>
@@ -258,7 +258,7 @@
   <li>Neural network</li>
 </ol>
 
-<hr />
+<hr>
 
 <h2 id="learning-objective">Learning Objective</h2>
 <p>This is essentially our loss function that let us uncover the best representation for the user/item. The learning objective converts both the user/item representation and prediction into a loss to learn the best parameter for the recsys model. Learning objective can have a huge impact on the output of the recommendation system. Changes in learning objective can dramatically affect how our recsys feel to the user. Examples of loss function characteristics:</p>
@@ -278,17 +278,17 @@
   <li>Weighted approximately ranked pairwise (learning-to-rank)</li>
 </ol>
 
-<hr />
+<hr>
 
 <h1 id="combining-it-all-together">Combining it all together</h1>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/recsys-build.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/recsys-build.png">
     </div>
 </div>
 
-<p><em>Common architecture of a recommender system. Source: <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="blank">James Kirk’s slides</a></em></p>
+<p><em>Common architecture of a recommender system. Source: <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="_blank" rel="noopener noreferrer">James Kirk’s slides</a></em></p>
 
 <p>There we have it: the architecture of recommender systems. Let’s try to design a recommender system based on some cases:</p>
 
@@ -316,7 +316,7 @@
 
 <p>With this architecture, we can also incorporate more complex feature representation into the system. For example, if we want to utilize the social graph between user-user, then we can introduce graph neural network that takes an input of user graph (user features) and outputs the representation to be further processed (user representation).</p>
 
-<p><a href="https://arxiv.org/pdf/1902.07243.pdf">For you page</a> utilizing social graph structure:</p>
+<p><a href="https://arxiv.org/pdf/1902.07243.pdf" target="_blank" rel="noopener noreferrer">For you page</a> utilizing social graph structure:</p>
 <ul>
   <li>Interaction matrix: user-item (binary or continuous)</li>
   <li>User features: user-user graph</li>
@@ -353,7 +353,7 @@
 
 <h2 id="is-there-a-recsys-model-that-does-not-fit-into-this-architecture">Is there a recsys model that does not fit into this architecture?</h2>
 
-<p>Yes! In some cases we can use the interaction matrix to design the training data and not use it as our label. You can find some of the examples <a href="https://eugeneyan.com/writing/recommender-systems-graph-and-nlp-pytorch/">here</a> where the author tries to create a pseudo-sentences of products to then be fed into a word2vec training. This setting does not use the interaction matrix as the label.</p>
+<p>Yes! In some cases we can use the interaction matrix to design the training data and not use it as our label. You can find some of the examples <a href="https://eugeneyan.com/writing/recommender-systems-graph-and-nlp-pytorch/" target="_blank" rel="noopener noreferrer">here</a> where the author tries to create a pseudo-sentences of products to then be fed into a word2vec training. This setting does not use the interaction matrix as the label.</p>
 
 <p>Thanks for reading! Contact me on twitter if you spot any mistake.</p>
 
@@ -370,8 +370,8 @@
     
 <footer class="fixed-bottom">
   <div class="container mt-0">
-    &copy; Copyright 2021 Rezka  Leonandya.
-    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
+    © Copyright 2021 Rezka  Leonandya.
+    Powered by <a href="http://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" target="_blank" rel="noopener noreferrer">al-folio</a> theme.
 
     
     
@@ -381,6 +381,9 @@
 
 
   </body>
+
+  <!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 
   <!-- Bootsrap & MDB scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.4/umd/popper.min.js" integrity="sha512-eUQ9hGdLjBjY3F41CScH3UX+4JDSI9zXeroz7hJ+RteoCaY+GP/LDoM8AO+Pt+DRFw3nXqsjh9Zsts8hnYv8/A==" crossorigin="anonymous"></script>
@@ -397,8 +400,41 @@
   
 
 
+<!-- Medium Zoom JS -->
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+<script src="/assets/js/zoom.js"></script>
+
+
 <!-- Load Common JS -->
 <script src="/assets/js/common.js"></script>
+
+  
+<!-- MathJax -->
+<script type="text/javascript">
+  window.MathJax = {
+    tex: {
+      tags: 'ams'
+    }
+  };
+</script>
+<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+
+  
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-192945533-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'UA-192945533-1');
+</script>
+
+
+
+
 
 
 </html>

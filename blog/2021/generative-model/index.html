@@ -2,11 +2,19 @@
 <html>
 
   <head>
+    
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<title>Rezka  Leonandya | Some notes on generative model</title>
+<title>
+
+  Rezka  Leonandya
+
+
+  | Some notes on generative model
+
+</title>
 <meta name="description" content="Rezka's Personal Website and Blog
 ">
 
@@ -26,48 +34,17 @@
 <link rel="stylesheet" href="https://gitcdn.link/repo/jwarby/jekyll-pygments-themes/master/github.css" />
 
 <!-- Styles -->
-<link rel="shortcut icon" href="/assets/img/favicon.ico">
-<link rel="stylesheet" href="/assets/css/main.css">
 
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤡</text></svg>">
+
+<link rel="stylesheet" href="/assets/css/main.css">
 <link rel="canonical" href="/blog/2021/generative-model/">
 
-<!-- JQuery -->
-<!-- jQuery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 
-
-<!-- Theming-->
-
-  <script src="/assets/js/theme.js"></script>
-  <!-- Load DarkMode JS -->
+<!-- Dark Mode -->
+<script src="/assets/js/theme.js"></script>
 <script src="/assets/js/dark_mode.js"></script>
 
-
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-192945533-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'UA-192945533-1');
-  </script>
-
-
-
-
-    
-<!-- MathJax -->
-<script type="text/javascript">
-  window.MathJax = {
-    tex: {
-      tags: 'ams'
-    }
-  };
-</script>
-<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js"></script>
-<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 
 
   </head>
@@ -82,7 +59,7 @@
     <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
     <div class="container">
       
-      <a class="navbar-brand title font-weight-lighter" href="/">
+      <a class="navbar-brand title font-weight-lighter" href="https://rezkaaufar.github.io/">
        <span class="font-weight-bold">Rezka</span>   Leonandya
       </a>
       
@@ -127,12 +104,23 @@
           
           
           
+          
+          
+          
+          
+          
+          
+          
+          
+          
           <li class="nav-item ">
               <a class="nav-link" href="/publications/">
                 publications
                 
               </a>
           </li>
+          
+          
           
           
           
@@ -145,8 +133,9 @@
           
           
           
-            <div class = "toggle-container">
-              <a id = "light-toggle">
+          
+            <div class="toggle-container">
+              <a id="light-toggle">
                   <i class="fas fa-moon"></i>
                   <i class="fas fa-sun"></i>
               </a>
@@ -165,17 +154,28 @@
     <div class="container mt-5">
       
 
+
+
+
+
 <div class="post">
 
   <header class="post-header">
     <h1 class="post-title">Some notes on generative model</h1>
     <p class="post-meta">April 18, 2021</p>
+    <p class="post-tags">
+      <a href="/blog/2021"> <i class="fas fa-calendar fa-sm"></i> 2021 </a>
+      
+
+      
+
+    </p>
   </header>
 
   <article class="post-content">
     <p>Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding.</p>
 
-<hr />
+<hr>
 
 <h2 id="discriminative-vs-generative">Discriminative vs Generative</h2>
 <p>Discriminative models directly capture the conditional probability of \(p(y|x)\). Given a feature \(x\) and a label \(y\), the model can then discriminate between different input instances. Discriminative models are pervasive in the machine learning community.</p>
@@ -184,7 +184,7 @@
 
 <p>Generative models themselves differ in many ways. There are many ways to model the data generating process, depending on the design choice. It can be supervised or unsupervised, it can be factorized differently depending on the architecture design, etc. Below I am going to list some examples but these are not an exhaustive list of generative models. I am leaving out the technical depth out of this post and only discuss the high-level overview.</p>
 
-<hr />
+<hr>
 
 <h2 id="examples-of-generative-model">Examples of Generative Model</h2>
 
@@ -201,19 +201,19 @@ There is a sequential version of NB: hidden markov model (HMM) but I am not disc
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/lda.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/lda.png">
     </div>
 </div>
 
-<p><em>Source: <a href="https://jmlr.org/papers/volume3/blei03a/blei03a.pdf" target="blank">original paper</a></em></p>
+<p><em>Source: <a href="https://jmlr.org/papers/volume3/blei03a/blei03a.pdf" target="_blank" rel="noopener noreferrer">original paper</a></em></p>
 
 <p>There are three main parameters of this model<sup>4</sup>: \(\theta\), for the document-topic distribution (\(M \times K\) matrix), \(\beta\), for the topic-word distribution (\(K \times V\) matrix), and \(z_n\), for the word assignment (\(K\) vector per document-word level). The objective of LDA is to find the best value for these parameters given the data that we have. This is a bayesian inference task where the goal is to calculate the posterior distribution for these parameters. We cannot calculate the posterior analytically because computing the denominator is intractable. Hence to approximate the posterior, most advocate for either markov chain monte carlo (mcmc) or variational inference (VI). The original LDA paper uses VI but there exists some MCMC approaches as well.  For the VI approach, they use mean-field variational inference<sup>5</sup>, which breaks the interdependence between each latent variables, making it easier to calculate. After the bayesian inference is done, we get the approximated posterior distribution for \(\theta\), \(\beta\), and \(z_n\). We can use these distributions to generate new sample after training, following the data generating process above. The sampling, like in NB, will result in garbled texts as there is no notion of sequence here. Given a document consisting of words, we can use LDA to get the most likely topics for the document by generating the mixture of topic first using \(\theta\) and then greedily assign given word to a topic based on \(\beta\) and \(z_n\).</p>
 
 <h3 id="generative-rnn-for-text-classification">Generative RNN for Text Classification</h3>
-<p><a href="https://arxiv.org/pdf/1703.01898.pdf">Generative RNN</a> uses the same factorization \(p(x|y) = p(x|y) p(y)\) as in NB. The difference here is that since the model is an RNN, \(p(x|y)\) can be further factorized into \(\prod_{i} p(x_i| x_{&lt;i}, y)\). During training, the label \(y\) is used as an input to the RNN, transformed into its own trainable embedding. The authors experimented with two models: sharing the parameters for every label or uses different parameters for each label. During prediction, they compute \(argmax_y p(x|y) p(y)\) using empirical categorical distribution for \(p(y)\). Sampling from generative RNN is pretty straightforward. We can just first sample the label and starts the sequential process of RNN that generates a new data instances one token at a time. To stop the generative process one might include EOS token or determine the sentence length in advance.</p>
+<p><a href="https://arxiv.org/pdf/1703.01898.pdf" target="_blank" rel="noopener noreferrer">Generative RNN</a> uses the same factorization \(p(x|y) = p(x|y) p(y)\) as in NB. The difference here is that since the model is an RNN, \(p(x|y)\) can be further factorized into \(\prod_{i} p(x_i| x_{&lt;i}, y)\). During training, the label \(y\) is used as an input to the RNN, transformed into its own trainable embedding. The authors experimented with two models: sharing the parameters for every label or uses different parameters for each label. During prediction, they compute \(argmax_y p(x|y) p(y)\) using empirical categorical distribution for \(p(y)\). Sampling from generative RNN is pretty straightforward. We can just first sample the label and starts the sequential process of RNN that generates a new data instances one token at a time. To stop the generative process one might include EOS token or determine the sentence length in advance.</p>
 
 <h3 id="generative-rnng-recurrent-neural-network-grammar">Generative RNNG (Recurrent Neural Network Grammar)</h3>
-<p>In my opinion, <a href="https://arxiv.org/pdf/1602.07776.pdf">RNNG</a> is a cool model. RNNG design allows it to model \(p(x,y)\) directly without any factorization. It is based on a top-down generation algorithm that relies on a stack data structure.  We can imagine that at each timesteps, RNNG generates an action that produces both words \(x\) and a well-formed parse tree \(y\). I’m omitting a lot of details here, but there are 3 main actions in the generative version:</p>
+<p>In my opinion, <a href="https://arxiv.org/pdf/1602.07776.pdf" target="_blank" rel="noopener noreferrer">RNNG</a> is a cool model. RNNG design allows it to model \(p(x,y)\) directly without any factorization. It is based on a top-down generation algorithm that relies on a stack data structure.  We can imagine that at each timesteps, RNNG generates an action that produces both words \(x\) and a well-formed parse tree \(y\). I’m omitting a lot of details here, but there are 3 main actions in the generative version:</p>
 
 <ul>
   <li>NT(s), which generates a non-terminal S</li>
@@ -257,14 +257,14 @@ Once the model is trained, we can sample from the gaussian distribution \(p(z)\)
 
 <p>With further math derivations, it can be shown that the above loss function is a Jensen-Shannon divergence<sup>8</sup> (JS divergence) that quantifies similarity between the fake data distribution \(p_g(x)\) and the real data distribution \(p_r(x)\). If \(D\) and \(G\) are at their optimal values when \(p_g(x) = p_r(x)\) then the JS divergence is minimized at 0.</p>
 
-<hr />
+<hr>
 
 <h2 id="closing">Closing</h2>
 <p>To conclude, generative models allow us to sample from the model after training because we design a data generating process assumption into the model. We have seen that generative model can be design in many ways, for example: factorizing into \(p(x|y) p(y)\) with a label \(y\), designing a model to capture the joint \(p(x,y)\) directly, assuming a latent variable, and a zero-sum game setting. There are plenty of another approaches in generative models that I do not mention in the post, such as autoregressive<sup>9</sup> models and flow-based models (I might create a part 2 related to this some other time).</p>
 
 <p>Thank you for reading my post! Please contact me on twitter if you spot any mistake.</p>
 
-<hr />
+<hr>
 
 <h4 id="footnote">Footnote</h4>
 <ol>
@@ -279,17 +279,17 @@ Once the model is trained, we can sample from the gaussian distribution \(p(z)\)
   <li>They’re not the same as recurrent in RNN.</li>
 </ol>
 
-<hr />
+<hr>
 
 <h4 id="useful-links">Useful links</h4>
 <ul>
-  <li><a href="http://brooksandrew.github.io/simpleblog/articles/latent-dirichlet-allocation-under-the-hood/">http://brooksandrew.github.io/simpleblog/articles/latent-dirichlet-allocation-under-the-hood/</a></li>
-  <li><a href="http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/">http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/</a></li>
-  <li><a href="https://jonathan-hui.medium.com/machine-learning-latent-dirichlet-allocation-lda-1d9d148f13a4">https://jonathan-hui.medium.com/machine-learning-latent-dirichlet-allocation-lda-1d9d148f13a4</a></li>
-  <li><a href="https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/">https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/</a></li>
-  <li><a href="https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/">https://jeffreyling.github.io/2018/01/09/vaes-are-bayesian.html</a></li>
-  <li><a href="https://blog.evjang.com/2016/08/variational-bayes.html">https://blog.evjang.com/2016/08/variational-bayes.html</a></li>
-  <li><a href="https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html#generative-adversarial-network-gan">https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html#generative-adversarial-network-gan</a></li>
+  <li><a href="http://brooksandrew.github.io/simpleblog/articles/latent-dirichlet-allocation-under-the-hood/" target="_blank" rel="noopener noreferrer">http://brooksandrew.github.io/simpleblog/articles/latent-dirichlet-allocation-under-the-hood/</a></li>
+  <li><a href="http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/" target="_blank" rel="noopener noreferrer">http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/</a></li>
+  <li><a href="https://jonathan-hui.medium.com/machine-learning-latent-dirichlet-allocation-lda-1d9d148f13a4" target="_blank" rel="noopener noreferrer">https://jonathan-hui.medium.com/machine-learning-latent-dirichlet-allocation-lda-1d9d148f13a4</a></li>
+  <li><a href="https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/" target="_blank" rel="noopener noreferrer">https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/</a></li>
+  <li><a href="https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/" target="_blank" rel="noopener noreferrer">https://jeffreyling.github.io/2018/01/09/vaes-are-bayesian.html</a></li>
+  <li><a href="https://blog.evjang.com/2016/08/variational-bayes.html" target="_blank" rel="noopener noreferrer">https://blog.evjang.com/2016/08/variational-bayes.html</a></li>
+  <li><a href="https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html#generative-adversarial-network-gan" target="_blank" rel="noopener noreferrer">https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html#generative-adversarial-network-gan</a></li>
 </ul>
 
   </article>
@@ -305,8 +305,8 @@ Once the model is trained, we can sample from the gaussian distribution \(p(z)\)
     
 <footer class="fixed-bottom">
   <div class="container mt-0">
-    &copy; Copyright 2021 Rezka  Leonandya.
-    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
+    © Copyright 2021 Rezka  Leonandya.
+    Powered by <a href="http://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" target="_blank" rel="noopener noreferrer">al-folio</a> theme.
 
     
     
@@ -316,6 +316,9 @@ Once the model is trained, we can sample from the gaussian distribution \(p(z)\)
 
 
   </body>
+
+  <!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 
   <!-- Bootsrap & MDB scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.4/umd/popper.min.js" integrity="sha512-eUQ9hGdLjBjY3F41CScH3UX+4JDSI9zXeroz7hJ+RteoCaY+GP/LDoM8AO+Pt+DRFw3nXqsjh9Zsts8hnYv8/A==" crossorigin="anonymous"></script>
@@ -332,8 +335,41 @@ Once the model is trained, we can sample from the gaussian distribution \(p(z)\)
   
 
 
+<!-- Medium Zoom JS -->
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+<script src="/assets/js/zoom.js"></script>
+
+
 <!-- Load Common JS -->
 <script src="/assets/js/common.js"></script>
+
+  
+<!-- MathJax -->
+<script type="text/javascript">
+  window.MathJax = {
+    tex: {
+      tags: 'ams'
+    }
+  };
+</script>
+<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+
+  
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-192945533-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'UA-192945533-1');
+</script>
+
+
+
+
 
 
 </html>

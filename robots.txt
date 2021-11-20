@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://rezkaaufar.github.io/sitemap.xml

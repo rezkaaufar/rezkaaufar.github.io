@@ -2,11 +2,19 @@
 <html>
 
   <head>
+    
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<title>Rezka  Leonandya | Causal model with bayesian network</title>
+<title>
+
+  Rezka  Leonandya
+
+
+  | Causal model with bayesian network
+
+</title>
 <meta name="description" content="Rezka's Personal Website and Blog
 ">
 
@@ -26,48 +34,17 @@
 <link rel="stylesheet" href="https://gitcdn.link/repo/jwarby/jekyll-pygments-themes/master/github.css" />
 
 <!-- Styles -->
-<link rel="shortcut icon" href="/assets/img/favicon.ico">
-<link rel="stylesheet" href="/assets/css/main.css">
 
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤡</text></svg>">
+
+<link rel="stylesheet" href="/assets/css/main.css">
 <link rel="canonical" href="/blog/2021/structural-causal-model/">
 
-<!-- JQuery -->
-<!-- jQuery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 
-
-<!-- Theming-->
-
-  <script src="/assets/js/theme.js"></script>
-  <!-- Load DarkMode JS -->
+<!-- Dark Mode -->
+<script src="/assets/js/theme.js"></script>
 <script src="/assets/js/dark_mode.js"></script>
 
-
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-192945533-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'UA-192945533-1');
-  </script>
-
-
-
-
-    
-<!-- MathJax -->
-<script type="text/javascript">
-  window.MathJax = {
-    tex: {
-      tags: 'ams'
-    }
-  };
-</script>
-<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js"></script>
-<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 
 
   </head>
@@ -82,7 +59,7 @@
     <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
     <div class="container">
       
-      <a class="navbar-brand title font-weight-lighter" href="/">
+      <a class="navbar-brand title font-weight-lighter" href="https://rezkaaufar.github.io/">
        <span class="font-weight-bold">Rezka</span>   Leonandya
       </a>
       
@@ -127,12 +104,23 @@
           
           
           
+          
+          
+          
+          
+          
+          
+          
+          
+          
           <li class="nav-item ">
               <a class="nav-link" href="/publications/">
                 publications
                 
               </a>
           </li>
+          
+          
           
           
           
@@ -145,8 +133,9 @@
           
           
           
-            <div class = "toggle-container">
-              <a id = "light-toggle">
+          
+            <div class="toggle-container">
+              <a id="light-toggle">
                   <i class="fas fa-moon"></i>
                   <i class="fas fa-sun"></i>
               </a>
@@ -165,11 +154,22 @@
     <div class="container mt-5">
       
 
+
+
+
+
 <div class="post">
 
   <header class="post-header">
     <h1 class="post-title">Causal model with bayesian network</h1>
     <p class="post-meta">August 26, 2021</p>
+    <p class="post-tags">
+      <a href="/blog/2021"> <i class="fas fa-calendar fa-sm"></i> 2021 </a>
+      
+
+      
+
+    </p>
   </header>
 
   <article class="post-content">
@@ -180,7 +180,7 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-graph.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-graph.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;">
     </div>
 </div>
 <div class="caption">
@@ -191,16 +191,16 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-regression.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-regression.png" style="display: block;margin-left: auto;margin-right: auto;width: 60%;">
     </div>
 </div>
 <div class="caption">
-    Figure 2: Results of two linear regressions using different features. (<a href="https://www.youtube.com/watch?v=5JsFZbGqJzc&amp;t=1516s&amp;ab_channel=ODSAIGlobal">credits</a>)
+    Figure 2: Results of two linear regressions using different features. (<a href="https://www.youtube.com/watch?v=5JsFZbGqJzc&amp;t=1516s&amp;ab_channel=ODSAIGlobal" target="_blank" rel="noopener noreferrer">credits</a>)
 </div>
 
 <p>Looking at Figure 2 above, if we use \(T\) as the single feature to predict \(Y\), we got test RMSE of 10 and a coefficient of 0.99, meaning that there is a positive relationship between exposure to sun and illness. But if we were to add \(C\) (type of car owned) as feature, then we would have an even better test RMSE of 7.7, hinting that type of car owned is helpful in predictive power. But if we inspect the coefficient, we see that now \(T\) and \(Y\) have a negative relationship, whereas \(C\) and \(Y\) have a positive relationship. How can this happen? How can knowing the type of car owned results in more predictive power to illness? To the naked eye, this seems pretty unintuitive. But if we know the true causal graph we will immediately realized that knowing \(C\) indirectly tells us the age of the person, which gives it the predictive power to illness. This is another example of simpson’s paradox in a acyclic directed graph which we can use to distinguish flow of correlation vs causation.</p>
 
-<hr />
+<hr>
 
 <h1 id="bayesian-network">Bayesian Network</h1>
 
@@ -208,7 +208,7 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-example.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-example.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;">
     </div>
 </div>
 <div class="caption">
@@ -218,11 +218,11 @@
 <p>In a bayesian network, the value of a node is independent of the rest of the variables in the graph given its parents. The relationship between arbitrary nodes are not necessarily causal. Therefore, we need to assume that the directed edges are the actual causal effect. This is where the unconfoundedness assumption plays in SCM. We need to believe and be sure that the bayesian network that we build have no unmeasured confounders.</p>
 
 <h2 id="how-to-build-bayesian-network">How to build bayesian network?</h2>
-<p>So now we might ask: how do we build this bayesian network? If we have a lot of features, do we need to manually specify the causal relationships between the features that we have? There are some ways in which we can utilize correlation to automatically build the bayesian network, such as the <a href="https://arxiv.org/abs/1803.01422">NOTEARS</a> algorithm. This automatic training is also known as structure learning. However, we can’t just blindly use the result. It’s better to have an expert to review the structure and fix the relationship (add, remove, or flip edges) in the bayesian network if deemed necessary.</p>
+<p>So now we might ask: how do we build this bayesian network? If we have a lot of features, do we need to manually specify the causal relationships between the features that we have? There are some ways in which we can utilize correlation to automatically build the bayesian network, such as the <a href="https://arxiv.org/abs/1803.01422" target="_blank" rel="noopener noreferrer">NOTEARS</a> algorithm. This automatic training is also known as structure learning. However, we can’t just blindly use the result. It’s better to have an expert to review the structure and fix the relationship (add, remove, or flip edges) in the bayesian network if deemed necessary.</p>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-build.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-build.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;">
     </div>
 </div>
 <div class="caption">
@@ -244,7 +244,7 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-trained.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-trained.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;">
     </div>
 </div>
 <div class="caption">
@@ -253,7 +253,7 @@
 
 <p>Figure 5 shows the illustration after fitting the parameters of our 3 variables on the observational data. Each node is governed by a conditional probability. If a variable does not have any parents, then it’s just its own probability.</p>
 
-<hr />
+<hr>
 
 <h1 id="the-operation-in-bayesian-network">The operation in bayesian network</h1>
 <p>With a bayesian network defined, one might ask: what can do with it? There are two operations that we can apply on a bayesian networks node: conditioning and intervention. Do note that conditioning is not always the same as the causal effect, that is why it is better to always do an intervention if we are able to and especially if we want to gain insight using the bayesian network.</p>
@@ -264,11 +264,11 @@ In conditioning, we can have a non-causal correlation flowing from one node to a
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-ass-caus.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-ass-caus.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;">
     </div>
 </div>
 <div class="caption">
-    Figure 6: Association vs causation in a graph (<a href="https://www.bradyneal.com/causal-inference-course">credits</a>)
+    Figure 6: Association vs causation in a graph (<a href="https://www.bradyneal.com/causal-inference-course" target="_blank" rel="noopener noreferrer">credits</a>)
 </div>
 
 <p>The true causal effect from treatment \(T\) to outcome \(Y\) flows through \(M1\) and \(M2\). However, in the case above there are two other paths in which non-causal correlation can flow from \(T\) to \(Y\):</p>
@@ -284,15 +284,15 @@ In conditioning, we can have a non-causal correlation flowing from one node to a
 
 <p>The \(W\) path is known as confounder path. In bayesian network, confounder path can mess with the treatment effect because it affect how treatment \(T\) is assigned, making \(Y\) also affected. The only way to measure the treatment effect correctly in this case is by conditioning on all possible confounder. In the case of bayesian network, if we intervene on \(T\), then the non-causal association in the W path is automatically blocked. If we cannot do an intervention and would want to derive treatment effect from observational data, then the W path needs to be conditioned on, otherwise the non-causal association will render the causal effect incorrect. In the \(W\) path, conditioning on children of colliders (either \(W1\) or \(W3\)) also blocks the non-causal association, so it doesn’t have to be on the confounder node.</p>
 
-<p>The \(X\) path is known as colliders. Contrary to the confounder, conditioning on the collider can make non-causal association flows through the path. We will not go into details but here is an excellent <a href="http://corysimon.github.io/articles/berksons-paradox-are-handsome-men-really-jerks/">example of colliders</a>. The idea is that if we have colliders, we should not apply conditioning on that variable as it can mess with our interpretation.</p>
+<p>The \(X\) path is known as colliders. Contrary to the confounder, conditioning on the collider can make non-causal association flows through the path. We will not go into details but here is an excellent <a href="http://corysimon.github.io/articles/berksons-paradox-are-handsome-men-really-jerks/" target="_blank" rel="noopener noreferrer">example of colliders</a>. The idea is that if we have colliders, we should not apply conditioning on that variable as it can mess with our interpretation.</p>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-cond-intv.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-cond-intv.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;">
     </div>
 </div>
 <div class="caption">
-    Figure 7: Visual illustration on the difference between conditioning and intervening (<a href="https://www.bradyneal.com/causal-inference-course">credits</a>)
+    Figure 7: Visual illustration on the difference between conditioning and intervening (<a href="https://www.bradyneal.com/causal-inference-course" target="_blank" rel="noopener noreferrer">credits</a>)
 </div>
 
 <h2 id="intervention">Intervention</h2>
@@ -301,7 +301,7 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-before-intv.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-before-intv.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;">
     </div>
 </div>
 <div class="caption">
@@ -312,7 +312,7 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-after-intv.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/scm-bn-after-intv.png" style="display: block;margin-left: auto;margin-right: auto;width: 70%;">
     </div>
 </div>
 <div class="caption">
@@ -320,9 +320,9 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
 </div>
 <p>Figure 9 shows how it would look like to Grade variable if we do an intervention on Study. Here we force \(P(S)\) to hold a certain value: in plain English we can interpret this as forcing everyone to Study. We can see after intervening, the marginal probability of Grade from 0.605 to 0.875 on the marginal probability \(P(G=High)\). This means that we can assume that if we nudge students to study more then it would yield better grades that is good for the school.</p>
 
-<p>Please note that when doing intervention, we assume that the change in the target variables marginal probability happens on the whole population. However, when we build the causal structure and fit the parameters for every variables, we do it on the observational data. So it’s important to make sure that we have enough data first. Ensuring that we have enough data is most commonly known as fulfilling the <a href="https://www.bradyneal.com/Introduction_to_Causal_Inference-Dec17_2020-Neal.pdf">positivity/overlap</a> assumption.</p>
+<p>Please note that when doing intervention, we assume that the change in the target variables marginal probability happens on the whole population. However, when we build the causal structure and fit the parameters for every variables, we do it on the observational data. So it’s important to make sure that we have enough data first. Ensuring that we have enough data is most commonly known as fulfilling the <a href="https://www.bradyneal.com/Introduction_to_Causal_Inference-Dec17_2020-Neal.pdf" target="_blank" rel="noopener noreferrer">positivity/overlap</a> assumption.</p>
 
-<hr />
+<hr>
 
 <h1 id="recap-and-closing">Recap and closing</h1>
 <p>In this post we cover structural causal model as a way to capture causal language. We have seen:</p>
@@ -333,14 +333,14 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
   <li>Condition and intervention as operations that we can apply in bayesian network.</li>
 </ul>
 
-<p>Thanks for reading this post! Contact me on twitter for feedback <a href="https://twitter.com/rezkaaufar">@rezkaaufar</a></p>
+<p>Thanks for reading this post! Contact me on twitter for feedback <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>
 
   </article>
 
   
     <div id="disqus_thread"></div>
     <script type="text/javascript">
-      var disqus_shortname  = 'rezka';
+      var disqus_shortname  = 'rezka-blog';
       var disqus_identifier = '/blog/2021/structural-causal-model';
       var disqus_title      = "Causal model with bayesian network";
       (function() {
@@ -349,7 +349,8 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
       })();
     </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener noreferrer">comments powered by Disqus.</a>
+</noscript>
   
 
 </div>
@@ -361,8 +362,8 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
     
 <footer class="fixed-bottom">
   <div class="container mt-0">
-    &copy; Copyright 2021 Rezka  Leonandya.
-    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
+    © Copyright 2021 Rezka  Leonandya.
+    Powered by <a href="http://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" target="_blank" rel="noopener noreferrer">al-folio</a> theme.
 
     
     
@@ -372,6 +373,9 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
 
 
   </body>
+
+  <!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 
   <!-- Bootsrap & MDB scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.4/umd/popper.min.js" integrity="sha512-eUQ9hGdLjBjY3F41CScH3UX+4JDSI9zXeroz7hJ+RteoCaY+GP/LDoM8AO+Pt+DRFw3nXqsjh9Zsts8hnYv8/A==" crossorigin="anonymous"></script>
@@ -388,8 +392,41 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
   
 
 
+<!-- Medium Zoom JS -->
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+<script src="/assets/js/zoom.js"></script>
+
+
 <!-- Load Common JS -->
 <script src="/assets/js/common.js"></script>
+
+  
+<!-- MathJax -->
+<script type="text/javascript">
+  window.MathJax = {
+    tex: {
+      tags: 'ams'
+    }
+  };
+</script>
+<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+
+  
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-192945533-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'UA-192945533-1');
+</script>
+
+
+
+
 
 
 </html>

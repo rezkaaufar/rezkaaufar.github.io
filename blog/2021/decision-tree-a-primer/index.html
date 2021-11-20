@@ -2,11 +2,19 @@
 <html>
 
   <head>
+    
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<title>Rezka  Leonandya | A primer on decision tree</title>
+<title>
+
+  Rezka  Leonandya
+
+
+  | A primer on decision tree
+
+</title>
 <meta name="description" content="Rezka's Personal Website and Blog
 ">
 
@@ -26,48 +34,17 @@
 <link rel="stylesheet" href="https://gitcdn.link/repo/jwarby/jekyll-pygments-themes/master/github.css" />
 
 <!-- Styles -->
-<link rel="shortcut icon" href="/assets/img/favicon.ico">
-<link rel="stylesheet" href="/assets/css/main.css">
 
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤡</text></svg>">
+
+<link rel="stylesheet" href="/assets/css/main.css">
 <link rel="canonical" href="/blog/2021/decision-tree-a-primer/">
 
-<!-- JQuery -->
-<!-- jQuery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 
-
-<!-- Theming-->
-
-  <script src="/assets/js/theme.js"></script>
-  <!-- Load DarkMode JS -->
+<!-- Dark Mode -->
+<script src="/assets/js/theme.js"></script>
 <script src="/assets/js/dark_mode.js"></script>
 
-
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-192945533-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'UA-192945533-1');
-  </script>
-
-
-
-
-    
-<!-- MathJax -->
-<script type="text/javascript">
-  window.MathJax = {
-    tex: {
-      tags: 'ams'
-    }
-  };
-</script>
-<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js"></script>
-<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 
 
   </head>
@@ -82,7 +59,7 @@
     <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
     <div class="container">
       
-      <a class="navbar-brand title font-weight-lighter" href="/">
+      <a class="navbar-brand title font-weight-lighter" href="https://rezkaaufar.github.io/">
        <span class="font-weight-bold">Rezka</span>   Leonandya
       </a>
       
@@ -127,12 +104,23 @@
           
           
           
+          
+          
+          
+          
+          
+          
+          
+          
+          
           <li class="nav-item ">
               <a class="nav-link" href="/publications/">
                 publications
                 
               </a>
           </li>
+          
+          
           
           
           
@@ -145,8 +133,9 @@
           
           
           
-            <div class = "toggle-container">
-              <a id = "light-toggle">
+          
+            <div class="toggle-container">
+              <a id="light-toggle">
                   <i class="fas fa-moon"></i>
                   <i class="fas fa-sun"></i>
               </a>
@@ -165,17 +154,28 @@
     <div class="container mt-5">
       
 
+
+
+
+
 <div class="post">
 
   <header class="post-header">
     <h1 class="post-title">A primer on decision tree</h1>
     <p class="post-meta">June 18, 2021</p>
+    <p class="post-tags">
+      <a href="/blog/2021"> <i class="fas fa-calendar fa-sm"></i> 2021 </a>
+      
+
+      
+
+    </p>
   </header>
 
   <article class="post-content">
     <p>Decision tree is the crux of many popular algorithms in data science: xgboost, lightgbm, catboost, etc. In this post I aim to explain how decision tree works in both classification and regression setting. This post is meant as a learning notes also for myself.</p>
 
-<hr />
+<hr>
 
 <h1 id="classification-decision-trees">Classification decision trees</h1>
 <p>Given series of features \(X\) and a categorical label \(Y\), decision tree works by finding which feature in our instances to split and further divide the instances so that we have a leaf that represent the final prediction. For classification trees, we usually do the split based on a technique called gini impurity (the most popular technique). In practice there are several ways to calculate the split for a leaf. Deciding a split based on gini impurity involves several steps:</p>
@@ -188,7 +188,7 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/classif-toy-dataset.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/classif-toy-dataset.png">
     </div>
 </div>
 <p><em>Figure 1: A toy dataset that is used to illustrate the classification section.</em></p>
@@ -209,7 +209,7 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/loves-sugar.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/loves-sugar.png">
     </div>
 </div>
 <p><em>Figure 2: A split example on the “loves sugar” column.</em></p>
@@ -243,7 +243,7 @@
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/gini-impurity.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/gini-impurity.png">
     </div>
 </div>
 <p><em>Figure 3: Gini impurity for continuous variables.</em></p>
@@ -261,9 +261,9 @@
 If by stopping criteria we end up with impure leaf (3 yes label and 1 no label) then we take the majority as the decision.</p>
 
 <h2 id="do-classification-decision-trees-have-probabilities">Do classification decision trees have probabilities?</h2>
-<p>It is easy to fall into thinking that a classifier always have a probability interpretation. But decision tree is a non-parametric model. It does not have a probabilistic interpretation. One might get a pseudo-probability based on an <a href="https://rpmcruz.github.io/machine%20learning/2018/02/09/probabilities-trees.html">impure node</a>.</p>
+<p>It is easy to fall into thinking that a classifier always have a probability interpretation. But decision tree is a non-parametric model. It does not have a probabilistic interpretation. One might get a pseudo-probability based on an <a href="https://rpmcruz.github.io/machine%20learning/2018/02/09/probabilities-trees.html" target="_blank" rel="noopener noreferrer">impure node</a>.</p>
 
-<hr />
+<hr>
 
 <h1 id="regression-decision-trees">Regression decision trees</h1>
 <p>For regression trees, the leaf produces a continuous value, which is usually an average \(y\) over the splitted samples. Therefore, to evaluate the split, the sum of squared residuals (SSR) of every splitted samples are usually used. These are the steps:</p>
@@ -276,7 +276,7 @@ If by stopping criteria we end up with impure leaf (3 yes label and 1 no label) 
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/regression-toy-dataset.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/regression-toy-dataset.png">
     </div>
 </div>
 <p><em>Figure 1: A toy dataset to illustrate this regression section.</em></p>
@@ -295,7 +295,7 @@ If by stopping criteria we end up with impure leaf (3 yes label and 1 no label) 
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/ssr-1.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/ssr-1.png">
     </div>
 </div>
 <p><em>Figure 2a: Example of splitting at a threshold value.</em></p>
@@ -304,7 +304,7 @@ If by stopping criteria we end up with impure leaf (3 yes label and 1 no label) 
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/ssr-2.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/ssr-2.png">
     </div>
 </div>
 <p><em>Figure 2b: Another example of splitting at a threshold value.</em></p>
@@ -314,7 +314,7 @@ If by stopping criteria we end up with impure leaf (3 yes label and 1 no label) 
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/ssr-all.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/ssr-all.png">
     </div>
 </div>
 <p><em>Figure 3: Illustration to get the smallest SSR in multiple variables. The values are all made up.</em></p>
@@ -326,7 +326,7 @@ If by stopping criteria we end up with impure leaf (3 yes label and 1 no label) 
 <p>There are multiple ways to do this. The most common one is that we stop when there are less than \(k\) instances in the leaf. \(k\) is usually set at 20. We can also stop based on some stopping criteria, for example, by maximum depth. Know when to stop is related to overfitting issue. Splitting perfectly on a training set lead to overfitting whereas splitting fewer lead to underfitting.
 With stopping criteria we then take the average \(y\) values of every instances in the leaf and use that as our prediction.</p>
 
-<hr />
+<hr>
 
 <h1 id="closing">Closing</h1>
 
@@ -345,8 +345,8 @@ With stopping criteria we then take the average \(y\) values of every instances 
     
 <footer class="fixed-bottom">
   <div class="container mt-0">
-    &copy; Copyright 2021 Rezka  Leonandya.
-    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
+    © Copyright 2021 Rezka  Leonandya.
+    Powered by <a href="http://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" target="_blank" rel="noopener noreferrer">al-folio</a> theme.
 
     
     
@@ -356,6 +356,9 @@ With stopping criteria we then take the average \(y\) values of every instances 
 
 
   </body>
+
+  <!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 
   <!-- Bootsrap & MDB scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.4/umd/popper.min.js" integrity="sha512-eUQ9hGdLjBjY3F41CScH3UX+4JDSI9zXeroz7hJ+RteoCaY+GP/LDoM8AO+Pt+DRFw3nXqsjh9Zsts8hnYv8/A==" crossorigin="anonymous"></script>
@@ -372,8 +375,41 @@ With stopping criteria we then take the average \(y\) values of every instances 
   
 
 
+<!-- Medium Zoom JS -->
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+<script src="/assets/js/zoom.js"></script>
+
+
 <!-- Load Common JS -->
 <script src="/assets/js/common.js"></script>
+
+  
+<!-- MathJax -->
+<script type="text/javascript">
+  window.MathJax = {
+    tex: {
+      tags: 'ams'
+    }
+  };
+</script>
+<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+
+  
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-192945533-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'UA-192945533-1');
+</script>
+
+
+
+
 
 
 </html>

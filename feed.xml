@@ -1,0 +1,1097 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="https://rezkaaufar.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://rezkaaufar.github.io/" rel="alternate" type="text/html" /><updated>2021-11-20T22:55:38+07:00</updated><id>https://rezkaaufar.github.io/feed.xml</id><title type="html">blank</title><subtitle>Rezka's Personal Website and Blog
+</subtitle><entry><title type="html">Hypothesis testing in an AB test</title><link href="https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing/" rel="alternate" type="text/html" title="Hypothesis testing in an AB test" /><published>2021-11-19T00:00:00+07:00</published><updated>2021-11-19T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing/">&lt;p&gt;AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions.
+In this post we are going to see an overview about two school of statistics, namely frequentist and bayesian, on how they differ in deriving conclusion about the test&lt;/p&gt;
+
+&lt;h1 id=&quot;before-hypothesis-testing&quot;&gt;Before hypothesis testing&lt;/h1&gt;
+&lt;p&gt;Before doing hypothesis testing, the first thing that we need to understand is that we only have samples from our AB test, not the true underlying distribution. Ideally, we want to do the hypothesis testing using the true underlying distribution. In reality, we do not know anything about the true underlying distribution. We do not know their distribution, let alone the parameters of the distribution. All we can do is to make an assumption about: 1) the form of the true distribution and 2) the approximation of the true parameter of the assumed distribution. The former is mostly decided by looking at the problem and data format, whereas the latter is based on the data samples. For example. if we are working with a normal distribution, then we need to know the true mean. We can then make an assumption that the mean can be approximated with our samples. Same thing can also be said for the standard deviation.&lt;/p&gt;
+
+&lt;h1 id=&quot;frequentist-hypothesis-testing&quot;&gt;Frequentist hypothesis testing&lt;/h1&gt;
+&lt;p&gt;For this post, I am going to illustrate using both normal distribution and bernoulli distribution as they both represent continuous and binary outcomes that might happen in real ab test scenario.&lt;/p&gt;
+
+&lt;h2 id=&quot;normal-distribution&quot;&gt;Normal distribution&lt;/h2&gt;
+&lt;p&gt;Say that we are making an intervention to our systems and our metric of interest are a continuous value, such as response time of a customer, time it takes for customer to complete an order, etc. We have gathered the experiment data and we assume that the true baseline has mean=0.1 and the true variant b has mean=-0.1.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;normal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;loc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;normal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;loc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sns&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;histplot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kde&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bins&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edgecolor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        
+
+
+&lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;&quot; srcset=&quot;/assets/img/freq-ab-sample.png 432w&quot; data-zoomable=&quot;&quot; /&gt;
+
+        &lt;!-- &lt;img class=&quot;img-fluid rounded z-depth-1 data-zoomable&quot; src=&quot;/assets/img/freq-ab-sample.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 50%;&quot;&gt; --&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 1: Example of an AB test sample from two variants.
+&lt;/div&gt;
+
+&lt;h3 id=&quot;inferring-the-parameter-standard-error&quot;&gt;Inferring the parameter: standard error&lt;/h3&gt;
+&lt;p&gt;First we need to infer the parameter of the distribution. In real life we do not know the true parameter, so here we just take the mean and calculate the standard deviation and assume that these values are the true parameter:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.10209145722536886&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.004581515836704&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.10367983213074679&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.008924455645851&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;With the parameter information at hand, we can plot both distribution with their confidence interval:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;a_mu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a_std&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;a_se&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;//&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;standard&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;error&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;a_ci&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a_mu&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a_se&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a_mu&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a_se&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;b_mu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_std&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;b_se&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;//&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;standard&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;error&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;b_ci&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_mu&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_se&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_mu&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_se&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a_mu&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a_se&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a_mu&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a_se&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stats&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;norm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pdf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a_mu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a_se&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vlines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a_ci&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ymin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ymax&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vlines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a_ci&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ymin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ymax&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;A 95% CI&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_mu&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_se&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_mu&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_se&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stats&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;norm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pdf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_mu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_se&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vlines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_ci&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ymin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ymax&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vlines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_ci&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ymin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ymax&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;B 95% CI&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;legend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/freq-ab-sample-ci.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 50%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 2: The confidence interval for mean of both baseline and variant b.
+&lt;/div&gt;
+
+&lt;p&gt;Since we only have one mean, which is our sample mean, we use standard error to create a confidence interval around the sample mean. The confidence interval relies on a theory called central limit theorem. This theorem states that means of experiments are normally distributed. The standard error of the mean serves as our estimate of the distribution of the experiment means. So, if we multiply it by 2 and add and subtract it from the mean of one of our experiments, we will construct a 95% confidence interval for the true mean. Note that we don’t need to restrict ourselves to the 95% confidence interval.&lt;/p&gt;
+
+&lt;p&gt;What we can see from Figure 2 is that the 95% CI of the variants don’t overlap. The lower end of the CI for variant b is above the upper end of the CI for baseline. This is evidence that our result is not by chance, and that the true mean for variant b is higher than the true mean for baseline. In other words, we can conclude that there is a significant increase in our metric when switching from baseline to variant b.&lt;/p&gt;
+
+&lt;h3 id=&quot;inferring-the-parameter-bootstrap&quot;&gt;Inferring the parameter: bootstrap&lt;/h3&gt;
+&lt;p&gt;There is another way to estimate the interval of the true mean. Ideally when we want to estimate the interval of the true mean, we would like to be able to simulate an experiment with multiple datasets. In other words, we would like to be able to get multiple sample means from different samples to get the mean of means. Using this mean of means, we can then create a confidence interval. This technique is commonly known as bootstrap. I am not going into the bootstrap detail in this post.&lt;/p&gt;
+
+&lt;h3 id=&quot;concluding-the-test-using-hypothesis-testing&quot;&gt;Concluding the test using hypothesis testing&lt;/h3&gt;
+&lt;p&gt;To solidify our conclusion regarding confidence interval, we can state a hypothesis test: is the difference in means statistically different from zero (or any other value)? To do so, we will recall that the sum or difference of 2 independent normal distributions is also a normal distribution. The resulting mean will be the sum or difference between the two distributions, while the variance will always be the sum of the variance.&lt;/p&gt;</content><author><name></name></author><summary type="html">AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions. In this post we are going to see an overview about two school of statistics, namely frequentist and bayesian, on how they differ in deriving conclusion about the test</summary></entry><entry><title type="html">Causal model with bayesian network</title><link href="https://rezkaaufar.github.io/blog/2021/structural-causal-model/" rel="alternate" type="text/html" title="Causal model with bayesian network" /><published>2021-08-26T00:00:00+07:00</published><updated>2021-08-26T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/structural-causal-model</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/structural-causal-model/">&lt;p&gt;In this &lt;a href=&quot;https://rezkaaufar.github.io/blog/2021/language-of-causal-model/&quot;&gt;previous post&lt;/a&gt;, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.&lt;/p&gt;
+
+&lt;h1 id=&quot;simpsons-paradox-in-an-acyclic-directed-graph&quot;&gt;Simpson’s paradox in an acyclic directed graph&lt;/h1&gt;
+&lt;p&gt;I have mentioned about simpson’s paradox briefly in my previous blog post. Here I am going to illustrate another perspective on how simpson’s paradox can affect the result of classical machine learning. Consider a (true) causal graph below.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/scm-graph.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 1: An example of a true causal graph between 5 variables
+&lt;/div&gt;
+
+&lt;p&gt;Assume that we have data with these 5 variables in a spreadsheet style (think pandas dataframe) and we are tasked to find the effect on how exposure to sun (\(T\)) on the illness (\(Y\)). Without any knowledge of causal inference, we might think to just incorporate \(T\) as feature and create a linear regression model on the label \(Y\). Once we have the model, we use the coefficient to gauge and measure the relationship between exposure to sun and illness. If the coefficient is a positive number, then it tells us that there is a positive relationship, and vice versa if the coefficient is a negative number.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/scm-regression.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 60%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 2: Results of two linear regressions using different features. (&lt;a href=&quot;https://www.youtube.com/watch?v=5JsFZbGqJzc&amp;amp;t=1516s&amp;amp;ab_channel=ODSAIGlobal&quot;&gt;credits&lt;/a&gt;)
+&lt;/div&gt;
+
+&lt;p&gt;Looking at Figure 2 above, if we use \(T\) as the single feature to predict \(Y\), we got test RMSE of 10 and a coefficient of 0.99, meaning that there is a positive relationship between exposure to sun and illness. But if we were to add \(C\) (type of car owned) as feature, then we would have an even better test RMSE of 7.7, hinting that type of car owned is helpful in predictive power. But if we inspect the coefficient, we see that now \(T\) and \(Y\) have a negative relationship, whereas \(C\) and \(Y\) have a positive relationship. How can this happen? How can knowing the type of car owned results in more predictive power to illness? To the naked eye, this seems pretty unintuitive. But if we know the true causal graph we will immediately realized that knowing \(C\) indirectly tells us the age of the person, which gives it the predictive power to illness. This is another example of simpson’s paradox in a acyclic directed graph which we can use to distinguish flow of correlation vs causation.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;bayesian-network&quot;&gt;Bayesian Network&lt;/h1&gt;
+
+&lt;p&gt;We know that strong correlation between variables do not imply a causal effect. With counterfactuals, we introduce potential outcomes \((Y1, Y0)\) to be able to capture the causal effect. With structural causal model (SCM), the goal is to model the causal interdependencies between variables. One tool that we can use to achieve this is to use probabilistic graphical models (PGM). With PGM, we can model the relationships between features. PGM as a term encompasses many different approaches. In our case, one of the graph models that we can use to capture causal model is a bayesian network. Bayesian network is a directed acyclic graph that captures the interdependencies between variables. Nodes represent random variables, whereas edges represent relationships (the conditional probabilities) between variables.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/scm-bn-example.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 3: Illustration of a bayesian network
+&lt;/div&gt;
+
+&lt;p&gt;In a bayesian network, the value of a node is independent of the rest of the variables in the graph given its parents. The relationship between arbitrary nodes are not necessarily causal. Therefore, we need to assume that the directed edges are the actual causal effect. This is where the unconfoundedness assumption plays in SCM. We need to believe and be sure that the bayesian network that we build have no unmeasured confounders.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-to-build-bayesian-network&quot;&gt;How to build bayesian network?&lt;/h2&gt;
+&lt;p&gt;So now we might ask: how do we build this bayesian network? If we have a lot of features, do we need to manually specify the causal relationships between the features that we have? There are some ways in which we can utilize correlation to automatically build the bayesian network, such as the &lt;a href=&quot;https://arxiv.org/abs/1803.01422&quot;&gt;NOTEARS&lt;/a&gt; algorithm. This automatic training is also known as structure learning. However, we can’t just blindly use the result. It’s better to have an expert to review the structure and fix the relationship (add, remove, or flip edges) in the bayesian network if deemed necessary.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/scm-bn-build.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 4: Steps to build a bayesian network
+&lt;/div&gt;
+
+&lt;p&gt;Figure 4 above shows the steps in building a bayesian network:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;First, we can use some algorithm (NOTEARS) to automatically build edges between our variables.&lt;/li&gt;
+  &lt;li&gt;As a consequence of the learning process, the edges have weights. Hence we can remove some edges that are below a certain threshold. This results in an initial causal structure build automatically from the algorithm.&lt;/li&gt;
+  &lt;li&gt;We can then further proceed to fix the causal structure by flipping, removing, or adding edges based on our domain knowledge.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;what-lies-underneath-bayesian-network&quot;&gt;What lies underneath bayesian network?&lt;/h2&gt;
+&lt;p&gt;In the classical literature, bayesian networks are mostly either fully discrete or fully gaussian. This means that all the nodes in the graph are either discrete or continuous. The reason is because of closure properties: fully discrete allows us to model the conditional probability distribution with conditional table and they are all jointly multinomial random variable, whereas fully gaussian allows every operation (conditional, marginal, etc) to always result in another gaussian. There are other approaches where we use a non-parametric version of bayesian network which allows us to work flexibly with different types of distributions.&lt;/p&gt;
+
+&lt;h2 id=&quot;parameter-estimation-in-bayesian-network&quot;&gt;Parameter estimation in bayesian network&lt;/h2&gt;
+&lt;p&gt;The structure tells us the causal relationships, and for each of these relationships, there is a distribution which tells us the probability of attaining a certain state given for any variable given the states of the parent node. In a fully discrete bayesian network, the size of the conditional probability table would be the number of states of current node multiplied by the parents state. This would be total parameter that we need to estimate from data. To estimate these parameters, one can use maximum likelihood estimation (usually just involves taking counts and fractions) which produces a point estimate or use bayesian estimation and allows us to put a prior belief on the estimate.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/scm-bn-trained.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 5: A conditional probability distributions for each node in bayesian network
+&lt;/div&gt;
+
+&lt;p&gt;Figure 5 shows the illustration after fitting the parameters of our 3 variables on the observational data. Each node is governed by a conditional probability. If a variable does not have any parents, then it’s just its own probability.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;the-operation-in-bayesian-network&quot;&gt;The operation in bayesian network&lt;/h1&gt;
+&lt;p&gt;With a bayesian network defined, one might ask: what can do with it? There are two operations that we can apply on a bayesian networks node: conditioning and intervention. Do note that conditioning is not always the same as the causal effect, that is why it is better to always do an intervention if we are able to and especially if we want to gain insight using the bayesian network.&lt;/p&gt;
+
+&lt;h2 id=&quot;conditioning&quot;&gt;Conditioning&lt;/h2&gt;
+&lt;p&gt;Conditioning is an observational inference: having observed the data that we have, what would the probability of a certain variable be given that we observe some parents state. Since conditioning is observational, we can do conditioning between any arbitrary nodes without having to follow the directed edge (yes including between nodes that doesn’t have any directed arrows). Conditioning is usually done in a setting where one cannot do an intervention. 
+In conditioning, we can have a non-causal correlation flowing from one node to another node if we are not careful, leading to an incorrect interpretation. In other words, conditioning between arbitrary nodes without regarding the causal effect might lead to a spurious correlation. Consider this case below:&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/scm-ass-caus.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 6: Association vs causation in a graph (&lt;a href=&quot;https://www.bradyneal.com/causal-inference-course&quot;&gt;credits&lt;/a&gt;)
+&lt;/div&gt;
+
+&lt;p&gt;The true causal effect from treatment \(T\) to outcome \(Y\) flows through \(M1\) and \(M2\). However, in the case above there are two other paths in which non-causal correlation can flow from \(T\) to \(Y\):&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(W1\), \(W2\), \(W3\)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(X1\), \(X2\), \(X3\)&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The \(W\) path is known as confounder path. In bayesian network, confounder path can mess with the treatment effect because it affect how treatment \(T\) is assigned, making \(Y\) also affected. The only way to measure the treatment effect correctly in this case is by conditioning on all possible confounder. In the case of bayesian network, if we intervene on \(T\), then the non-causal association in the W path is automatically blocked. If we cannot do an intervention and would want to derive treatment effect from observational data, then the W path needs to be conditioned on, otherwise the non-causal association will render the causal effect incorrect. In the \(W\) path, conditioning on children of colliders (either \(W1\) or \(W3\)) also blocks the non-causal association, so it doesn’t have to be on the confounder node.&lt;/p&gt;
+
+&lt;p&gt;The \(X\) path is known as colliders. Contrary to the confounder, conditioning on the collider can make non-causal association flows through the path. We will not go into details but here is an excellent &lt;a href=&quot;http://corysimon.github.io/articles/berksons-paradox-are-handsome-men-really-jerks/&quot;&gt;example of colliders&lt;/a&gt;. The idea is that if we have colliders, we should not apply conditioning on that variable as it can mess with our interpretation.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/scm-cond-intv.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 7: Visual illustration on the difference between conditioning and intervening (&lt;a href=&quot;https://www.bradyneal.com/causal-inference-course&quot;&gt;credits&lt;/a&gt;)
+&lt;/div&gt;
+
+&lt;h2 id=&quot;intervention&quot;&gt;Intervention&lt;/h2&gt;
+&lt;p&gt;To gain insight from our model, we want to query our model under different observation. With intervention, we can replace the probability distributions of a certain state. If this state has a children, then we can simulate what would have happened to the children marginal probability if we do an intervention to the node. Unlike conditioning, intervention on a node will only affect its children according to the causal direction.
+Figure 8 and 9 below shows how we can do an intervention to simulate the target variable.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/scm-bn-before-intv.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 8: Marginal probability of getting high or low grades before doing an intervention
+&lt;/div&gt;
+
+&lt;p&gt;Figure 8 shows the calculation of the joint probability between Grade, Study, and School Support, and the marginal probability of Grade. Remember that \(P(S)\),  \(P(SS)\), and \(P(G \mid S, SS)\) are calculated from data. These are the parameters that we estimated after we have the causal structure. With the estimated parameter and causal structure, we calculate the marginal probability of Grade. This is the marginal probability that we learn from data before we do any intervention.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/scm-bn-after-intv.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 9: Marginal probability of getting high or low grades after doing an intervention on the study variable
+&lt;/div&gt;
+&lt;p&gt;Figure 9 shows how it would look like to Grade variable if we do an intervention on Study. Here we force \(P(S)\) to hold a certain value: in plain English we can interpret this as forcing everyone to Study. We can see after intervening, the marginal probability of Grade from 0.605 to 0.875 on the marginal probability \(P(G=High)\). This means that we can assume that if we nudge students to study more then it would yield better grades that is good for the school.&lt;/p&gt;
+
+&lt;p&gt;Please note that when doing intervention, we assume that the change in the target variables marginal probability happens on the whole population. However, when we build the causal structure and fit the parameters for every variables, we do it on the observational data. So it’s important to make sure that we have enough data first. Ensuring that we have enough data is most commonly known as fulfilling the &lt;a href=&quot;https://www.bradyneal.com/Introduction_to_Causal_Inference-Dec17_2020-Neal.pdf&quot;&gt;positivity/overlap&lt;/a&gt; assumption.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;recap-and-closing&quot;&gt;Recap and closing&lt;/h1&gt;
+&lt;p&gt;In this post we cover structural causal model as a way to capture causal language. We have seen:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Simpson’s paradox in a graph.&lt;/li&gt;
+  &lt;li&gt;Directed acyclic graph, especially bayesian network, as a structure to model both association and causation relationship between variables.&lt;/li&gt;
+  &lt;li&gt;How to build bayesian network given data.&lt;/li&gt;
+  &lt;li&gt;Condition and intervention as operations that we can apply in bayesian network.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Thanks for reading this post! Contact me on twitter for feedback &lt;a href=&quot;https://twitter.com/rezkaaufar&quot;&gt;@rezkaaufar&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">In this previous post, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.</summary></entry><entry><title type="html">Understanding the language of causal model</title><link href="https://rezkaaufar.github.io/blog/2021/language-of-causal-model/" rel="alternate" type="text/html" title="Understanding the language of causal model" /><published>2021-07-09T00:00:00+07:00</published><updated>2021-07-09T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/language-of-causal-model</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/language-of-causal-model/">&lt;p&gt;“Correlation does not imply causation”&lt;/p&gt;
+
+&lt;p&gt;You might hear this jargon everywhere since it is quite pervasive if you work in data science/machine learning. Also, you might have seen this image about spurious correlation:&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/corr-col.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 1: spurious correlation (&lt;a href=&quot;https://www.kaggle.com/general/187094&quot;&gt;credits&lt;/a&gt;)
+&lt;/div&gt;
+
+&lt;p&gt;But what does it mean, really? What does “correlation does not imply causation” really mean? Given a data \(X\) and a target variable \(Y\), can we estimate direct causal effect? If so, how can we know that we have modeled causation in a correct way? Is there a formal way to capture this English statement? Yes!&lt;/p&gt;
+
+&lt;p&gt;In causal inference, there are at least two formal ways to discuss causation: one is based on counterfactuals (or potential outcomes) and the other one is based on causal directed acyclic graph (or structural causal model). The latter involves Judea Pearl’s do-calculus. For the rest of this post I am going to use the former, which is the language of counterfactuals to draw the intuition.
+Okay, enough intro. The best way to start understanding why correlation \(\neq\) causation is to understand the simpson’s paradox.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;simpsons-paradox&quot;&gt;Simpson’s paradox&lt;/h1&gt;
+
+&lt;p&gt;Imagine we are developing a treatment for both men and women. We want to know the causal effect of the treatment. Specifically, we want to draw a conclusion from the treatment with the following possibility:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Treatment is good for men (S1)&lt;/li&gt;
+  &lt;li&gt;Treatment is good for women (S2)&lt;/li&gt;
+  &lt;li&gt;Treatment is bad overall (S3)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now, simpson’s paradox occurs when people equate probabilistic statements with the statements (S1), (S2), and (S3) above. How does the probabilistic statements look like? Consider the data below&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/table-causal.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Table 1: illustrative data
+&lt;/div&gt;
+
+&lt;p&gt;From the table, we have treatment \(T\) that is binary (given and not given), feature (or covariate) \(X\) that is also binary (men and women) and the outcome \(Y\) that is also binary (working and not working). The numbers in the column is the sum of treatment that is working (\(Y=1\)). Consequently, we have the probabilistic interpretation as follows:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y=1 | T=1, X=1) = 0.15\) 
+(Group 1)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y=1 | T=0, X=1) = 0.10\)
+(Group 2)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y=1 | T=1, X=0) = 0.30\)
+(Group 3)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y=1 | T=0, X=0) = 0.20\)
+(Group 4)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y=1 | T=1) = 0.16\)
+(Group 5)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y=1 | T=0) = 0.19\)
+(Group 6)&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;From the probabilistic interpretation above, we can derive three key probabilistic statements:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y=1 | T=1, X=1) - P(Y=1 | T=0, X=1) &amp;gt; 0\)
+(P1)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y=1 | T=1, X=0) - P(Y=1 | T=0, X=0) &amp;gt; 0\)
+(P2)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y=1 | T=1) - P(Y=1 | T=0) &amp;lt; 0\)
+(P3)&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Remember: simpson’s paradox occur when people equate probabilistic statements (P1-P3) with the English statements (S1-S3). We see from the example above, all (P1), (P2), and (P3) are true. But in causal inference, it is NOT possible for (S1), (S2), and (S3) to all be true. If the treatment is good for both men and women (S1-S2), then it should not be possible that the overall treatment is bad (S3). But why does our observation says otherwise? Again, the error is in equating (P1-P3) with (S1-S3).&lt;/p&gt;
+
+&lt;p&gt;How does this happen then? Is it because of the sample size that is not comparable between groups? Well we can still have more or less the same sample size and still fall to simpson’s paradox (&lt;a href=&quot;https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s897-machine-learning-for-healthcare-spring-2019/lecture-notes/MIT6_S897S19_lec14note.pdf&quot;&gt;example&lt;/a&gt;). To understand why this is happening, we need to understand the effect of confounding variable.&lt;/p&gt;
+
+&lt;h1 id=&quot;confounding-variable&quot;&gt;Confounding variable&lt;/h1&gt;
+&lt;p&gt;Let’s take a closer look at Table 1. Do you notice a pattern in the treatment assignment? You can see that the there are more treated men than those who doesn’t receive treatment. On the other hand, there are less treated women than those who doesn’t receive treatment. We might wonder: gender probably affects the treatment assignment, therefore there are more men who received treatment than women, which led to non-comparable groups formed between men and woman. In this case, gender is a confounding variable. Confounding variable is a common cause that is both affecting the treatment and the treatment outcome. Usually confounding variable is unobserved.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/confound-graph.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 2: directed acyclic graph illustrating confounding variable (&lt;a href=&quot;https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf&quot;&gt;credits&lt;/a&gt;)
+&lt;/div&gt;
+
+&lt;p&gt;There is an information flow between the treatment to the outcome via the confounding variable, resulting in (P1-P3) to all be true. In this case, \(X\) is the confounding variable: the gender.&lt;/p&gt;
+
+&lt;h1 id=&quot;correlation-does-not-imply-causation-in-a-formal-way&quot;&gt;Correlation does not imply causation (in a formal way)&lt;/h1&gt;
+&lt;p&gt;To capture the English statements (S1-S3) above, we use counterfactuals. We start by introducing \((Y1, Y0)\) where \(Y1\) is the outcome if one is treated and \(Y0\) is the outcome if one is not treated. We observe:&lt;/p&gt;
+
+\[Y = T Y1 + (1 - T) Y0\]
+
+&lt;p&gt;To put it simply, \(Y1\) denotes the outcome I WOULD observe if I WERE to take the treatment, \(Y0\) denotes the outcome I WOULD observe if I WERE to not take the treatment, whereas \(Y\) denotes the outcome that I do observe just in the observational data. In reality, we never observe \(Y1\) and \(Y0\) in the observational data on any person, that is why when we derive conclusion DIRECTLY from Y, we observe the simpson’s paradox. We’ll see more details regarding counterfactuals in the next section.&lt;/p&gt;
+
+&lt;p&gt;The correct translation of (S1-S3) is:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y1=1 | X=1) - P(Y0=1 |X=1) &amp;gt; 0\) 
+(C1)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y1=1 | X=0) - P(Y0=1 |X=0) &amp;gt; 0\) 
+(C2)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;\(P(Y1=1) - P(Y0=1) &amp;lt; 0\) 
+(C3)&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;These three statements cannot be all true. If the first two statements hold, then:&lt;/p&gt;
+
+\[P(Y1=1) - P(Y0=1) = \sum_{x=0}^1 [P(Y1=1 | X=x) - P(Y0=1 | X=x)] P(x)\]
+
+&lt;p&gt;This is why if the treatment is good for both men and women (S1-S2) , then it is not possible that the overall treatment is bad (S3).
+In summary:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;(C1) = (E1) \(\neq\) (P1)&lt;/li&gt;
+  &lt;li&gt;(C2) = (E2) \(\neq\) (P2)&lt;/li&gt;
+  &lt;li&gt;(C3) = (E3) \(\neq\) (P3)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;and (E3) cannot be true if (E1) and/or (E2) hold.
+In general, we have:&lt;/p&gt;
+
+\[P(Y=1 | T=1, X=1) - P(Y=1 | T=0, X=1) \neq P(Y1=1 | X=1) - P(Y0=1 |X=1)\]
+
+\[P(Y=1 | T=1, X=0) - P(Y=1 | T=0, X=0) \neq P(Y1=1 | X=0) - P(Y0=1 |X=0)\]
+
+\[P(Y=1 | T=1) - P(Y=1 | T=0) \neq P(Y1=1) - P(Y0=1)\]
+
+&lt;p&gt;In other words, correlation (left hand side) does not imply causation (right hand side). The left hand side can also be called the probabilistic quantity and the right hand side can be called causal quantity.&lt;/p&gt;
+
+&lt;h1 id=&quot;counterfactuals&quot;&gt;Counterfactuals&lt;/h1&gt;
+&lt;p&gt;I mentioned above that in order to capture the causal statements, we can use counterfactuals (or potential outcome). But what does it mean? In our binary treatment example, counterfactuals are the outcomes that we could have observed if we can give treatment and not give treatment to a person simultaneously. Ideally, to measure the true causal effect, we would want to put everyone in the population in both the treatment group and control group(s). Consider the men group in Table 1: the true causal effect is the difference between all 1450 people for the treatment group and all 1450 people for the control group. In other words, we want both the outcome for treatment and no treatment to be available for everyone. But in this case (and almost always) the counterfactuals cannot be observed, hence we take the naive difference between n=1400 and n=50.&lt;/p&gt;
+
+&lt;p&gt;So how do we derive the correct causal effect then? How can we get \(Y1\) and \(Y0\) so that we can reliably say that my treatment has an effect? Do we have to fill in all the counterfactuals so that we have the same number of instances between groups? As far as I understand, there are two ways we can derive causal effect reliably:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Randomized controlled trial (or AB Test).&lt;/li&gt;
+  &lt;li&gt;Conditioning on all possible confounding variables.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The former usually does not involve in filling all the counterfactuals (which we’ll see more below). The latter approach is used in a situation where it is almost impossible to do randomized controlled trials (e.g. telling non-smoker to smoke to determine the causal effect of smoking to impotence). The latter is also mostly used on observational data. Furthermore, in the latter case we can take it further by filling the counterfactuals to get the best causal effect estimate.&lt;/p&gt;
+
+&lt;h1 id=&quot;randomized-controlled-trials&quot;&gt;Randomized controlled trials&lt;/h1&gt;
+&lt;p&gt;RCT/AB test removes the effects of confounding to the treatment. Directed edge from \(X-&amp;gt;T\) is removed.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/rct-causal.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 3: effects of RCT on the edge between confounding to treatment (&lt;a href=&quot;https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf&quot;&gt;credits&lt;/a&gt;)
+&lt;/div&gt;
+
+&lt;p&gt;This means that the treatment assignments are now purely random. Consequently, this makes \(T\) independent of \((Y1, Y0)\), or in other words, the treatment does not affect the potential outcome anymore. Note the difference: treatment \(T\) still affect the actual outcome \(Y\) but the treatment DOES NOT affect the potential outcome \(Y1\), \(Y0\). For more intuition regarding this I highly recommend checking out &lt;a href=&quot;https://www.bradyneal.com/causal-inference-course&quot;&gt;Brady Neal’s causal inference course&lt;/a&gt;.
+With the independence, we have&lt;/p&gt;
+
+\[P(Y=1 | T=1, X=x) = P(Y1 = 1 | X=x)\]
+
+&lt;p&gt;hence we can assume that the probabilistic quantity (P1-P1) is now the same as the causal quantity (C1-C3). Therefore, we can derive the causal effect directly from the probabilistic quantity and do your statistical test to determine whether it is significant (the usual AB Test). In RCT, afaik, we can sort of trust the outcome because of the randomized treatment assignment without having to approximate the counterfactuals.&lt;/p&gt;
+
+&lt;h1 id=&quot;observational-data&quot;&gt;Observational data&lt;/h1&gt;
+&lt;p&gt;In the case of most observational data, where the treatment assignment is not random, we can only recover the causal effect by CONDITIONING on all possible confounding variables.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/conditioning-causal.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 70%;&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 4: effects of conditioning on confounding variable, blocking the path (&lt;a href=&quot;https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf&quot;&gt;credits&lt;/a&gt;)
+&lt;/div&gt;
+
+&lt;p&gt;Essentially, we want the independence between \(T\) and \((Y1, Y0)\) to happen here but we do this via conditioning on the confounding variables. We have:&lt;/p&gt;
+
+\[(Y0,Y1) \perp T | X\]
+
+&lt;p&gt;This condition reduces the causal effect into a probabilisitic quantity. In the above example, if we assume that gender is our confounding variable, conditioning on it would yield:&lt;/p&gt;
+
+&lt;p&gt;\(P(Y1 = 1) = \sum_x P(Y = 1 | T = 1, X=x) P(X=x)\)
+, where there is only one \(x\), namely gender&lt;/p&gt;
+
+&lt;p&gt;Now, to further calculate the causal effect in a non-randomized observational data, it is common to approximate the unobserved counterfactuals with a prediction. In the men group above, we can train a model to predict the unobserved counterfactuals to fill the missing data points (so we have treated men n=1450, not treated men n=1450) and then predict the average treatment effect between the two groups. There are many ways to create this approximate causal model and they usually involve a lot of assumption. For more details I highly recommend to also check &lt;a href=&quot;https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s897-machine-learning-for-healthcare-spring-2019/lecture-notes/MIT6_S897S19_lec14note.pdf&quot;&gt;this MIT lecture notes&lt;/a&gt;. The most important assumption is of no unmeasured confounders, which only holds when we observe all possible variables that influence both treatment decisions and potential outcomes. In reality, one has to consult with a domain expert to make sure that all variables that influence treatments and potential outcomes are observed.&lt;/p&gt;
+
+&lt;h1 id=&quot;application-in-industry&quot;&gt;Application in industry&lt;/h1&gt;
+&lt;p&gt;This is something that I am curious about, but unfortunately I haven’t found the opportunity that allowed me to implement causal inference in a work setting. So I can’t speak from experience. 
+Here are some examples of causal inference that I know can be beneficial in industry:&lt;/p&gt;
+
+&lt;h4 id=&quot;uplift-modeling&quot;&gt;Uplift modeling&lt;/h4&gt;
+&lt;p&gt;It is aimed at quantifying the treatment effect and identifying the characteristics of individuals most likely to benefit from the benefit. With this information, one thing we can do is to better choose individuals for the next cycle. The characteristics identification is essentially a prediction of counterfactuals for a customer in an experiment setting. Afaik, uplift can also be used to generate demand by giving user more targeted coupons or voucher. Uplift modeling can be used together with AB Test (offline) or multi armed bandit (online).&lt;/p&gt;
+
+&lt;h4 id=&quot;causal-dags-for-forecasting&quot;&gt;Causal DAGs for forecasting&lt;/h4&gt;
+&lt;p&gt;I do not know much about this since this is probably still a new field. One example that I know of is from Lyft (check this &lt;a href=&quot;https://www.youtube.com/watch?v=5wbLy4SDuo4&amp;amp;ab_channel=TheTWIMLAIPodcastwithSamCharrington&quot;&gt;talk&lt;/a&gt; from Sean Taylor). At Lyft, they create a causal DAGs with prior experimental evidence to model the causal effect of things. In the causal DAGs, there are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;pure parent nodes that they control (price level, how much we spend on driver incentives)&lt;/li&gt;
+  &lt;li&gt;outcome nodes that they monitor (marketplace outcome, things that happen)&lt;/li&gt;
+  &lt;li&gt;pure parent nodes that they do not control (how many people request driver organically)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;They seem to have another model (like policy variables) that produces plan. This plan is then inserted into the structural causal model to sort of simulate what would happen in the outcome nodes.&lt;/p&gt;
+
+&lt;p&gt;Sean mentioned that in the business context, they need to estimate the effects of choices they make, and making those choices are causes in both the causality and causal inference senses. The estimates produced by their causal models are inputs to decision problems. Ultimately, they still need to do some decision-making (either by humans or algorithmically) that is informed by their models. I think that they cover more complex interventions involving multiple treatments and outcomes.&lt;/p&gt;
+
+&lt;p&gt;If you know any other implementation of causal inference in industry, please do let me know!&lt;/p&gt;
+
+&lt;h1 id=&quot;recap-and-closing&quot;&gt;Recap and closing&lt;/h1&gt;
+&lt;p&gt;What this post covered:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Correlation vs causation in a formal way.&lt;/li&gt;
+  &lt;li&gt;Counterfactuals as a causal language to capture causal effect correctly. By introducing potential outcomes \((Y1, Y0)\) we see where the failure is.&lt;/li&gt;
+  &lt;li&gt;RCT and conditioning on confounding variables as a way to reliably calculate causal effect in an experiment.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;What this post doesn’t cover:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;List of assumptions that need to hold for the counterfactuals to work.&lt;/li&gt;
+  &lt;li&gt;Structural causal model (Pearl): another causal language to describe and capture causal effect.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Thanks for reading this post! I am a noob in causal inference so please do inform me if there is an error or mistake on twitter &lt;a href=&quot;https://twitter.com/rezkaaufar&quot;&gt;@rezkaaufar&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">“Correlation does not imply causation”</summary></entry><entry><title type="html">Tesla in CVPR 2021</title><link href="https://rezkaaufar.github.io/blog/2021/cvpr-2021-tesla/" rel="alternate" type="text/html" title="Tesla in CVPR 2021" /><published>2021-07-06T00:00:00+07:00</published><updated>2021-07-06T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/cvpr-2021-tesla</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/cvpr-2021-tesla/">&lt;p&gt;Akhir juni 2021, Andrej Karpathy selaku director of AI nya tesla melakukan sebuah presentasi mengenai gimana cara self-driving cars bekerja di Tesla. Nah di post kali ini mau gue bahas kesimpulan gue abis nonton video tersebut. Postingan ini ditulis menggunakan Bahasa Indonesia + Bahasa Inggris yang tidak baku.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;pake-kamera-doang&quot;&gt;Pake kamera doang&lt;/h1&gt;
+
+&lt;p&gt;Sebelumnya, self-driving car menggunakan LIDAR untuk pre-mapping situasi jalanan ke format point cloud yang diubah lagi ke HD maps. Konsekuensi menggunakan cara ini adalah mereka mesti rekam dulu situasi jalanan pake lidar terus disimpen. Jadinya manual harus ada orang yang nyetir mobil dengan LIDAR muter-muterin jalan untuk dapetin HD mapsnya. Nah nanti pas testing si self-driving car tinggal lokalisasi situasi jalanan dan navigasi dari HD map yang udah ada untuk melakukan prediksi dia mau ngapain. Nah sekarang, Tesla mau mulai untuk pakai vision-based sensor aja. Jadi mereka langsung bikin map dari kamera pada waktu itu juga. Artinya, si mobil ini ga perlu dikasih HD maps sebelum dia turun kejalan. Semua kondisi jalanan langsung diprediksi saat si mobil jalan sendiri. Menggunakan 8 kamera, si mobil on the spot memprediksi ini jalan nyambungnya kemana, dimana ada lampu merah, zebra cross, pejalan kaki, pesepeda, gedung, dll. Ini bagian menurut gue keren banget. Neural network memang super powerful untuk perception problem.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/tesla-cars.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Ilustrasi kamera+radar sensor+lidar yang digunakan oleh Tesla&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Sebelumnya juga Tesla menggunakan sensor radar untuk membantu prediksi navigasi self-driving car mereka. Fungsi sensor radar ini adalah memberikan mobil informasi mengenai informasi depth-velocity-acceleration. Depth adalah informasi mengenai seberapa jauh objek yang sekarang ada di sekitar mobil, velocity adalah kecepatan dari objek lain yang ada di sekitar mobil, sedangkan acceleration adalah informasi mengenai percepatan dari objek lain yang ada di sekitar mobil. Jadi ya informasi ini penting banget biar si mobil tau objek di sekeliling dia ada apa aja dan gimana cara navigasi yang aman.&lt;/p&gt;
+
+&lt;p&gt;Berikut adalah beberapa masalah dari menggunakan radar:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Secara acak (random) sensor radar memberikan angka yang gak akurat.&lt;/li&gt;
+  &lt;li&gt;Masalah saat perlambatan dadakan. Ada banyak kasus menggunakan sensor radar, mobil pas ngerem jadinya kasar tidak santai.&lt;/li&gt;
+  &lt;li&gt;Masalah sensor radar bingung gak tau mana stationary object yang benar. Tiba-tiba ngerem pas ada jembatan, tiba-tiba ngerem pas ada mobil parkir dipinggir jalan.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Berdasarkan masalah diatas, mereka akhirnya fokus full invest di sensor kamera aja. Terus gimana dong dapetin informasi depth-velocity-acceleration diatas? Tesla pake neural network buat prediksi depth-velocity-acceleration. Jadi sensor radar diganti sama kamera yang dipersenjatai dengan neural network.&lt;/p&gt;
+
+&lt;h1 id=&quot;kualitas-data&quot;&gt;Kualitas data&lt;/h1&gt;
+
+&lt;p&gt;Kunci dari neural network yang bagus performanya? Ini kata mereka:&lt;/p&gt;
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/tesla-data.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Kunci suksesnya neural network&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Untuk dapetin data yang bagus gimana caranya? Mereka pake iterative labelling buat dapetin dataset depth-velocity-acceleration yang bagus.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Cara pertama mereka cara yang cuma ngerecord data aja yang banyak dalam bentuk video, jadi mereka bisa dapetin benefit of hindsight yang tidak bisa mereka dapatkan di prediction time. Contoh misal kalo lagi nyetir, didepan ada mobil terus ngeluarin debu-debu. Si neural network bisa jadi udah gak ngeliat mobil didepannya. Kalo kita tambahin data video yang dilabelin secara konsisten, si NN bisa tau oh ini mah debu doang tapi didepan gue masih ada mobil. Dengan kata lain: record -&amp;gt; figure out what happened -&amp;gt; label frame -&amp;gt; use this for prediction.&lt;/li&gt;
+  &lt;li&gt;Untuk kasus edge cases mereka bikin triggers. Trigger adalah hand programmed rule yang nentuin oke case mana nih yang mesti gue benerin labelnya. Deploy seed neural network, deploy in shadow mode, make prediction, Terus bikin trigger untuk dapetin case2 yang ada inaccuracies buat nanti dibenerin scr otomatis maupun manual.
+Total data yang terkumpul ada 1.5 petabytes. seberapa besar itu neural networknya? :)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/tesla-iterative.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Iterative labeling nya Tesla&lt;/em&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;arsitektur-neural-network&quot;&gt;Arsitektur neural network&lt;/h1&gt;
+
+&lt;p&gt;Mereka pake backbone net kayak resnet abis itu ada beberapa head yang process informasi dari backbone untuk output kayak direction, kinematics, dll. Karena di self-driving cars banyak task yang diprediksi, sepertinya beberapa head itu digroup untuk task yang mirip: misal satu head buat prediksi pixel level classification kayak depth, satu head buat prediksi object level, satu head buat classification satu image, etc. Karpathy juga bilang banyak bagian branch dan head nya yang pake transformers, convolutions, dan juga recurrent neural network.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/tesla-nn.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Neural network nya Tesla&lt;/em&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;ml-ops&quot;&gt;ML Ops&lt;/h1&gt;
+
+&lt;p&gt;Mungkin ini bagian yang paling menarik. Dengan neural network yang super besar dan data yang banyak, gimana mereka handle tech stack nya mereka? Mereka pake in-house supercomputer dan semuanya mereka handle end-to-end. Ngerjain semua stack end-to-end ngasih mereka keuntungan dimana mereka bisa iterasi cepet. Jadi semuanya terintegrasi secara vertikal, dari mulai chip, gpu dan npu, filesystem sendiri, proses buat ngitung gradient secara terdistribusi, semua lah. Mereka investasi gila-gilaan di ML OPS. 5760 gpu nodes dan 1.6tbs filesystem. Ada npu (neural processing unit) jg dan processing chip bikin sendiri.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/tesla-sc.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Supercomputer nya Tesla&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/tesla-npu.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Neural processing unit nya Tesla, lebih terspesialisasi untuk komputasi neural network&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Terima kasih sudah membaca!&lt;/p&gt;
+
+&lt;p&gt;P.S. gambarnya gue crop dari youtube karena gue males jadi ya jelek lah gambarnya intinya gitu.&lt;/p&gt;</content><author><name></name></author><summary type="html">Akhir juni 2021, Andrej Karpathy selaku director of AI nya tesla melakukan sebuah presentasi mengenai gimana cara self-driving cars bekerja di Tesla. Nah di post kali ini mau gue bahas kesimpulan gue abis nonton video tersebut. Postingan ini ditulis menggunakan Bahasa Indonesia + Bahasa Inggris yang tidak baku.</summary></entry><entry><title type="html">A primer on decision tree</title><link href="https://rezkaaufar.github.io/blog/2021/decision-tree-a-primer/" rel="alternate" type="text/html" title="A primer on decision tree" /><published>2021-06-18T00:00:00+07:00</published><updated>2021-06-18T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/decision-tree-a-primer</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/decision-tree-a-primer/">&lt;p&gt;Decision tree is the crux of many popular algorithms in data science: xgboost, lightgbm, catboost, etc. In this post I aim to explain how decision tree works in both classification and regression setting. This post is meant as a learning notes also for myself.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;classification-decision-trees&quot;&gt;Classification decision trees&lt;/h1&gt;
+&lt;p&gt;Given series of features \(X\) and a categorical label \(Y\), decision tree works by finding which feature in our instances to split and further divide the instances so that we have a leaf that represent the final prediction. For classification trees, we usually do the split based on a technique called gini impurity (the most popular technique). In practice there are several ways to calculate the split for a leaf. Deciding a split based on gini impurity involves several steps:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Calculate gini impurity for a leaf&lt;/li&gt;
+  &lt;li&gt;Calculate total gini impurity for a split&lt;/li&gt;
+  &lt;li&gt;Decide the split based on feature that has the lowest total gini impurity.&lt;/li&gt;
+  &lt;li&gt;Repeat step 1-3 until convergence / stopping criteria&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/classif-toy-dataset.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Figure 1: A toy dataset that is used to illustrate the classification section.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;gini-impurity-for-a-leaf&quot;&gt;Gini impurity for a leaf&lt;/h2&gt;
+
+&lt;p&gt;Gini impurity for a leaf is calculated as:&lt;/p&gt;
+
+\[1 - (\sum_{c=1}^C p_{c}^2)\]
+
+&lt;p&gt;where \(p_{c}\) is the class probability and \(C\) is the total number of class. For binary classification, the equation would become:&lt;/p&gt;
+
+\[1 - y_{1}^2 - y_{0}^2\]
+
+&lt;p&gt;where \(y_1\) is the yes class probability and \(y_0\) is the no class probability.&lt;/p&gt;
+
+&lt;p&gt;For example, if we split the dataset on the “loves sugar” column, we would have:&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/loves-sugar.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Figure 2: A split example on the “loves sugar” column.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;where the gini impurity for the left leaf is given by:&lt;/p&gt;
+
+\[1 - (\frac{1}{1+3})^2 - (\frac{3}{1+3})^2 = 0.375\]
+
+&lt;p&gt;and the right gini impurity:&lt;/p&gt;
+
+\[1 - (\frac{2}{2+1})^2 - (\frac{1}{2+1})^2 = 0.444\]
+
+&lt;h2 id=&quot;total-gini-impurity-for-a-split&quot;&gt;Total gini impurity for a split&lt;/h2&gt;
+
+&lt;p&gt;Once we have the gini impurity for each leaf, we need to calculate the gini impurity for a split. Note that these two are different quantities. The gini impurity for a split is the quantity that we use to decide which feature we want to split our instance first. To assess the total gini impurity for a split, we do a weighted average of gini impurities for each leaves:&lt;/p&gt;
+
+\[(\frac{4}{4+3}) 0.375 - (\frac{3}{4+3}) 0.444\]
+
+&lt;p&gt;The idea behind gini impurity is that the more homogeneous sample that we can divide based on a split, then the more pure the split is, hence the lower gini impurity score (0 being the most pure).&lt;/p&gt;
+
+&lt;h2 id=&quot;gini-impurity-for-multi-categorical-variable-and-numeric-continuous-variables&quot;&gt;Gini impurity for multi categorical variable and numeric continuous variables&lt;/h2&gt;
+&lt;p&gt;For categorical variable with category greater than 2, we calculate gini impurity for every possible split. For example, if we have a categorical variable with value 1,2, and 3, we split:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;based on 1 and not 1 (2 and 3)&lt;/li&gt;
+  &lt;li&gt;based on 2 and not 2 (1 and 3)&lt;/li&gt;
+  &lt;li&gt;based on 3 and not 3 (1 and 2)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;and then we follow the exact same steps as above. The idea is to binarize the split so that we can calculate the leaf gini impurity and split total gini impurity. The same thing also applies to continuous variable. Coming back to our example, “age” column is a numeric continuous variable. To make a split on that variable, we do something like this:&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/gini-impurity.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Figure 3: Gini impurity for continuous variables.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Note that we do this on a sorted column because we want the split to be on the sorted instances. The idea is that we decide a split criteria for the continuous variable and we do the exact same steps as the above: treating the split as a binary choice. In the above case, the split criteria is computed based on the mean of every adjacent instances. After we get the mean we then split the instances and calculate the gini impurity like in Figure 2. In practice, there are many ways to decide the split criteria.&lt;/p&gt;
+
+&lt;h2 id=&quot;choosing-the-split&quot;&gt;Choosing the split&lt;/h2&gt;
+&lt;p&gt;Based on the example above, we have multiple split criterias and their gini impurity scores. We choose the split that has the lowest gini impurity and made it our first split.&lt;/p&gt;
+
+&lt;h2 id=&quot;adding-branches&quot;&gt;Adding branches&lt;/h2&gt;
+&lt;p&gt;We do the same thing as above but now we only consider samples that are included in the node. As we split more, the instances that end up in the leaf will be smaller and smaller.&lt;/p&gt;
+
+&lt;h2 id=&quot;deciding-when-to-stop-adding-leaves&quot;&gt;Deciding when to stop (adding leaves)&lt;/h2&gt;
+&lt;p&gt;We stop when we consider a leaf contains only homogeneous instances. We do not need to split more if all instances on a leaf already belong to one label.  We can also stop based on some stopping criteria, for example, by maximum depth. Know when to stop is related to overfitting issue. Splitting perfectly on a training set lead to overfitting whereas splitting fewer lead to underfitting.
+If by stopping criteria we end up with impure leaf (3 yes label and 1 no label) then we take the majority as the decision.&lt;/p&gt;
+
+&lt;h2 id=&quot;do-classification-decision-trees-have-probabilities&quot;&gt;Do classification decision trees have probabilities?&lt;/h2&gt;
+&lt;p&gt;It is easy to fall into thinking that a classifier always have a probability interpretation. But decision tree is a non-parametric model. It does not have a probabilistic interpretation. One might get a pseudo-probability based on an &lt;a href=&quot;https://rpmcruz.github.io/machine%20learning/2018/02/09/probabilities-trees.html&quot;&gt;impure node&lt;/a&gt;.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;regression-decision-trees&quot;&gt;Regression decision trees&lt;/h1&gt;
+&lt;p&gt;For regression trees, the leaf produces a continuous value, which is usually an average \(y\) over the splitted samples. Therefore, to evaluate the split, the sum of squared residuals (SSR) of every splitted samples are usually used. These are the steps:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Calculate the average predicted value of a leaf&lt;/li&gt;
+  &lt;li&gt;Calculate sum of squared residuals (average predicted value - sample value) of every samples in both sides of the split&lt;/li&gt;
+  &lt;li&gt;Decide the split based on a feature that has the lowest sum of squared residuals&lt;/li&gt;
+  &lt;li&gt;Repeat step 1 -3 until convergence / stopping criteria&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/regression-toy-dataset.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Figure 1: A toy dataset to illustrate this regression section.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;deciding-the-values-to-split-our-featurecolumn&quot;&gt;Deciding the values to split our feature/column&lt;/h2&gt;
+&lt;p&gt;In regression trees, we do this by sorting the column of our features and then we take the average of the adjacent value. This average value will be our threshold to split our feature into two groups. After the split, we calculate the average predicted value of the leaf.&lt;/p&gt;
+
+&lt;h2 id=&quot;sum-of-squared-residuals&quot;&gt;Sum of squared residuals&lt;/h2&gt;
+&lt;p&gt;After we get the average predicted value of the leaf, we then calculate the sum of squared residuals, which is given by:&lt;/p&gt;
+
+\[\sum_i (y - f(x_{i}))^2\]
+
+&lt;p&gt;where \(y\) is our label and \(f(x_{i})\) is our prediction value. Here the prediction depends on the average predicted value of the leaf/ where the sample ends up after being splitted.&lt;/p&gt;
+
+&lt;p&gt;Refer to the two figures below for an example of how to do calculate sum of squared residuals for a split:&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/ssr-1.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Figure 2a: Example of splitting at a threshold value.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Figure 2a shows how we can calculate a sum of squared residuals for one threshold split, which is at 100 mg. We do this for all possible threshold value for this column:&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/ssr-2.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Figure 2b: Another example of splitting at a threshold value.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;choosing-the-root-for-both-single-variable-and-multiple-variables&quot;&gt;Choosing the root for both single variable and multiple variables&lt;/h2&gt;
+&lt;p&gt;If we have multiple variables, we do the same as above for every variable possible and we choose the split that has the lowest sum of squared residuals. If we have a binary column, we are just doing one split. Remember that the idea of a split is that we split the instances into two groups and then we move further from there.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/ssr-all.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Figure 3: Illustration to get the smallest SSR in multiple variables. The values are all made up.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;adding-branches-1&quot;&gt;Adding branches&lt;/h2&gt;
+&lt;p&gt;We do the same thing as in the classification decision tree. Further split only consider samples that are included in the node. As we split more, the instances that end up in the leaf will be smaller and smaller.&lt;/p&gt;
+
+&lt;h2 id=&quot;deciding-when-to-stop-adding-leaves-1&quot;&gt;Deciding when to stop (adding leaves)&lt;/h2&gt;
+&lt;p&gt;There are multiple ways to do this. The most common one is that we stop when there are less than \(k\) instances in the leaf. \(k\) is usually set at 20. We can also stop based on some stopping criteria, for example, by maximum depth. Know when to stop is related to overfitting issue. Splitting perfectly on a training set lead to overfitting whereas splitting fewer lead to underfitting.
+With stopping criteria we then take the average \(y\) values of every instances in the leaf and use that as our prediction.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;closing&quot;&gt;Closing&lt;/h1&gt;
+
+&lt;p&gt;Decision tree is a non-parametric model that powers several most popular models in data science. In practice, there are many ways to decide which features to split. This post highlights one of the most popular technique for splitting: gini impurity for classification and sum of squared residuals for regression.&lt;/p&gt;</content><author><name></name></author><summary type="html">Decision tree is the crux of many popular algorithms in data science: xgboost, lightgbm, catboost, etc. In this post I aim to explain how decision tree works in both classification and regression setting. This post is meant as a learning notes also for myself.</summary></entry><entry><title type="html">Core components of recommender systems</title><link href="https://rezkaaufar.github.io/blog/2021/recsys-core-components/" rel="alternate" type="text/html" title="Core components of recommender systems" /><published>2021-05-08T00:00:00+07:00</published><updated>2021-05-08T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/recsys-core-components</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/recsys-core-components/">&lt;p&gt;The way that recsys is usually taught by starting from its taxonomy (collaborative filtering, content based, hybrid based) is confusing to me at first. In this post I am going to take another path to explain recsys by discussing the core components first and then draw the connection to the recsys taxonomy. Essentially, the majority of recsys objective is to map items and users on the same vector space through a learning objectives so that we can determine items to give to users for a recommendation or which items to show in a similar items page. My post is mostly based on this wonderful talk by &lt;a href=&quot;https://www.youtube.com/watch?v=xBMGr08fowA&amp;amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;amp;index=5&amp;amp;t=2593s&amp;amp;ab_channel=mitrecorp&quot;&gt;James Kirk from Spotify&lt;/a&gt; so I highly recommend you to watch the video to gain further understanding.&lt;/p&gt;
+
+&lt;p&gt;Main components of a recommendation system:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Interactions Matrix&lt;/li&gt;
+  &lt;li&gt;User and Item Features&lt;/li&gt;
+  &lt;li&gt;User and Item Representation Function&lt;/li&gt;
+  &lt;li&gt;Learning Objective&lt;/li&gt;
+  &lt;li&gt;Prediction Function&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Let’s go through it one by one!&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;interaction-matrix&quot;&gt;Interaction Matrix&lt;/h2&gt;
+&lt;p&gt;Interaction Matrix is the main components of a recsys, usually of \(M \times N\) size, where \(M\) is the number of users and \(N\) is the number of items. Note that user-item definition in a recsys is not restrictive to an actual user or item. The user is the receiving and acting entity on the recommendation, whereas the item is the passive entity that is being recommended to the user.&lt;/p&gt;
+
+&lt;p&gt;The matrix contains the interaction value between a user and an item. The interaction value can be:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;positive (likes, 5-star review, purchases, views, etc) or negative (downvotes, 1-star review, skips, etc).&lt;/li&gt;
+  &lt;li&gt;binary or continuous, depending on the data and the problem.&lt;/li&gt;
+  &lt;li&gt;explicit or implicit. explicit interactions are usually an exact number given by the user (upvotes/downvotes, ratings, etd). implicit interactions are actions that are suggested but not stated clearly (views, clicks, counts, etc)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/interaction-matrix.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;Source: &lt;a href=&quot;https://www.youtube.com/watch?v=xBMGr08fowA&amp;amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;amp;index=5&amp;amp;t=2593s&amp;amp;ab_channel=mitrecorp&quot; target=&quot;blank&quot;&gt;James Kirk’s slides&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Interaction value should reflect what is the intended effect that we want to happen in our recommender system. For example, if we want users to purchase more given our recommender system, then we want our interaction value to be related to purchase. If we want users to engage more in our platform, then our interaction value should be related to engagement.&lt;/p&gt;
+
+&lt;p&gt;We might also want to handle and preprocess our interaction matrix before using it. In some settings, users can give negative explicit interaction. Negative interactions can be a rich signals for the recsys to learn from but we need to be careful in handling them. Some loss functions such as learning-to-rank cannot accomodate negative signals. Interaction matrix is also usually sparse, so we need to handle missing value. In explicit interactions, we can’t just replace them with zeroes as it indicates that the user do not like the item. Hence we just go about modelling with sparse data. In implicit interactions, it is much safer to replace with zeroes as it indicates no action from the user (no views, no plays, etc).  Missing values are usually what we want to predict with our recsys: giving item recommendation to a particular user that hasn’t been interacted by the user.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;useritem-features&quot;&gt;User/Item Features&lt;/h2&gt;
+&lt;p&gt;There are two types of features in a recsys:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Indicator features: which represents user and item individually. The feature is unique to every user/item and encoded as one-hot vector. Since indicator is unique to every user/item, this feature does not scale to a lot of users. Indicator feature alone also cannot be used to solve cold-start problem (new users who does not have any interaction data).&lt;/li&gt;
+  &lt;li&gt;Metadata features: any information that we know about user/item that can be incorporated to the recsys. Examples: age, gender, number of child, location, word embeddings, image representation, etc. In some cases, it might be beneficial to preprocess metadata features before using it in our recsys model. For example: converting any string/categorical metadata feature to a numerical type.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In a lot of libraries out there, if we do not specify any metadata features for item and user and use interaction matrix solely in our recsys, then by default only the indicator feature is used. The model is only going to learn representation that is unique for every user/item.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/user-item-features.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;Source: &lt;a href=&quot;https://www.youtube.com/watch?v=xBMGr08fowA&amp;amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;amp;index=5&amp;amp;t=2593s&amp;amp;ab_channel=mitrecorp&quot; target=&quot;blank&quot;&gt;James Kirk’s slides&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Pure collaborative filtering is an approach where a recsys uses only indicator features.&lt;/li&gt;
+  &lt;li&gt;Pure content-based filtering is an approach where a recsys uses only metadata features for the item and only indicator features for the user. Pure content-based does not share metadata features among users.&lt;/li&gt;
+  &lt;li&gt;When both indicator and metadata features are used they’re known as a hybrid recsys.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;useritem-representation-function&quot;&gt;User/Item Representation Function&lt;/h2&gt;
+&lt;p&gt;In recsys we want to find a good representation for the user and item. A representation is typically a low-dimensional vector that encodes information regarding the user and item. Getting the representation involves transforming the user/item features via a representation function. Some examples of representation function:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Linear Kernels&lt;/li&gt;
+  &lt;li&gt;Neural Networks (Fully Connected, Transformers, Word2vec, Autoencoder)&lt;/li&gt;
+  &lt;li&gt;Passthrough (None)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Depending on the design, there are many ways to choose our representation function. Linear kernels are effective with both indicator and metadata features. Linear kernels are also a natural choice for matrix factorization problem. If we have an unstructured data, e.g., text/image that we want to utilize, we can use separate architecture like word2vec or autoencoder to get the text/image representation and then feed it into our recsys representation function. We can also use different representation function for different features, for example, linear kernels for indicator and metadata and passthrough for text/image (directly using representation output from the word2vec or autoencoder).&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;prediction-function&quot;&gt;Prediction Function&lt;/h2&gt;
+&lt;p&gt;A function that outputs the estimated items’ relevance to a particular user. This function converts user/item representation into a prediction. The prediction itself can vary depending on the design: it can be a score that tells us how relevant an item to a user but it can also be a relevance rank on several items for a particular user. Some examples of prediction function:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Dot product&lt;/li&gt;
+  &lt;li&gt;Cosine similarity&lt;/li&gt;
+  &lt;li&gt;Euclidian distance&lt;/li&gt;
+  &lt;li&gt;Neural network&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;learning-objective&quot;&gt;Learning Objective&lt;/h2&gt;
+&lt;p&gt;This is essentially our loss function that let us uncover the best representation for the user/item. The learning objective converts both the user/item representation and prediction into a loss to learn the best parameter for the recsys model. Learning objective can have a huge impact on the output of the recommendation system. Changes in learning objective can dramatically affect how our recsys feel to the user. Examples of loss function characteristics:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Some loss functions learn to approximate the interaction value of a user-item and some loss functions learn to uprank positive interaction and downrank negative interactions for a particular user. The former predicts the interaction value and the latter predicts the ranking of items (learning-to-rank).&lt;/li&gt;
+  &lt;li&gt;Some loss function accomodate negative interactions.&lt;/li&gt;
+  &lt;li&gt;Some loss function are sensitive to interaction magnitude.&lt;/li&gt;
+  &lt;li&gt;Some loss function only account for pairs with interactions (sparse), some loss can be made to compare every interaction pairs (dense), and some loss can learn by comparing pairs with interactions by sampling (sampled).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Due to these differences in nature, we must choose learning objective that best fit our goal. Some examples of loss function:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Root-mean-square error&lt;/li&gt;
+  &lt;li&gt;KL Divergence&lt;/li&gt;
+  &lt;li&gt;Alternating least square&lt;/li&gt;
+  &lt;li&gt;Bayesian personalized ranking (learning-to-rank)&lt;/li&gt;
+  &lt;li&gt;Weighted approximately ranked pairwise (learning-to-rank)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;combining-it-all-together&quot;&gt;Combining it all together&lt;/h1&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/recsys-build.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;Common architecture of a recommender system. Source: &lt;a href=&quot;https://www.youtube.com/watch?v=xBMGr08fowA&amp;amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;amp;index=5&amp;amp;t=2593s&amp;amp;ab_channel=mitrecorp&quot; target=&quot;blank&quot;&gt;James Kirk’s slides&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;There we have it: the architecture of recommender systems. Let’s try to design a recommender system based on some cases:&lt;/p&gt;
+
+&lt;p&gt;For you page. The example case is to recommend item on a homepage personalized for every user:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Interaction matrix: user-item (binary or continuous)&lt;/li&gt;
+  &lt;li&gt;User features: indicator, metadata&lt;/li&gt;
+  &lt;li&gt;Item features: indicator, metadata&lt;/li&gt;
+  &lt;li&gt;User representation: linear&lt;/li&gt;
+  &lt;li&gt;Item representation: linear&lt;/li&gt;
+  &lt;li&gt;Learning objective: RMSE, binary cross entropy, WARP, BPE&lt;/li&gt;
+  &lt;li&gt;Prediction function: dot product, cosine similarity&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Similar items. The example case is to recommend item given another item:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Interaction matrix: item-item (binary or continuous)&lt;/li&gt;
+  &lt;li&gt;User features: indicator, metadata&lt;/li&gt;
+  &lt;li&gt;Item features: same as user features&lt;/li&gt;
+  &lt;li&gt;User representation: linear&lt;/li&gt;
+  &lt;li&gt;Item representation: linear&lt;/li&gt;
+  &lt;li&gt;Learning objective: RMSE, binary cross entropy, WARP, BPE&lt;/li&gt;
+  &lt;li&gt;Prediction function: dot product, cosine similarity&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;With this architecture, we can also incorporate more complex feature representation into the system. For example, if we want to utilize the social graph between user-user, then we can introduce graph neural network that takes an input of user graph (user features) and outputs the representation to be further processed (user representation).&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://arxiv.org/pdf/1902.07243.pdf&quot;&gt;For you page&lt;/a&gt; utilizing social graph structure:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Interaction matrix: user-item (binary or continuous)&lt;/li&gt;
+  &lt;li&gt;User features: user-user graph&lt;/li&gt;
+  &lt;li&gt;Item features: indicator, metadata, etc&lt;/li&gt;
+  &lt;li&gt;User representation: graph neural network&lt;/li&gt;
+  &lt;li&gt;Item representation: linear&lt;/li&gt;
+  &lt;li&gt;Learning objective: custom RMSE&lt;/li&gt;
+  &lt;li&gt;Prediction function: feed forward neural network&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Simpler recsys such as user-based and item-based that does not require training also fits in this architecture. Let’s take a look:&lt;/p&gt;
+
+&lt;p&gt;User-based recsys:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Interaction matrix: user-item&lt;/li&gt;
+  &lt;li&gt;User Features: Indicator but we use the row in the interaction matrix&lt;/li&gt;
+  &lt;li&gt;Item Features: -&lt;/li&gt;
+  &lt;li&gt;User representation: -&lt;/li&gt;
+  &lt;li&gt;Item representation: -&lt;/li&gt;
+  &lt;li&gt;Learning objective: -&lt;/li&gt;
+  &lt;li&gt;Prediction function: dot product, cosine similarity. to predict the rating of an item \(y\) that user \(x\) hasn’t seen, we query top \(k\) users that are similar to user \(x\) (have rated item \(y\)) and calculate the weighted average of the ratings.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Item-based recsys:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Interaction matrix: user-item&lt;/li&gt;
+  &lt;li&gt;User Features: -&lt;/li&gt;
+  &lt;li&gt;Item Features: Indicator but we use the column in the interaction matrix&lt;/li&gt;
+  &lt;li&gt;User representation: -&lt;/li&gt;
+  &lt;li&gt;Item representation: -&lt;/li&gt;
+  &lt;li&gt;Learning objective: -&lt;/li&gt;
+  &lt;li&gt;Prediction function: dot product, cosine similarity. to predict the rating of an item \(y\) that user \(x\) hasn’t seen, we query top \(k\) users that are similar to item \(y\) (\(y\) has been rated by user \(x\)) and calculate the weighted average of the ratings.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;is-there-a-recsys-model-that-does-not-fit-into-this-architecture&quot;&gt;Is there a recsys model that does not fit into this architecture?&lt;/h2&gt;
+
+&lt;p&gt;Yes! In some cases we can use the interaction matrix to design the training data and not use it as our label. You can find some of the examples &lt;a href=&quot;https://eugeneyan.com/writing/recommender-systems-graph-and-nlp-pytorch/&quot;&gt;here&lt;/a&gt; where the author tries to create a pseudo-sentences of products to then be fed into a word2vec training. This setting does not use the interaction matrix as the label.&lt;/p&gt;
+
+&lt;p&gt;Thanks for reading! Contact me on twitter if you spot any mistake.&lt;/p&gt;</content><author><name></name></author><summary type="html">The way that recsys is usually taught by starting from its taxonomy (collaborative filtering, content based, hybrid based) is confusing to me at first. In this post I am going to take another path to explain recsys by discussing the core components first and then draw the connection to the recsys taxonomy. Essentially, the majority of recsys objective is to map items and users on the same vector space through a learning objectives so that we can determine items to give to users for a recommendation or which items to show in a similar items page. My post is mostly based on this wonderful talk by James Kirk from Spotify so I highly recommend you to watch the video to gain further understanding.</summary></entry><entry><title type="html">Some notes on generative model</title><link href="https://rezkaaufar.github.io/blog/2021/generative-model/" rel="alternate" type="text/html" title="Some notes on generative model" /><published>2021-04-18T00:00:00+07:00</published><updated>2021-04-18T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/generative-model</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/generative-model/">&lt;p&gt;Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;discriminative-vs-generative&quot;&gt;Discriminative vs Generative&lt;/h2&gt;
+&lt;p&gt;Discriminative models directly capture the conditional probability of \(p(y|x)\). Given a feature \(x\) and a label \(y\), the model can then discriminate between different input instances. Discriminative models are pervasive in the machine learning community.&lt;/p&gt;
+
+&lt;p&gt;Generative models, on the other hand, capture the joint probability \(p(x,y)\). Hence, during predictions, generative model has the data generating process information compared to a discriminative model.  Now one might wonder, what about the deep generative models like VAE, GAN, or flow-based? All these model do not have a label \(y\) (though some do depending on the task). But they are still categorized as generative model because they can generate samples after you train the model. These models capture \(p(x)\). In short, if after training you can generate a new data by sampling from your model, then your model is a generative model.&lt;/p&gt;
+
+&lt;p&gt;Generative models themselves differ in many ways. There are many ways to model the data generating process, depending on the design choice. It can be supervised or unsupervised, it can be factorized differently depending on the architecture design, etc. Below I am going to list some examples but these are not an exhaustive list of generative models. I am leaving out the technical depth out of this post and only discuss the high-level overview.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;examples-of-generative-model&quot;&gt;Examples of Generative Model&lt;/h2&gt;
+
+&lt;h3 id=&quot;naive-bayes-nb&quot;&gt;Naive Bayes (NB)&lt;/h3&gt;
+&lt;p&gt;NB captures \(p(x,y)\) by factorizing it into \(p(x|y) p(y)\). The naive part comes from the assumption that every features \(x_i\) are conditionally independent from each other given a category \(y\), hence&lt;/p&gt;
+
+\[p(x|y) p(y) = p(y) \prod_{i} p(x_{i}|y)\]
+
+&lt;p&gt;\(p(x|y)\) can be represented by a distribution. For example, in a text classification task&lt;sup&gt;1&lt;/sup&gt;, one can use multinomial distribution&lt;sup&gt;2&lt;/sup&gt; over distinct words given \(y\) (the parameters of \(p(x|y)\) is of \(y \times v\) matrix, where \(v\) is total number of vocab). The classification rule is \(argmax_y p(x|y) p(y)\). For \(p(y)\), it is usually an empirical categorical distribution of \(y\), whereas one can use maximum likelihood to estimate the parameter of \(p(x|y)\). In the text classification example, one could sample words from the multinomial distribution given a label \(y\). But it is not clear how many \(k\) words you want in the instances, so I think the \(k\) needs to be decided. The sampling will give us garbled texts since there is no notion of sequence (also nobody train NB to generate new samples). To make a prediction, we use the classification rule.
+There is a sequential version of NB: hidden markov model (HMM) but I am not discussing it in this post.&lt;/p&gt;
+
+&lt;h3 id=&quot;latent-dirichlet-allocation-lda&quot;&gt;Latent Dirichlet Allocation (LDA)&lt;/h3&gt;
+&lt;p&gt;LDA is widely used in topic modeling task where the objective is to automatically retrieve hidden topics for a given documents&lt;sup&gt;3&lt;/sup&gt;. LDA assumes that a document is composed by a mixture of topics, and these topics generate the series of word inside the documents. The topic is a latent variable where one cannot observe during training. Given this assumption, LDA by definition is a hierarchical bayesian model. Below is the graphical model visualization:&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/lda.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;Source: &lt;a href=&quot;https://jmlr.org/papers/volume3/blei03a/blei03a.pdf&quot; target=&quot;blank&quot;&gt;original paper&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;There are three main parameters of this model&lt;sup&gt;4&lt;/sup&gt;: \(\theta\), for the document-topic distribution (\(M \times K\) matrix), \(\beta\), for the topic-word distribution (\(K \times V\) matrix), and \(z_n\), for the word assignment (\(K\) vector per document-word level). The objective of LDA is to find the best value for these parameters given the data that we have. This is a bayesian inference task where the goal is to calculate the posterior distribution for these parameters. We cannot calculate the posterior analytically because computing the denominator is intractable. Hence to approximate the posterior, most advocate for either markov chain monte carlo (mcmc) or variational inference (VI). The original LDA paper uses VI but there exists some MCMC approaches as well.  For the VI approach, they use mean-field variational inference&lt;sup&gt;5&lt;/sup&gt;, which breaks the interdependence between each latent variables, making it easier to calculate. After the bayesian inference is done, we get the approximated posterior distribution for \(\theta\), \(\beta\), and \(z_n\). We can use these distributions to generate new sample after training, following the data generating process above. The sampling, like in NB, will result in garbled texts as there is no notion of sequence here. Given a document consisting of words, we can use LDA to get the most likely topics for the document by generating the mixture of topic first using \(\theta\) and then greedily assign given word to a topic based on \(\beta\) and \(z_n\).&lt;/p&gt;
+
+&lt;h3 id=&quot;generative-rnn-for-text-classification&quot;&gt;Generative RNN for Text Classification&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://arxiv.org/pdf/1703.01898.pdf&quot;&gt;Generative RNN&lt;/a&gt; uses the same factorization \(p(x|y) = p(x|y) p(y)\) as in NB. The difference here is that since the model is an RNN, \(p(x|y)\) can be further factorized into \(\prod_{i} p(x_i| x_{&amp;lt;i}, y)\). During training, the label \(y\) is used as an input to the RNN, transformed into its own trainable embedding. The authors experimented with two models: sharing the parameters for every label or uses different parameters for each label. During prediction, they compute \(argmax_y p(x|y) p(y)\) using empirical categorical distribution for \(p(y)\). Sampling from generative RNN is pretty straightforward. We can just first sample the label and starts the sequential process of RNN that generates a new data instances one token at a time. To stop the generative process one might include EOS token or determine the sentence length in advance.&lt;/p&gt;
+
+&lt;h3 id=&quot;generative-rnng-recurrent-neural-network-grammar&quot;&gt;Generative RNNG (Recurrent Neural Network Grammar)&lt;/h3&gt;
+&lt;p&gt;In my opinion, &lt;a href=&quot;https://arxiv.org/pdf/1602.07776.pdf&quot;&gt;RNNG&lt;/a&gt; is a cool model. RNNG design allows it to model \(p(x,y)\) directly without any factorization. It is based on a top-down generation algorithm that relies on a stack data structure.  We can imagine that at each timesteps, RNNG generates an action that produces both words \(x\) and a well-formed parse tree \(y\). I’m omitting a lot of details here, but there are 3 main actions in the generative version:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;NT(s), which generates a non-terminal S&lt;/li&gt;
+  &lt;li&gt;GEN(x), which generates a word&lt;/li&gt;
+  &lt;li&gt;REDUCE, which completes a partially open subtree in the stack&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For the discriminative version \(p(y|x)\), GEN(x) is replaced by SHIFT action that consumes a given sentence from a buffer data structure.
+Sampling a parsed sentence from this model is easy. We can run the sequential process of the RNNG and let it run until it hits the stop token, yielding a well-formed parse tree with a sentence. In the original paper, besides evaluating RNNG on a syntactic parsing task, the generative RNNG is also used to measure the perplexity in a language model setting. In order to evaluate RNNG as a language model, they do MCMC approximation, importance sampling, to calculate the marginal probability \(p(x) = \sum_y p(x, y)\). For the parsing task, from the samples of the importance sampling above, they retrieve the MAP parse tree which is the tree \(\hat{y}\) that has the highest probability under the joint probability \(p(x,y)\).&lt;/p&gt;
+&lt;h3 id=&quot;variational-autoencoder-vae&quot;&gt;Variational Autoencoder (VAE)&lt;/h3&gt;
+&lt;p&gt;When I first studied VAE, I view it from a deep learning perspective: an autoencoder which maps \(x\) to a latent space \(z\) (encoding) and then maps it back to the data space \(x\) (decoding), Aside from the reconstruction loss, VAE introduces regularization term on the encoder network to be close to a multivariate gaussian, since VAE maps to a distribution rather than a single point.
+VAE has a bayesian interpretation that explains why there are two losses and why the encoder-decoder come into existence. Given a data point \(x = (x_1, .. x_n)\), we assume that there is a latent variable \(z_i\) for each \(x_i\) and there is a joint distribution \(p(x,z) = p(x|z) p(z)\) which explains where the data is coming from. In VAE, \(p(z)\) is a multivariate gaussian and \(p(x|z)\) is parameterized by a neural network. Now the objective here is to do a bayesian inference: we want to find the best \(z\) given an observed data, or in other words, find the posterior distribution:&lt;/p&gt;
+
+\[p(z|x) = \frac{p(x|z)p(z)}{p(x)}\]
+
+&lt;!-- $$a$$ --&gt;
+&lt;p&gt;Calculating exact \(p(x)\) is intractable, cause it requires us to marginalize all possible \(z\). Hence we can approximate the posterior by introducing variational distribution \(q(z|x)\). Ignoring some math derivation, we arrive at this objective function&lt;sup&gt;6&lt;/sup&gt;:&lt;/p&gt;
+
+\[\log p(x) \geq \mathbb{E}_{z \sim q}[\log p_{\theta}(x|z)] - KL(q_{\phi}(z|x)||p(z))\]
+
+&lt;!-- $$a$$ --&gt;
+&lt;p&gt;where the left term is known as the ELBO and the right term is KL divergence&lt;sup&gt;7&lt;/sup&gt; between \(q_{\phi}(z|x)\) and \(p(z)\). Notice that in VAE, the latent variable \(z\) is produced by the same parameter of the encoder network. This is known as an amortized inference. 
+Here it becomes clear that \(q_{\phi}(z|x)\) is the encoder network and \(p_{\theta}(x|z)\) is the decoder network. We can interpret ELBO as the reconstruction error and the negative KL divergence as the regularization term. We have arrived from the bayesian interpretation to the deep learning perspective. 
+Once the model is trained, we can sample from the gaussian distribution \(p(z)\) and then feed it into our decoder network \(p_{\theta}(x|z)\).&lt;/p&gt;
+
+&lt;h3 id=&quot;generative-adversarial-network-gan&quot;&gt;Generative Adversarial Network (GAN)&lt;/h3&gt;
+&lt;p&gt;When it first came out, GANs are widely popular for generating good quality image. GAN attempts to model \(p(x)\) by introducing two agents: a discriminator \(D\) and a generator \(G\). The generator learns to generate plausible data, and the discriminator learns to distinguish generator fake’s data from the real data. During training, the generator generates fake data and the discriminator has to predict which one is fake.  As training progresses, the generator gets better at generating data and it becomes harder for the discriminator to tell which one is fake. At the end of training, \(p(x)\) is modeled by the generator \(G\) hence we can directly sample new data from this network. In this setting GAN is trained in an unsupervised way because we can create the label automatically for the discriminator.&lt;/p&gt;
+
+&lt;p&gt;Steps:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;We introduce \(p(z)\), a distribution of noise which we can sample from (uniform, normal, etc).&lt;/li&gt;
+  &lt;li&gt;We feed the sampled z into the generator \(G(z)\) and it will output a data point (an image in the original paper). Consequently, the generator gets to have a probability distribution over the data that it generates \(p_g(x)\).&lt;/li&gt;
+  &lt;li&gt;We present the data from \(p_g(x)\) and \(p_r(x)\), which is a probability distribution over the real data, to the discriminator network.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Both \(D\) and \(G\) are playing a minimax game in which the loss function is as follow:&lt;/p&gt;
+
+\[\min_G \max_D L(D, G)= \mathbb{E}_{x\sim p_{r}(x)}[\log D(x)] + \mathbb{E}_{x\sim p_{g}(x)}[\log(1 - D(x))]\]
+
+&lt;p&gt;where the right term is equal to \(\mathbb{E}_{z \sim p(z)}[\log(1 - D(G(z)))]\)&lt;/p&gt;
+
+&lt;p&gt;With further math derivations, it can be shown that the above loss function is a Jensen-Shannon divergence&lt;sup&gt;8&lt;/sup&gt; (JS divergence) that quantifies similarity between the fake data distribution \(p_g(x)\) and the real data distribution \(p_r(x)\). If \(D\) and \(G\) are at their optimal values when \(p_g(x) = p_r(x)\) then the JS divergence is minimized at 0.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;closing&quot;&gt;Closing&lt;/h2&gt;
+&lt;p&gt;To conclude, generative models allow us to sample from the model after training because we design a data generating process assumption into the model. We have seen that generative model can be design in many ways, for example: factorizing into \(p(x|y) p(y)\) with a label \(y\), designing a model to capture the joint \(p(x,y)\) directly, assuming a latent variable, and a zero-sum game setting. There are plenty of another approaches in generative models that I do not mention in the post, such as autoregressive&lt;sup&gt;9&lt;/sup&gt; models and flow-based models (I might create a part 2 related to this some other time).&lt;/p&gt;
+
+&lt;p&gt;Thank you for reading my post! Please contact me on twitter if you spot any mistake.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;footnote&quot;&gt;Footnote&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;NB is not tied to a text based problem.&lt;/li&gt;
+  &lt;li&gt;One can use different distribution, such as gaussian and categorical for \(p\\(x\\|y\\)\). For gaussian and categorical, the distribution has different parameter for every feature \(x_{i}\). This means that we have different distribution for each \(p\\(x_{i}\\|y\\)\), instead of the same distribution for every \(x_{i}\) in the text classification examples above.&lt;/li&gt;
+  &lt;li&gt;LDA is not tied to a text based problem.&lt;/li&gt;
+  &lt;li&gt;This post excludes other parameters in the LDA. In practice, other parameters in LDA (\(\alpha\), \(\eta\)) can also be approximated using either VI or MCMC, depending on the design choice. Refer to the original paper for more details.&lt;/li&gt;
+  &lt;li&gt;What still confuses to me is that if one would use mean-field VI for VAE instead of amortized, the mean-field VI would separate the variational distribution \(q\) per data-point level, instead of per latent variables. I don’t have an answer to this yet.&lt;/li&gt;
+  &lt;li&gt;This is the same objective that we get if we use variational inference in LDA. The difference is in VAE \(q\) is parameterized by neural network, whereas in LDA \(q\) is parameterized with the same distribution as the true parameter. The learning is then achieved via variational EM.&lt;/li&gt;
+  &lt;li&gt;KL divergence equals to 0 when \(q_{\phi}\\(z\\|x\\) = p\\(z\\)\). And it is not symmetric.&lt;/li&gt;
+  &lt;li&gt;JS divergence is symmetric.&lt;/li&gt;
+  &lt;li&gt;They’re not the same as recurrent in RNN.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;useful-links&quot;&gt;Useful links&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://brooksandrew.github.io/simpleblog/articles/latent-dirichlet-allocation-under-the-hood/&quot;&gt;http://brooksandrew.github.io/simpleblog/articles/latent-dirichlet-allocation-under-the-hood/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/&quot;&gt;http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://jonathan-hui.medium.com/machine-learning-latent-dirichlet-allocation-lda-1d9d148f13a4&quot;&gt;https://jonathan-hui.medium.com/machine-learning-latent-dirichlet-allocation-lda-1d9d148f13a4&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/&quot;&gt;https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/&quot;&gt;https://jeffreyling.github.io/2018/01/09/vaes-are-bayesian.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.evjang.com/2016/08/variational-bayes.html&quot;&gt;https://blog.evjang.com/2016/08/variational-bayes.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html#generative-adversarial-network-gan&quot;&gt;https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html#generative-adversarial-network-gan&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding.</summary></entry><entry><title type="html">A year on foundational programming (doing leetcode)</title><link href="https://rezkaaufar.github.io/blog/2021/a-year-on-leetcode/" rel="alternate" type="text/html" title="A year on foundational programming (doing leetcode)" /><published>2021-04-08T00:00:00+07:00</published><updated>2021-04-08T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/a-year-on-leetcode</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/a-year-on-leetcode/">&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/leetcode.png&quot; /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;One year of leetcode submission. Check out &lt;a href=&quot;https://leetcode.com/rezka/&quot; target=&quot;blank&quot;&gt;my leetcode page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;I had never really understood why competitive programming type of problem (I will call it CP for the rest of the post) is important. I first encountered these questions during my high school, when I first started learning how to code and was preparing for national programming competition. During my bachelor study, I re-encountered CP in the lectures. Despite my reoccurring exposure to CP, I never paid attention to it. I always thought that it was a waste of time because the real-world programming doesn’t require you to create recursive program with memoization or even worse, reversing a LinkedList. It is true though that a typical software engineer wouldn’t spend their days solving these kinds of problem, as all the underlying necessary algorithms have been abstracted away by libraries. But unfortunately, these type of questions are everywhere on the initial screening for tech recruitment.&lt;/p&gt;
+
+&lt;p&gt;I got into CP self-training not long after I decided to quit my &lt;a href=&quot;https://rezkaaufar.github.io/blog/2021/leaving_phd/&quot; target=&quot;blank&quot;&gt;quit my PhD&lt;/a&gt;. I had huge difficulties transitioning from academia to industry back then (I will write another blog post related to my struggle in this matter). In short, I realized that I was so lacking in foundational programming that I decided to spend time to catch up and grind on these topics. To be honest, I’m glad that I found the fact that my understanding was shaky the hard way, since it became a huge fuel for me to keep going for a year.&lt;/p&gt;
+
+&lt;p&gt;Despite the pros and cons about whether CP is a good way to assess candidate’s skills in a tech interview, my views on CP has changed after spending a year regularly solving problems on leetcode. I now see CP and foundational programming as beneficial to some extent. CP has broadened my perspective on the importance of time and space complexity. It becomes more crucial if you’re working with large data. In my case, I started to notice the importance especially when trying to make machine learning model works at scale. The difference on how you code your way to the solution can mean a huge difference in running time and how much money is spent on the compute power. A lot of people probably jumped on looking for the best library and tool to use to alleviate and optimize their problems. But knowing the fact that these libraries and tools are mostly built upon foundational programming certainly help to force us to think in first principle. How code differences can lead to gap in running time essentially boils down to how the operations are being processed underneath.&lt;/p&gt;
+
+&lt;p&gt;Some of my AHA moment on how CP helped me to think in first principle on solutions and techniques (happened on a job or during self-study):&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;When I was in my PhD program, I worked on creating an A* parser. We used a priority queue to store and select the best scoring atomic semantic component to be merged to form a parse tree. I didn’t understood why we used a priority queue at that time. The aha moment was when I re-studied heap data structure, in which priority queue was built on. It allows O(1) extraction time and O(log n) self-restructuring during insert and delete.&lt;/li&gt;
+  &lt;li&gt;When I studied the &lt;a href=&quot;https://arxiv.org/pdf/2009.06732.pdf&quot; target=&quot;blank&quot;&gt;efficient transformers model&lt;/a&gt;, I stumbled upon &lt;a href=&quot;https://ai.googleblog.com/2020/10/rethinking-attention-with-performers.html&quot; target=&quot;blank&quot;&gt;performers model&lt;/a&gt;. Performers approximate the quadratic calculation by using kernel methods to decompose the attention matrix. What’s cool is that for the unidirectional (causal) transformers where one can’t attend to future tokens, it uses prefix-sum mechanism to compute the attention on the fly. (tbh I still have shaky understanding in performers).&lt;/li&gt;
+  &lt;li&gt;I used approximate nearest neighbor in a recommendation system. I now know that approximate nearest neighbor is essentially a &lt;a href=&quot;https://www.slideshare.net/erikbern/approximate-nearest-neighbor-methods-and-vector-models-nyc-ml-meetup&quot; target=&quot;blank&quot;&gt;binary search&lt;/a&gt; under the hood.&lt;/li&gt;
+  &lt;li&gt;I now know that indexing a DB leads to a faster join time because it essentially sorts the index column so that when one join the complexity becomes O(n log m) instead of O(nm) (since it uses binary search). It can even be faster if the DB has hash index O(1).&lt;/li&gt;
+  &lt;li&gt;Working on feature engineering for machine learning model, I used bisect python library to derive a feature that is conditioned on another columns (my problem is similar to &lt;a href=&quot;https://stackoverflow.com/questions/45092267/spark-window-function-referencing-different-columns-for-range&quot; target=&quot;blank&quot;&gt;this&lt;/a&gt;). The solution that I can use with the built-in function (both in pandas and pyspark) led me to memory problems so I have to precompute it. Hence binary search came into rescue and it saved me tons of time.&lt;/li&gt;
+  &lt;li&gt;I coded a recursive function to traverse a taxonomy upward. I did this on my job!&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;To end this post, I am grateful that I went down this leetcode rabbit hole. Knowing foundational programming has been transformative for me. It makes me a better coder (self-proclaimed). It has also became a habit of mine to at least work on a problem once a week. I intend to keep this up, so fingers crossed for me!&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;blockquote&gt;
+    We do not grow absolutely, chronologically. We grow sometimes in one dimension, and not in another, unevenly. We grow partially. We are relative. 
+    —Anais Nin
+&lt;/blockquote&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Leaving my PhD</title><link href="https://rezkaaufar.github.io/blog/2021/leaving_phd/" rel="alternate" type="text/html" title="Leaving my PhD" /><published>2021-03-25T00:00:00+07:00</published><updated>2021-03-25T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/leaving_phd</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/leaving_phd/">&lt;h1 id=&quot;prologue&quot;&gt;Prologue&lt;/h1&gt;
+
+&lt;p&gt;I have always envisioned myself to be a top researcher working on cutting-edge research in big labs like Google Deepmind or Facebook AI Research. It thrills me to know that maybe in my lifetime I get to see intelligent machines that are capable of learning and communicating with people using natural language. Highly motivated, I said to myself that I want to dedicate my professional life to push the boundary of AI research, especially in NLP.&lt;/p&gt;
+
+&lt;p&gt;It started in December 2017 when I first got selected to a research collaboration of my university with Facebook AI Research. I had the privilege of working with brilliant colleagues and supervisors in a vibrant team. I often feel like I was the stupidest person in the room and I was just lucky enough to be selected to the program (the selection phase was pretty hard and I genuinely shocked when I got admitted). At the start of the program, all I can feel was that research is completely out of my reach. I was overwhelmed by the level of what I needed to get in order to keep up with the group. After 8 months of dealing with impostor syndrome, anxiety, sleepless nights, struggles, and many more discomfort, I graduated from the master’s program with a completely different outlook: I enjoy research and I wanted to do this for a long time.&lt;/p&gt;
+
+&lt;p&gt;I went back to Indonesia and I had my eyes on the goal: to become an AI researcher. I know that one of the most effective way to become an AI researcher is to start by doing PhD. Hence, I started applying to various PhD openings while also working as an NLP researcher trying to build a portfolio. I didn’t have any expectation back then. I thought that if I fail and didn’t get admitted that year, no worries, I do not have anything to lose. I worked on my PhD proposals, motivation letter, keeping up with the recent developments of NLP research, and etc. I applied to 12 positions. I received a lot of rejection. It hurts but I got used to it. In May 2019, I finally got my first good news. I got accepted! Out of 12 positions that I had applied, I got accepted into 2 programs and all of them are fully funded (not government-funded this time). Best feelings ever. I dare to say that one of the best feelings that I have ever experienced was when I first got a PhD offer. Super excited to begin my journey!&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;For those of you who are not familiar with the field, PhD program in machine learning is one of the hardest programs to get into. I am not saying this to brag but to stress the high level of excitement I felt that made me go down the bias hole later. (okay probably a little intention to brag but that is not important).&lt;/em&gt;&lt;/p&gt;
+
+&lt;!-- I never regarded myself as a smart student. I think I was just lucky. I was lucky enough to get a PhD program because during my master study (master thesis, to be exact), I had the privilege of working with researchers in AI from big labs. I think my recommendation letter was strong and all my master's supervisors were kind enough to vouch for me. How did I get to be able to work with these super talented researchers? I am not sure either. The master thesis selection was pretty hard but somehow I made it. Again, I think I was just lucky.  --&gt;
+
+&lt;h1 id=&quot;the-discussion-to-go-abroad&quot;&gt;The discussion to go abroad&lt;/h1&gt;
+&lt;p&gt;The first thing I did after hearing the news is that I told my wife. I asked her what she thinks about us moving abroad but honestly my mind was already made up. So when we had the discussion, my reasoning was serving my intuition rather than thinking every possible paths, especially the downsides of this decision. I think it was more of a forceful persuasion rather than a discussion (lol). I didn’t even remember what arguments we had during the discussion. It didn’t felt like a big deal to me but my wife told me that it was one of the most monumental decision that she had to make. She told me that she was extremely hesitant, especially that now we’re moving for potentially 4-5 years, which is a long time.&lt;/p&gt;
+
+&lt;p&gt;First, she had to leave her job which she loves. I dismissed her concern by saying that she can get a job there, she can learn something new online, and other arguments along those lines. I didn’t realize that I was making a huge mistake because I was giving her a solution that wasn’t made considering the whole picture, e.g., how does it like over there, language barrier, transportation infrastructure, cost of living and acquiring new skills, etc. Second, the fact that our son was about to come to the world makes thing harder. I didn’t realize the complexity level of having to take care of a child without any support system in a country far away from home. Yes, the complexity is extremely high. During the discussion with my wife, I told her that it would be fine because we can put our son in the university daycare and they have a good system there and the cost is still affordable (because it’s for university staff) so there is nothing to worry about. Hell I was super wrong (more on this later).&lt;/p&gt;
+
+&lt;p&gt;I ended up saying yes to the offer. My wife eventually said yes because she didn’t want to become a hindrance to my dream (sok-sok an dah lu. lah ngapa jadi bahasa Indo. ya bodo amat lah).&lt;/p&gt;
+
+&lt;h1 id=&quot;the-decision-to-go-back&quot;&gt;The decision to go back&lt;/h1&gt;
+&lt;p&gt;Fast forward, we made it to Germany. A country that we have experienced before as a tourist but never as a resident. Change is inevitable especially when we’re making this huge leap, and the way we perceive change is different from each other. For me personally, the change was still manageable. There was a culture shock especially when dealing with locals that don’t speak English. I had to go through series of bureaucracy which requires me to speak German, even though my German is at the Duolingo “ich kann ein bisschen Deutsch sprechen” level. Grocery shopping is survivable with little vocabularies. Since I spent most of the time at the English speaking university, I didn’t feel drastic change as I have also lived abroad before.&lt;/p&gt;
+
+&lt;p&gt;I had assumed the same thing for my wife, that she can manage the change even though the level of agitation she felt might be higher. But then I noticed a pattern that my wife defaulted to during her day in the life. She spent all day in the flat except for 15 minutes grocery shopping and another 15 minutes going out in the park with our son. I would come home during the night to take care of our son so that she can have some her own time. She told me that she didn’t have any time to take a bath or clean herself during the day when I was at the office. On the weekend, we would go for 2 hours walk along the river to the city park. Doesn’t sound bad? For me personally, life is great. I can finally do research and follow my dream to become an AI researcher and (hopefully) eventually work at FAANG. As a family? I was not sure. Something did not sit right with me regarding her repetitive and constrained routine.&lt;/p&gt;
+
+&lt;p&gt;Initially, leaving the PhD program wasn’t an option that came to our mind. It never occurred to me because I was still enjoying my new job while my wife was trying to let go and look forward. But it just occurred to me that maybe we should have a talk. Hence, these sentences: “what do you think if we cancel all these and went back home? what if we had made the wrong decision?”.  And these sentences came out at the same day just before she was about to told her boss that she had to quit her job. What a coincidence. (For context, we are reunited in Germany only for 1.5 months because my wife lived on a tourist visa while she was still on her 6 months maternity leave. So technically, she was not a legal residence and she hadn’t quit her job yet.) It turns into a long lengthy discussion spanning weeks, involving families and friends. She also eventually admits that she felt suffocated and exhausted by the constrains of living there.&lt;/p&gt;
+
+&lt;p&gt;I mentioned that change is inevitable when faced with this huge leap, and for my wife, the change is highly challenging, and probably not in a good way. First of all she has to deal with the fact that she might be jobless, in the worst case, during our whole stay. There are plenty of reasons why we were skeptical of her career prospects if she stayed. The job demand for her field is scarce. Even if there is a demand, it mostly requires fluency in German or the job opening is placed far away from the city we lived in. Living far from each other was out of the question since we have a son to take care of and there was no one else that we can rely on, except daycare. It turns out that admitting a child into a daycare was not as easy as I had assumed. There was a waiting list of at least 9-12 months before you can get your child admitted. If I want to admit my son directly to daycare, I have to go to a private daycare which costs ~46% of my salary. Not to mention that her field requires more local knowledge so it puts her in disadvantage compared to the locals (unlike me CS grad who can get a job more easily as long as I speak fluent python and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pip install huggingface&lt;/code&gt;). Also, the language barrier is real. Probably only 10-15% in the city speaks fluent English. It makes socializing harder. (lesson learn: lebih enak ke english speaking country kayanya, lebih gampang segala macem).&lt;/p&gt;
+
+&lt;p&gt;Of all the possible paths that we outlined, there is only one path that was possible for us: my wife spend at least one year being a stay-at-home mother until we can admit our son to the daycare. This path is doable. A lot of family who is going abroad usually does this and my wife has no problem being a stay-at-home mother temporarily. But there is another aspect that still made us hesitant: financial (ya ujung2nya ke duit). Having a child means extra costs, and the extra costs are twofold: daycare cost and the need to rent bigger flats. Apparently, there is a rule in Germany (and probably Europe) that you need to have at least 12sqm feet for one head and at least a two bedroom for a family of at most 4. Truth is, the price gap between a studio and a two bedroom flat is huge. So if we didn’t have a child, we can rent a room for half price of a two bedroom. That means, having a child means that you have to pay double in rent, and the same applies to the monthly utilities too. But money is not a problem right? I mean she can do side jobs to help cover the expenses? Yes that’s true. But the problem is that if my wife only works for money, then she’ll be doing repetitive non-professional jobs, like working in a factory or etc. Doing blue collar jobs in Germany pays well actually, as Germany has a strong social net. But compared to the job she has back home, the feeling of fulfilling and the impact that she can made far exceeds these decent-paying blue collar jobs.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;She works in the environmental field, so she’s trying to save the Earth one step at a time. (her claim, not mine)&lt;/em&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;epilogue&quot;&gt;Epilogue&lt;/h1&gt;
+&lt;p&gt;All the story that I have told so far essentially is a problem of exploration vs exploitation. Either we try to explore things that we have less idea on how it might unfold or we exploit things that we already know with higher confidence lead to safer state. I always cheer those who go down the exploration path. Despite the bias that I have, I genuinely wanted to go down these paths. Exploration may lead us to uncover stepping stones that are new to us and maybe eventually yield better outcome in the long run. But having a child makes these paths a lot harder to cross. If we were childless back then, I am sure that we would still be living abroad. Who knows, I might have gotten an internship already at FAANG and my wife would probably working on her PhD somewhere in different country.&lt;/p&gt;
+
+&lt;p&gt;The initial trigger of having the discussion stems from my sense of there is something wrong with how we live. Eventually, the discussion also triggers me to rethink my life choice. It puts me more in a panoramic view, to try to reconsider and asks the question: “is doing a PhD what I really want for my endgame?”. I honestly couldn’t and still can’t answer that question. Hell I do not even know what my endgame is at the moment. I initially wanted to become an AI researcher so badly, but as an effect of the discussion, I was not so sure anymore. What I do know is that I still love machine learning to this day and I will keep continue doing that.&lt;/p&gt;
+
+&lt;p&gt;Lastly, this post is turning into more of a marriage story than I had expected to (lol). But if there is anything that I can learn from this story is that do not make a decision when you are emotionally not calm, especially if it is a life changing decision. Be aware of your own bias and let things settle first and then come back when you’re calmer. &lt;strong&gt;Humans act on intuition first&lt;/strong&gt;. So when we’re emotionally not calm (excited, sad, angry, etc), our rational module tend to find justification for our intuition rather than work its way to find the most objective truth. That’s what happened to me. I underestimated the complexity of moving abroad and oversimplify things that my wife had to do to settle. All that said, I do not regret the experience. It has been such a rewarding experience for me and us both as a family.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;“I don’t know which option you should choose. I could never advise you on that. No matter what kind of wisdom dictates you the option you pick, no one will be able to tell if it’s right or wrong until you arrive to some sort of outcome from your choice. The only thing we’re allowed to do is to believe that we won’t regret the choice we made.” -Levi Ackerman&lt;/p&gt;</content><author><name></name></author><summary type="html">Prologue I have always envisioned myself to be a top researcher working on cutting-edge research in big labs like Google Deepmind or Facebook AI Research. It thrills me to know that maybe in my lifetime I get to see intelligent machines that are capable of learning and communicating with people using natural language. Highly motivated, I said to myself that I want to dedicate my professional life to push the boundary of AI research, especially in NLP. It started in December 2017 when I first got selected to a research collaboration of my university with Facebook AI Research. I had the privilege of working with brilliant colleagues and supervisors in a vibrant team. I often feel like I was the stupidest person in the room and I was just lucky enough to be selected to the program (the selection phase was pretty hard and I genuinely shocked when I got admitted). At the start of the program, all I can feel was that research is completely out of my reach. I was overwhelmed by the level of what I needed to get in order to keep up with the group. After 8 months of dealing with impostor syndrome, anxiety, sleepless nights, struggles, and many more discomfort, I graduated from the master’s program with a completely different outlook: I enjoy research and I wanted to do this for a long time. I went back to Indonesia and I had my eyes on the goal: to become an AI researcher. I know that one of the most effective way to become an AI researcher is to start by doing PhD. Hence, I started applying to various PhD openings while also working as an NLP researcher trying to build a portfolio. I didn’t have any expectation back then. I thought that if I fail and didn’t get admitted that year, no worries, I do not have anything to lose. I worked on my PhD proposals, motivation letter, keeping up with the recent developments of NLP research, and etc. I applied to 12 positions. I received a lot of rejection. It hurts but I got used to it. In May 2019, I finally got my first good news. I got accepted! Out of 12 positions that I had applied, I got accepted into 2 programs and all of them are fully funded (not government-funded this time). Best feelings ever. I dare to say that one of the best feelings that I have ever experienced was when I first got a PhD offer. Super excited to begin my journey! For those of you who are not familiar with the field, PhD program in machine learning is one of the hardest programs to get into. I am not saying this to brag but to stress the high level of excitement I felt that made me go down the bias hole later. (okay probably a little intention to brag but that is not important). The discussion to go abroad The first thing I did after hearing the news is that I told my wife. I asked her what she thinks about us moving abroad but honestly my mind was already made up. So when we had the discussion, my reasoning was serving my intuition rather than thinking every possible paths, especially the downsides of this decision. I think it was more of a forceful persuasion rather than a discussion (lol). I didn’t even remember what arguments we had during the discussion. It didn’t felt like a big deal to me but my wife told me that it was one of the most monumental decision that she had to make. She told me that she was extremely hesitant, especially that now we’re moving for potentially 4-5 years, which is a long time. First, she had to leave her job which she loves. I dismissed her concern by saying that she can get a job there, she can learn something new online, and other arguments along those lines. I didn’t realize that I was making a huge mistake because I was giving her a solution that wasn’t made considering the whole picture, e.g., how does it like over there, language barrier, transportation infrastructure, cost of living and acquiring new skills, etc. Second, the fact that our son was about to come to the world makes thing harder. I didn’t realize the complexity level of having to take care of a child without any support system in a country far away from home. Yes, the complexity is extremely high. During the discussion with my wife, I told her that it would be fine because we can put our son in the university daycare and they have a good system there and the cost is still affordable (because it’s for university staff) so there is nothing to worry about. Hell I was super wrong (more on this later). I ended up saying yes to the offer. My wife eventually said yes because she didn’t want to become a hindrance to my dream (sok-sok an dah lu. lah ngapa jadi bahasa Indo. ya bodo amat lah). The decision to go back Fast forward, we made it to Germany. A country that we have experienced before as a tourist but never as a resident. Change is inevitable especially when we’re making this huge leap, and the way we perceive change is different from each other. For me personally, the change was still manageable. There was a culture shock especially when dealing with locals that don’t speak English. I had to go through series of bureaucracy which requires me to speak German, even though my German is at the Duolingo “ich kann ein bisschen Deutsch sprechen” level. Grocery shopping is survivable with little vocabularies. Since I spent most of the time at the English speaking university, I didn’t feel drastic change as I have also lived abroad before. I had assumed the same thing for my wife, that she can manage the change even though the level of agitation she felt might be higher. But then I noticed a pattern that my wife defaulted to during her day in the life. She spent all day in the flat except for 15 minutes grocery shopping and another 15 minutes going out in the park with our son. I would come home during the night to take care of our son so that she can have some her own time. She told me that she didn’t have any time to take a bath or clean herself during the day when I was at the office. On the weekend, we would go for 2 hours walk along the river to the city park. Doesn’t sound bad? For me personally, life is great. I can finally do research and follow my dream to become an AI researcher and (hopefully) eventually work at FAANG. As a family? I was not sure. Something did not sit right with me regarding her repetitive and constrained routine. Initially, leaving the PhD program wasn’t an option that came to our mind. It never occurred to me because I was still enjoying my new job while my wife was trying to let go and look forward. But it just occurred to me that maybe we should have a talk. Hence, these sentences: “what do you think if we cancel all these and went back home? what if we had made the wrong decision?”. And these sentences came out at the same day just before she was about to told her boss that she had to quit her job. What a coincidence. (For context, we are reunited in Germany only for 1.5 months because my wife lived on a tourist visa while she was still on her 6 months maternity leave. So technically, she was not a legal residence and she hadn’t quit her job yet.) It turns into a long lengthy discussion spanning weeks, involving families and friends. She also eventually admits that she felt suffocated and exhausted by the constrains of living there. I mentioned that change is inevitable when faced with this huge leap, and for my wife, the change is highly challenging, and probably not in a good way. First of all she has to deal with the fact that she might be jobless, in the worst case, during our whole stay. There are plenty of reasons why we were skeptical of her career prospects if she stayed. The job demand for her field is scarce. Even if there is a demand, it mostly requires fluency in German or the job opening is placed far away from the city we lived in. Living far from each other was out of the question since we have a son to take care of and there was no one else that we can rely on, except daycare. It turns out that admitting a child into a daycare was not as easy as I had assumed. There was a waiting list of at least 9-12 months before you can get your child admitted. If I want to admit my son directly to daycare, I have to go to a private daycare which costs ~46% of my salary. Not to mention that her field requires more local knowledge so it puts her in disadvantage compared to the locals (unlike me CS grad who can get a job more easily as long as I speak fluent python and pip install huggingface). Also, the language barrier is real. Probably only 10-15% in the city speaks fluent English. It makes socializing harder. (lesson learn: lebih enak ke english speaking country kayanya, lebih gampang segala macem). Of all the possible paths that we outlined, there is only one path that was possible for us: my wife spend at least one year being a stay-at-home mother until we can admit our son to the daycare. This path is doable. A lot of family who is going abroad usually does this and my wife has no problem being a stay-at-home mother temporarily. But there is another aspect that still made us hesitant: financial (ya ujung2nya ke duit). Having a child means extra costs, and the extra costs are twofold: daycare cost and the need to rent bigger flats. Apparently, there is a rule in Germany (and probably Europe) that you need to have at least 12sqm feet for one head and at least a two bedroom for a family of at most 4. Truth is, the price gap between a studio and a two bedroom flat is huge. So if we didn’t have a child, we can rent a room for half price of a two bedroom. That means, having a child means that you have to pay double in rent, and the same applies to the monthly utilities too. But money is not a problem right? I mean she can do side jobs to help cover the expenses? Yes that’s true. But the problem is that if my wife only works for money, then she’ll be doing repetitive non-professional jobs, like working in a factory or etc. Doing blue collar jobs in Germany pays well actually, as Germany has a strong social net. But compared to the job she has back home, the feeling of fulfilling and the impact that she can made far exceeds these decent-paying blue collar jobs. She works in the environmental field, so she’s trying to save the Earth one step at a time. (her claim, not mine) Epilogue All the story that I have told so far essentially is a problem of exploration vs exploitation. Either we try to explore things that we have less idea on how it might unfold or we exploit things that we already know with higher confidence lead to safer state. I always cheer those who go down the exploration path. Despite the bias that I have, I genuinely wanted to go down these paths. Exploration may lead us to uncover stepping stones that are new to us and maybe eventually yield better outcome in the long run. But having a child makes these paths a lot harder to cross. If we were childless back then, I am sure that we would still be living abroad. Who knows, I might have gotten an internship already at FAANG and my wife would probably working on her PhD somewhere in different country. The initial trigger of having the discussion stems from my sense of there is something wrong with how we live. Eventually, the discussion also triggers me to rethink my life choice. It puts me more in a panoramic view, to try to reconsider and asks the question: “is doing a PhD what I really want for my endgame?”. I honestly couldn’t and still can’t answer that question. Hell I do not even know what my endgame is at the moment. I initially wanted to become an AI researcher so badly, but as an effect of the discussion, I was not so sure anymore. What I do know is that I still love machine learning to this day and I will keep continue doing that. Lastly, this post is turning into more of a marriage story than I had expected to (lol). But if there is anything that I can learn from this story is that do not make a decision when you are emotionally not calm, especially if it is a life changing decision. Be aware of your own bias and let things settle first and then come back when you’re calmer. Humans act on intuition first. So when we’re emotionally not calm (excited, sad, angry, etc), our rational module tend to find justification for our intuition rather than work its way to find the most objective truth. That’s what happened to me. I underestimated the complexity of moving abroad and oversimplify things that my wife had to do to settle. All that said, I do not regret the experience. It has been such a rewarding experience for me and us both as a family. “I don’t know which option you should choose. I could never advise you on that. No matter what kind of wisdom dictates you the option you pick, no one will be able to tell if it’s right or wrong until you arrive to some sort of outcome from your choice. The only thing we’re allowed to do is to believe that we won’t regret the choice we made.” -Levi Ackerman</summary></entry></feed>

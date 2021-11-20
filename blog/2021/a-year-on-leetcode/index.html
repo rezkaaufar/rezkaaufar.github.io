@@ -2,11 +2,19 @@
 <html>
 
   <head>
+    
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<title>Rezka  Leonandya | A year on foundational programming (doing leetcode)</title>
+<title>
+
+  Rezka  Leonandya
+
+
+  | A year on foundational programming (doing leetcode)
+
+</title>
 <meta name="description" content="Rezka's Personal Website and Blog
 ">
 
@@ -26,48 +34,17 @@
 <link rel="stylesheet" href="https://gitcdn.link/repo/jwarby/jekyll-pygments-themes/master/github.css" />
 
 <!-- Styles -->
-<link rel="shortcut icon" href="/assets/img/favicon.ico">
-<link rel="stylesheet" href="/assets/css/main.css">
 
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤡</text></svg>">
+
+<link rel="stylesheet" href="/assets/css/main.css">
 <link rel="canonical" href="/blog/2021/a-year-on-leetcode/">
 
-<!-- JQuery -->
-<!-- jQuery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 
-
-<!-- Theming-->
-
-  <script src="/assets/js/theme.js"></script>
-  <!-- Load DarkMode JS -->
+<!-- Dark Mode -->
+<script src="/assets/js/theme.js"></script>
 <script src="/assets/js/dark_mode.js"></script>
 
-
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-192945533-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'UA-192945533-1');
-  </script>
-
-
-
-
-    
-<!-- MathJax -->
-<script type="text/javascript">
-  window.MathJax = {
-    tex: {
-      tags: 'ams'
-    }
-  };
-</script>
-<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js"></script>
-<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 
 
   </head>
@@ -82,7 +59,7 @@
     <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
     <div class="container">
       
-      <a class="navbar-brand title font-weight-lighter" href="/">
+      <a class="navbar-brand title font-weight-lighter" href="https://rezkaaufar.github.io/">
        <span class="font-weight-bold">Rezka</span>   Leonandya
       </a>
       
@@ -127,12 +104,23 @@
           
           
           
+          
+          
+          
+          
+          
+          
+          
+          
+          
           <li class="nav-item ">
               <a class="nav-link" href="/publications/">
                 publications
                 
               </a>
           </li>
+          
+          
           
           
           
@@ -145,8 +133,9 @@
           
           
           
-            <div class = "toggle-container">
-              <a id = "light-toggle">
+          
+            <div class="toggle-container">
+              <a id="light-toggle">
                   <i class="fas fa-moon"></i>
                   <i class="fas fa-sun"></i>
               </a>
@@ -165,23 +154,34 @@
     <div class="container mt-5">
       
 
+
+
+
+
 <div class="post">
 
   <header class="post-header">
     <h1 class="post-title">A year on foundational programming (doing leetcode)</h1>
     <p class="post-meta">April 8, 2021</p>
+    <p class="post-tags">
+      <a href="/blog/2021"> <i class="fas fa-calendar fa-sm"></i> 2021 </a>
+      
+
+      
+
+    </p>
   </header>
 
   <article class="post-content">
     <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        <img class="img-fluid rounded z-depth-1" src="/assets/img/leetcode.png" />
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/leetcode.png">
     </div>
 </div>
 
-<p><em>One year of leetcode submission. Check out <a href="https://leetcode.com/rezka/" target="blank">my leetcode page</a></em></p>
+<p><em>One year of leetcode submission. Check out <a href="https://leetcode.com/rezka/" target="_blank" rel="noopener noreferrer">my leetcode page</a></em></p>
 
-<hr />
+<hr>
 
 <p>I had never really understood why competitive programming type of problem (I will call it CP for the rest of the post) is important. I first encountered these questions during my high school, when I first started learning how to code and was preparing for national programming competition. During my bachelor study, I re-encountered CP in the lectures. Despite my reoccurring exposure to CP, I never paid attention to it. I always thought that it was a waste of time because the real-world programming doesn’t require you to create recursive program with memoization or even worse, reversing a LinkedList. It is true though that a typical software engineer wouldn’t spend their days solving these kinds of problem, as all the underlying necessary algorithms have been abstracted away by libraries. But unfortunately, these type of questions are everywhere on the initial screening for tech recruitment.</p>
 
@@ -192,16 +192,16 @@
 <p>Some of my AHA moment on how CP helped me to think in first principle on solutions and techniques (happened on a job or during self-study):</p>
 <ul>
   <li>When I was in my PhD program, I worked on creating an A* parser. We used a priority queue to store and select the best scoring atomic semantic component to be merged to form a parse tree. I didn’t understood why we used a priority queue at that time. The aha moment was when I re-studied heap data structure, in which priority queue was built on. It allows O(1) extraction time and O(log n) self-restructuring during insert and delete.</li>
-  <li>When I studied the <a href="https://arxiv.org/pdf/2009.06732.pdf" target="blank">efficient transformers model</a>, I stumbled upon <a href="https://ai.googleblog.com/2020/10/rethinking-attention-with-performers.html" target="blank">performers model</a>. Performers approximate the quadratic calculation by using kernel methods to decompose the attention matrix. What’s cool is that for the unidirectional (causal) transformers where one can’t attend to future tokens, it uses prefix-sum mechanism to compute the attention on the fly. (tbh I still have shaky understanding in performers).</li>
-  <li>I used approximate nearest neighbor in a recommendation system. I now know that approximate nearest neighbor is essentially a <a href="https://www.slideshare.net/erikbern/approximate-nearest-neighbor-methods-and-vector-models-nyc-ml-meetup" target="blank">binary search</a> under the hood.</li>
+  <li>When I studied the <a href="https://arxiv.org/pdf/2009.06732.pdf" target="_blank" rel="noopener noreferrer">efficient transformers model</a>, I stumbled upon <a href="https://ai.googleblog.com/2020/10/rethinking-attention-with-performers.html" target="_blank" rel="noopener noreferrer">performers model</a>. Performers approximate the quadratic calculation by using kernel methods to decompose the attention matrix. What’s cool is that for the unidirectional (causal) transformers where one can’t attend to future tokens, it uses prefix-sum mechanism to compute the attention on the fly. (tbh I still have shaky understanding in performers).</li>
+  <li>I used approximate nearest neighbor in a recommendation system. I now know that approximate nearest neighbor is essentially a <a href="https://www.slideshare.net/erikbern/approximate-nearest-neighbor-methods-and-vector-models-nyc-ml-meetup" target="_blank" rel="noopener noreferrer">binary search</a> under the hood.</li>
   <li>I now know that indexing a DB leads to a faster join time because it essentially sorts the index column so that when one join the complexity becomes O(n log m) instead of O(nm) (since it uses binary search). It can even be faster if the DB has hash index O(1).</li>
-  <li>Working on feature engineering for machine learning model, I used bisect python library to derive a feature that is conditioned on another columns (my problem is similar to <a href="https://stackoverflow.com/questions/45092267/spark-window-function-referencing-different-columns-for-range" target="blank">this</a>). The solution that I can use with the built-in function (both in pandas and pyspark) led me to memory problems so I have to precompute it. Hence binary search came into rescue and it saved me tons of time.</li>
+  <li>Working on feature engineering for machine learning model, I used bisect python library to derive a feature that is conditioned on another columns (my problem is similar to <a href="https://stackoverflow.com/questions/45092267/spark-window-function-referencing-different-columns-for-range" target="_blank" rel="noopener noreferrer">this</a>). The solution that I can use with the built-in function (both in pandas and pyspark) led me to memory problems so I have to precompute it. Hence binary search came into rescue and it saved me tons of time.</li>
   <li>I coded a recursive function to traverse a taxonomy upward. I did this on my job!</li>
 </ul>
 
 <p>To end this post, I am grateful that I went down this leetcode rabbit hole. Knowing foundational programming has been transformative for me. It makes me a better coder (self-proclaimed). It has also became a habit of mine to at least work on a problem once a week. I intend to keep this up, so fingers crossed for me!</p>
 
-<hr />
+<hr>
 
 <blockquote>
     We do not grow absolutely, chronologically. We grow sometimes in one dimension, and not in another, unevenly. We grow partially. We are relative. 
@@ -222,8 +222,8 @@
     
 <footer class="fixed-bottom">
   <div class="container mt-0">
-    &copy; Copyright 2021 Rezka  Leonandya.
-    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
+    © Copyright 2021 Rezka  Leonandya.
+    Powered by <a href="http://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" target="_blank" rel="noopener noreferrer">al-folio</a> theme.
 
     
     
@@ -233,6 +233,9 @@
 
 
   </body>
+
+  <!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 
   <!-- Bootsrap & MDB scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.4/umd/popper.min.js" integrity="sha512-eUQ9hGdLjBjY3F41CScH3UX+4JDSI9zXeroz7hJ+RteoCaY+GP/LDoM8AO+Pt+DRFw3nXqsjh9Zsts8hnYv8/A==" crossorigin="anonymous"></script>
@@ -249,8 +252,41 @@
   
 
 
+<!-- Medium Zoom JS -->
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+<script src="/assets/js/zoom.js"></script>
+
+
 <!-- Load Common JS -->
 <script src="/assets/js/common.js"></script>
+
+  
+<!-- MathJax -->
+<script type="text/javascript">
+  window.MathJax = {
+    tex: {
+      tags: 'ams'
+    }
+  };
+</script>
+<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+
+  
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-192945533-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'UA-192945533-1');
+</script>
+
+
+
+
 
 
 </html>
