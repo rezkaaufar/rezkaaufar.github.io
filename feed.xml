@@ -1,5 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="https://rezkaaufar.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://rezkaaufar.github.io/" rel="alternate" type="text/html" /><updated>2021-11-22T17:22:26+07:00</updated><id>https://rezkaaufar.github.io/feed.xml</id><title type="html">blank</title><subtitle>Rezka's Personal Website and Blog
-</subtitle><entry><title type="html">Hypothesis testing with normal distribution in an AB test</title><link href="https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing/" rel="alternate" type="text/html" title="Hypothesis testing with normal distribution in an AB test" /><published>2021-11-21T00:00:00+07:00</published><updated>2021-11-21T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing/">&lt;p&gt;AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="https://rezkaaufar.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://rezkaaufar.github.io/" rel="alternate" type="text/html" /><updated>2022-01-06T10:44:22+07:00</updated><id>https://rezkaaufar.github.io/feed.xml</id><title type="html">blank</title><subtitle>Rezka's Personal Website and Blog
+</subtitle><entry><title type="html">Hypothesis testing with binomial distribution in an AB test</title><link href="https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing-binomial/" rel="alternate" type="text/html" title="Hypothesis testing with binomial distribution in an AB test" /><published>2021-12-28T00:00:00+07:00</published><updated>2021-12-28T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing-binomial</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing-binomial/">&lt;p&gt;In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!&lt;/p&gt;
+
+&lt;h1 id=&quot;samples--parameter-inference&quot;&gt;Samples &amp;amp; Parameter Inference&lt;/h1&gt;
+
+&lt;p&gt;Let’s say that we have completed an AB test and we have sample size \(n=10000\) for both the control and variant group. The control have \(ns_c=5500\) and the variant have \(ns_v=5700\), which represents the number of success we get.&lt;/p&gt;
+
+&lt;p&gt;To do a hypothesis test, we need to infer the parameter of the binomial distribution for both the control and variant group. In binomial distribution, the parameter is \theta, which represents the probability of getting a positive outcome in a trial. Based on the data, we can infer that:&lt;/p&gt;
+
+\[p_c = ns_c / n = 5500 / 10000 = 0.55\]
+
+\[p_v = ns_v / n = 0.57 = 5700 / 10000 = 0.57\]
+
+&lt;h1 id=&quot;binomial-distribution--significance-testing&quot;&gt;Binomial Distribution &amp;amp; Significance Testing&lt;/h1&gt;
+
+&lt;p&gt;Now we want to determine whether the difference between control and variant group is significant enough so that we can decide which group we want to apply in our system. To do this, we need to find out what is the probability of getting 5700 success (the variant group parameter) assuming that the control distribution with \(p_c=0.55\) is true. Mathematically, it is defined as:&lt;/p&gt;
+
+\[a(ns) = \sum_{K=ns}^N {N \choose K} P_{0}^{K} (1 - P_{0}^{K})^{N-K}\]
+
+&lt;p&gt;where in this case \(ns\) is the variant group successes \(ns_v\) and \(P_0\) is the control group binomial distribution parameter \(p_c\).&lt;/p&gt;
+
+&lt;p&gt;In plain words, the formula tells us what is the probability of observing the event plus the probability of observing other events that are equally rare and more extreme. In this case, the event is the variant group successes \(ns_v\). Also note that I am using a one-sided test because in an AB test we only care about getting an improvement. We don’t care if the variant group successes is significantly worse than control group success, even though by statistical definition it still counts as significant.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;scipy&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stats&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;stats&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binom_test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5700&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.55&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alternative&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'greater'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;mf&quot;&gt;2.9637380107656557e-05&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Using python code above, we can see that we get a low p-value, which tells us that it is unlikely to get 5700 successes assuming that the control distribution is true. Hence we can conclude that the variant group yields better conversion.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        
+
+
+&lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/resized/gaussian-approx-binomial-480x300.png&quot; srcset=&quot;    /assets/resized/gaussian-approx-binomial-480x300.png 480w,/assets/img/gaussian-approx-binomial.png 576w&quot; data-zoomable=&quot;&quot; /&gt;
+
+        &lt;!-- &lt;img class=&quot;img-fluid rounded z-depth-1 data-zoomable&quot; src=&quot;/assets/img/freq-ab-sample.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 50%;&quot;&gt; --&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 1: Gaussian approximation of binomial distribution of both the control and variant group.
+&lt;/div&gt;
+
+&lt;p&gt;Figure 1 shows the gaussian approximation of both the control and variant binomial distributions. By theory, we know that we can &lt;a href=&quot;https://online.stat.psu.edu/stat414/lesson/28/28.1&quot;&gt;approximate binomial distribution with a normal distribution&lt;/a&gt;. In math notation, the parameter of the normal distribution can be calculated as:&lt;/p&gt;
+
+\[\mu = np\]
+
+\[\sigma = np(1-p)\]
+
+&lt;p&gt;where \(n\) is the number of trials and \(p\) is the probability of success in a trial.&lt;/p&gt;
+
+&lt;p&gt;We can use \(\sigma\) to calculate the confidence interval around the binomial parameter:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.55&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10000&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;SE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sa&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'95% confidence interval of our binomial distribution is between &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; and &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;mi&quot;&gt;95&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;confidence&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;interval&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;of&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;our&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;binomial&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;distribution&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;between&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.54&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.56&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The confidence interval reinforces our initial findings that getting \(0.57\) is unlikely assuming that \(p_c=0.55\) is true.&lt;/p&gt;
+
+&lt;h1 id=&quot;closing&quot;&gt;Closing&lt;/h1&gt;
+
+&lt;p&gt;Thanks for reading my blog post! Hit me on twitter &lt;a href=&quot;https://twitter.com/rezkaaufar&quot;&gt;@rezkaaufar&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!</summary></entry><entry><title type="html">Hypothesis testing with normal distribution in an AB test</title><link href="https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing/" rel="alternate" type="text/html" title="Hypothesis testing with normal distribution in an AB test" /><published>2021-11-21T00:00:00+07:00</published><updated>2021-11-21T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/ab-test-hypothesis-testing/">&lt;p&gt;AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions.
 In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test.&lt;/p&gt;
 
 &lt;h1 id=&quot;before-hypothesis-testing&quot;&gt;Before hypothesis testing&lt;/h1&gt;
