@@ -1,5 +1,149 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="https://rezkaaufar.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://rezkaaufar.github.io/" rel="alternate" type="text/html" /><updated>2022-03-06T14:03:15+07:00</updated><id>https://rezkaaufar.github.io/feed.xml</id><title type="html">blank</title><subtitle>Rezka's Personal Website and Blog
-</subtitle><entry><title type="html">Uncertainty in the parameters of linear regression</title><link href="https://rezkaaufar.github.io/blog/2022/uncertainty-in-linear-regression/" rel="alternate" type="text/html" title="Uncertainty in the parameters of linear regression" /><published>2022-03-06T00:00:00+07:00</published><updated>2022-03-06T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2022/uncertainty-in-linear-regression</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2022/uncertainty-in-linear-regression/">&lt;p&gt;I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="https://rezkaaufar.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://rezkaaufar.github.io/" rel="alternate" type="text/html" /><updated>2022-04-29T21:56:54+07:00</updated><id>https://rezkaaufar.github.io/feed.xml</id><title type="html">blank</title><subtitle>Rezka's Personal Website and Blog
+</subtitle><entry><title type="html">Search fundamentals (part 1)</title><link href="https://rezkaaufar.github.io/blog/2022/search-fundamentals-pt1/" rel="alternate" type="text/html" title="Search fundamentals (part 1)" /><published>2022-04-29T00:00:00+07:00</published><updated>2022-04-29T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2022/search-fundamentals-pt1</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2022/search-fundamentals-pt1/">&lt;p&gt;Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.&lt;/p&gt;
+
+&lt;p&gt;In this post, we are going to look at two components of a search engine. In a simplified view, search engine is composed of two main parts: retrieval and reranking.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        
+
+
+&lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/resized/search-query-document-1400x459.png&quot; srcset=&quot;    /assets/resized/search-query-document-480x158.png 480w,    /assets/resized/search-query-document-800x263.png 800w,    /assets/resized/search-query-document-1400x459.png 1400w,/assets/img/search-query-document.png 1408w&quot; data-zoomable=&quot;&quot; /&gt;
+
+        &lt;!-- &lt;img class=&quot;img-fluid rounded z-depth-1 data-zoomable&quot; src=&quot;/assets/img/freq-ab-sample.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 50%;&quot;&gt; --&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 1: Query and document.
+&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;retrieval&quot;&gt;Retrieval&lt;/h1&gt;
+&lt;p&gt;In retrieval, we want to return a smaller pool of documents from the huge pools given a query. We essentially want to reduce the number of document candidates that can potentially be of interest according to a given query.&lt;/p&gt;
+
+&lt;p&gt;There are many techniques to do retrieval, but the key point is retrieval needs to be fast. In Big-O notation, we want the retrieval to have a time complexity in \(\mathcal{O}(1)\) or at most in \(\mathcal{O}(\log N)\). Higher time complexity yields to slow and unpleasant experience for users.&lt;/p&gt;
+
+&lt;h2 id=&quot;retrieval-with-inverted-index&quot;&gt;Retrieval with inverted index&lt;/h2&gt;
+
+&lt;p&gt;For the sake of simplicity, let’s assume that the query and documents that we have are of string types. To do retrieval fast, we create an inverted index which stores every unique token (vocabulary) that can be found in the document pool and points to document subset containing this token.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        
+
+
+&lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/resized/search-inverted-index-1400x631.png&quot; srcset=&quot;    /assets/resized/search-inverted-index-480x216.png 480w,    /assets/resized/search-inverted-index-800x361.png 800w,    /assets/resized/search-inverted-index-1400x631.png 1400w,/assets/img/search-inverted-index.png 1632w&quot; data-zoomable=&quot;&quot; /&gt;
+
+        &lt;!-- &lt;img class=&quot;img-fluid rounded z-depth-1 data-zoomable&quot; src=&quot;/assets/img/freq-ab-sample.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 50%;&quot;&gt; --&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 2: Inverted index.
+&lt;/div&gt;
+
+&lt;p&gt;So instead of doing a string match of each query term to the document term, we can directly access the index to return the list of documents of matched query in \(\mathcal{O}(1)\) time complexity.&lt;/p&gt;
+
+&lt;p&gt;In popular search libraries such as elastic search, we can adjust further on preprocessing (e.g., tokenizing) and on how to define the match. For preprocessing, we can stem words to only include base word, tokenize word using different delimiters, and many more. For match definition, we can determine whether we want full match of all query term, partial match only, or any other heuristics. These heuristics give you some control on which criteria you want the documents to be returned.&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        
+
+
+&lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/resized/search-match-1400x689.png&quot; srcset=&quot;    /assets/resized/search-match-480x236.png 480w,    /assets/resized/search-match-800x394.png 800w,    /assets/resized/search-match-1400x689.png 1400w,/assets/img/search-match.png 1726w&quot; data-zoomable=&quot;&quot; /&gt;
+
+        &lt;!-- &lt;img class=&quot;img-fluid rounded z-depth-1 data-zoomable&quot; src=&quot;/assets/img/freq-ab-sample.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 50%;&quot;&gt; --&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 3: Inverted index match case.
+&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;reranking&quot;&gt;Reranking&lt;/h1&gt;
+
+&lt;p&gt;We need to assign a score to each of the retrieved documents so that we can get the rank from the most relevant items the least relevant items with respect to the query term. There are many ways to assign score to each retrieved documents, from the older approach like tf-idf and bm25 to the more neural network approach. In this post, we’ll take a look at tf-idf.&lt;/p&gt;
+
+&lt;h2 id=&quot;tf-idf-scoring&quot;&gt;TF-IDF scoring&lt;/h2&gt;
+&lt;p&gt;As the name suggest, there are two components in tf-idf: term frequency - inverse document frequency.&lt;/p&gt;
+
+&lt;p&gt;Given a word \(t\) and document \(d\), term frequency \(f_{t,d}\) is simply the number of times each word \(t\) appeared in document \(d\). The term frequency \(f_{t,d}\) is given as:&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        
+
+
+&lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/resized/search-tf-1400x444.png&quot; srcset=&quot;    /assets/resized/search-tf-480x152.png 480w,    /assets/resized/search-tf-800x254.png 800w,    /assets/resized/search-tf-1400x444.png 1400w,/assets/img/search-tf.png 1590w&quot; data-zoomable=&quot;&quot; /&gt;
+
+        &lt;!-- &lt;img class=&quot;img-fluid rounded z-depth-1 data-zoomable&quot; src=&quot;/assets/img/freq-ab-sample.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 50%;&quot;&gt; --&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 4: Term frequency.
+&lt;/div&gt;
+
+&lt;p&gt;Inverse document frequency measures how rare \(t\) is across the corpus \(D\). Given \(N = D\) as the total number of documents in the corpus and \(n_t\) as the number of documents having \(t\), the \(idf(t,D)\) can be calculated as:&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        
+
+
+&lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/resized/search-idf-1400x444.png&quot; srcset=&quot;    /assets/resized/search-idf-480x152.png 480w,    /assets/resized/search-idf-800x254.png 800w,    /assets/resized/search-idf-1400x444.png 1400w,/assets/img/search-idf.png 1590w&quot; data-zoomable=&quot;&quot; /&gt;
+
+        &lt;!-- &lt;img class=&quot;img-fluid rounded z-depth-1 data-zoomable&quot; src=&quot;/assets/img/freq-ab-sample.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 50%;&quot;&gt; --&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 5: Inverse document frequency.
+&lt;/div&gt;
+
+&lt;p&gt;Then we multiply them together to get the tf-idf score:&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        
+
+
+&lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/resized/search-tf-idf-1400x631.png&quot; srcset=&quot;    /assets/resized/search-tf-idf-480x216.png 480w,    /assets/resized/search-tf-idf-800x361.png 800w,    /assets/resized/search-tf-idf-1400x631.png 1400w,/assets/img/search-tf-idf.png 1632w&quot; data-zoomable=&quot;&quot; /&gt;
+
+        &lt;!-- &lt;img class=&quot;img-fluid rounded z-depth-1 data-zoomable&quot; src=&quot;/assets/img/freq-ab-sample.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 50%;&quot;&gt; --&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 6: tf-idf final score.
+&lt;/div&gt;
+
+&lt;h2 id=&quot;calculate-tf-idf-score-for-new-query&quot;&gt;Calculate tf-idf score for new query&lt;/h2&gt;
+
+&lt;p&gt;Say that your system is running in production, how does it work when you have new query coming in? For term frequency (tf) we need to calculate it real-time. For idf, we can just use the precomputed idf. See the illustration below:&lt;/p&gt;
+
+&lt;div class=&quot;row mt-3&quot;&gt;
+    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
+        
+
+
+&lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/resized/search-rerank-1400x510.png&quot; srcset=&quot;    /assets/resized/search-rerank-480x175.png 480w,    /assets/resized/search-rerank-800x291.png 800w,    /assets/resized/search-rerank-1400x510.png 1400w,/assets/img/search-rerank.png 1998w&quot; data-zoomable=&quot;&quot; /&gt;
+
+        &lt;!-- &lt;img class=&quot;img-fluid rounded z-depth-1 data-zoomable&quot; src=&quot;/assets/img/freq-ab-sample.png&quot; style=&quot;display: block;margin-left: auto;margin-right: auto;width: 50%;&quot;&gt; --&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;caption&quot;&gt;
+    Figure 7: Reranked list with tf-idf score.
+&lt;/div&gt;
+
+&lt;p&gt;Once we have the tf-idf vector, we still need to calculate the similarity between the query and the matched product tf-idf vectors. This will result in a complexity of \(\mathcal{O}(m * k)\) where m is the number of matched products and k is the complexity of the similarity metrics (cosine, euclidean, etc). To further speed up this process, we can use approximate nearest neighbor (ANN) which runs in \(\mathcal{O}(\log m * k)\). The details of ANN is out of the scope of this post.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;closing&quot;&gt;Closing&lt;/h1&gt;
+
+&lt;p&gt;In the next post we will see other techniques involving retrieval and reranking. Stay tuned and thanks for reading!&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.cbrinton.net/ECE20875-2020-Spring/W10/ngrams.pdf&quot;&gt;Image source&lt;/a&gt; for Figure 4,5 and 6.&lt;/p&gt;</content><author><name></name></author><summary type="html">Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.</summary></entry><entry><title type="html">Uncertainty in the parameters of linear regression</title><link href="https://rezkaaufar.github.io/blog/2022/uncertainty-in-linear-regression/" rel="alternate" type="text/html" title="Uncertainty in the parameters of linear regression" /><published>2022-03-06T00:00:00+07:00</published><updated>2022-03-06T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2022/uncertainty-in-linear-regression</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2022/uncertainty-in-linear-regression/">&lt;p&gt;I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;statsmodels.api&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sm&lt;/span&gt;
 
@@ -1252,37 +1396,4 @@ Once the model is trained, we can sample from the gaussian distribution \(p(z)\)
   &lt;li&gt;&lt;a href=&quot;https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/&quot;&gt;https://jeffreyling.github.io/2018/01/09/vaes-are-bayesian.html&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://blog.evjang.com/2016/08/variational-bayes.html&quot;&gt;https://blog.evjang.com/2016/08/variational-bayes.html&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html#generative-adversarial-network-gan&quot;&gt;https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html#generative-adversarial-network-gan&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding.</summary></entry><entry><title type="html">A year on foundational programming (doing leetcode)</title><link href="https://rezkaaufar.github.io/blog/2021/a-year-on-leetcode/" rel="alternate" type="text/html" title="A year on foundational programming (doing leetcode)" /><published>2021-04-08T00:00:00+07:00</published><updated>2021-04-08T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/blog/2021/a-year-on-leetcode</id><content type="html" xml:base="https://rezkaaufar.github.io/blog/2021/a-year-on-leetcode/">&lt;div class=&quot;row mt-3&quot;&gt;
-    &lt;div class=&quot;col-sm mt-3 mt-md-0&quot;&gt;
-        &lt;img class=&quot;img-fluid rounded z-depth-1&quot; src=&quot;/assets/img/leetcode.png&quot; /&gt;
-    &lt;/div&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;em&gt;One year of leetcode submission. Check out &lt;a href=&quot;https://leetcode.com/rezka/&quot; target=&quot;blank&quot;&gt;my leetcode page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;I had never really understood why competitive programming type of problem (I will call it CP for the rest of the post) is important. I first encountered these questions during my high school, when I first started learning how to code and was preparing for national programming competition. During my bachelor study, I re-encountered CP in the lectures. Despite my reoccurring exposure to CP, I never paid attention to it. I always thought that it was a waste of time because the real-world programming doesn’t require you to create recursive program with memoization or even worse, reversing a LinkedList. It is true though that a typical software engineer wouldn’t spend their days solving these kinds of problem, as all the underlying necessary algorithms have been abstracted away by libraries. But unfortunately, these type of questions are everywhere on the initial screening for tech recruitment.&lt;/p&gt;
-
-&lt;p&gt;I got into CP self-training not long after I decided to quit my &lt;a href=&quot;https://rezkaaufar.github.io/blog/2021/leaving_phd/&quot; target=&quot;blank&quot;&gt;quit my PhD&lt;/a&gt;. I had huge difficulties transitioning from academia to industry back then (I will write another blog post related to my struggle in this matter). In short, I realized that I was so lacking in foundational programming that I decided to spend time to catch up and grind on these topics. To be honest, I’m glad that I found the fact that my understanding was shaky the hard way, since it became a huge fuel for me to keep going for a year.&lt;/p&gt;
-
-&lt;p&gt;Despite the pros and cons about whether CP is a good way to assess candidate’s skills in a tech interview, my views on CP has changed after spending a year regularly solving problems on leetcode. I now see CP and foundational programming as beneficial to some extent. CP has broadened my perspective on the importance of time and space complexity. It becomes more crucial if you’re working with large data. In my case, I started to notice the importance especially when trying to make machine learning model works at scale. The difference on how you code your way to the solution can mean a huge difference in running time and how much money is spent on the compute power. A lot of people probably jumped on looking for the best library and tool to use to alleviate and optimize their problems. But knowing the fact that these libraries and tools are mostly built upon foundational programming certainly help to force us to think in first principle. How code differences can lead to gap in running time essentially boils down to how the operations are being processed underneath.&lt;/p&gt;
-
-&lt;p&gt;Some of my AHA moment on how CP helped me to think in first principle on solutions and techniques (happened on a job or during self-study):&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;When I was in my PhD program, I worked on creating an A* parser. We used a priority queue to store and select the best scoring atomic semantic component to be merged to form a parse tree. I didn’t understood why we used a priority queue at that time. The aha moment was when I re-studied heap data structure, in which priority queue was built on. It allows O(1) extraction time and O(log n) self-restructuring during insert and delete.&lt;/li&gt;
-  &lt;li&gt;When I studied the &lt;a href=&quot;https://arxiv.org/pdf/2009.06732.pdf&quot; target=&quot;blank&quot;&gt;efficient transformers model&lt;/a&gt;, I stumbled upon &lt;a href=&quot;https://ai.googleblog.com/2020/10/rethinking-attention-with-performers.html&quot; target=&quot;blank&quot;&gt;performers model&lt;/a&gt;. Performers approximate the quadratic calculation by using kernel methods to decompose the attention matrix. What’s cool is that for the unidirectional (causal) transformers where one can’t attend to future tokens, it uses prefix-sum mechanism to compute the attention on the fly. (tbh I still have shaky understanding in performers).&lt;/li&gt;
-  &lt;li&gt;I used approximate nearest neighbor in a recommendation system. I now know that approximate nearest neighbor is essentially a &lt;a href=&quot;https://www.slideshare.net/erikbern/approximate-nearest-neighbor-methods-and-vector-models-nyc-ml-meetup&quot; target=&quot;blank&quot;&gt;binary search&lt;/a&gt; under the hood.&lt;/li&gt;
-  &lt;li&gt;I now know that indexing a DB leads to a faster join time because it essentially sorts the index column so that when one join the complexity becomes O(n log m) instead of O(nm) (since it uses binary search). It can even be faster if the DB has hash index O(1).&lt;/li&gt;
-  &lt;li&gt;Working on feature engineering for machine learning model, I used bisect python library to derive a feature that is conditioned on another columns (my problem is similar to &lt;a href=&quot;https://stackoverflow.com/questions/45092267/spark-window-function-referencing-different-columns-for-range&quot; target=&quot;blank&quot;&gt;this&lt;/a&gt;). The solution that I can use with the built-in function (both in pandas and pyspark) led me to memory problems so I have to precompute it. Hence binary search came into rescue and it saved me tons of time.&lt;/li&gt;
-  &lt;li&gt;I coded a recursive function to traverse a taxonomy upward. I did this on my job!&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;To end this post, I am grateful that I went down this leetcode rabbit hole. Knowing foundational programming has been transformative for me. It makes me a better coder (self-proclaimed). It has also became a habit of mine to at least work on a problem once a week. I intend to keep this up, so fingers crossed for me!&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;blockquote&gt;
-    We do not grow absolutely, chronologically. We grow sometimes in one dimension, and not in another, unevenly. We grow partially. We are relative. 
-    —Anais Nin
-&lt;/blockquote&gt;</content><author><name></name></author><summary type="html"></summary></entry></feed>
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding.</summary></entry></feed>
