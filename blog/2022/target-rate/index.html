@@ -12,7 +12,7 @@
   Rezka  Leonandya
 
 
-  | blog - page 2
+  | Target rate for class imbalance
 
 </title>
 <meta name="description" content="Rezka's Personal Website and Blog
@@ -38,7 +38,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤡</text></svg>">
 
 <link rel="stylesheet" href="/assets/css/main.css">
-<link rel="canonical" href="/blog/page/2/">
+<link rel="canonical" href="/blog/2022/target-rate/">
 
 
 <!-- Dark Mode -->
@@ -136,8 +136,8 @@
           
           
           
-            <div class = "toggle-container">
-              <a id = "light-toggle">
+            <div class="toggle-container">
+              <a id="light-toggle">
                   <i class="fas fa-moon"></i>
                   <i class="fas fa-sun"></i>
               </a>
@@ -154,158 +154,80 @@
     <!-- Content -->
 
     <div class="container mt-5">
-      <div class="post">
-
-  <div class="header-bar">
-    <h1>Machine learning blog</h1>
-    <h2>Written in English, Bahasa Indonesia, or both</h2>
-  </div>
+      
 
 
-  <ul class="post-list">
-    
 
-    
-    
-    
-    
 
-    <li>
-      <h3><a class="post-title" href="/blog/2021/decision-tree-a-primer/">A primer on decision tree</a>
-      </h3>
-      <p>first post of my tree-based series.</p>
-      <p class="post-meta"> 7 min read &nbsp; &middot; &nbsp;
-        June 18, 2021
-      </p>
-      <p class="post-tags">
-        <a href="/blog/2021">
-          <i class="fas fa-calendar fa-sm"></i> 2021 </a>
 
-          
+<div class="post">
 
-          
+  <header class="post-header">
+    <h1 class="post-title">Target rate for class imbalance</h1>
+    <p class="post-meta">May 25, 2022</p>
+    <p class="post-tags">
+      <a href="/blog/2022"> <i class="fas fa-calendar fa-sm"></i> 2022 </a>
+      
+
+      
+
     </p>
-    </li>
+  </header>
 
-    
+  <article class="post-content">
+    <p>Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a <a href="https://www.youtube.com/watch?v=rHSpab1Wi9k" target="_blank" rel="noopener noreferrer">talk from stripe</a> where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>.</p>
 
-    
-    
-    
-    
+<h1 id="target-rate">Target rate</h1>
+<p>The objective is to create a model which can predict whether a transaction is fraudulent. The model is a binary classifier which produces a score in the 0-1 range, where 0 indicates no fraud and 1 indicates fraud. Based on what they’ve found, training on imbalance data and validating the metrics on imbalance data produces worse result compared to training and validating on a more balanced data. Why?</p>
 
-    <li>
-      <h3><a class="post-title" href="/blog/2021/recsys-core-components/">Core components of recommender systems</a>
-      </h3>
-      <p>better understanding than studying the taxonomy</p>
-      <p class="post-meta"> 8 min read &nbsp; &middot; &nbsp;
-        May 8, 2021
-      </p>
-      <p class="post-tags">
-        <a href="/blog/2021">
-          <i class="fas fa-calendar fa-sm"></i> 2021 </a>
+<p>With a binary classifier model, we need to choose a threshold that satisfies some criteria on the validation data. This threshold is used to determine whether an instance is going to predicted as fraud or not. What they want to do in their case is that they want to maximize recall while capping FPR (false positive rate).
+Say we have initially a training + validation data with less than 1% fraudulent label (the positive label). If we optimize only for recall and FPR, we can get a low FPR but extremely low precision. Why is this happening? FPR is low because the denominator of the negative label is extremely huge. The model can predict a lot of false positives and still get low FPR in this case. Then during the threshold picking phase on the validation set, we can just pick a relatively low threshold, which results in high recall but extremely low precision. Hence we need to do something on the class imbalance.</p>
 
-          
+<p>However, if we train and validate on a balanced dataset, we are going to be faced with class imbalance again on the production. That is why we need to find a balance that works best in production.</p>
 
-          
-    </p>
-    </li>
+<p>Their idea is to try to create a balanced training set that works well on the extremely imbalanced production data. Basically what we want to find is a percentage of fraud (x%) and the percentage of non-fraud training data instances (100-x%) that maximizes performances on the validation data which still contains the original proportion of the class imbalance. The percentage (x) is called the target rate. Then what we do is we can use grid/exhaustive search, trying out different values of x by keeping every fraudulent dataset and downsample the non-fraudulent dataset to create the dataset according to the target rate. After that, they evaluate the performance in validation set and also the performance in production.</p>
 
-    
+<h1 id="my-own-experiment">My own experiment</h1>
 
-    
-    
-    
-    
+<p>To see how helpful is this target rate idea, I decided to try it out on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>. The dataset is extremely imbalanced with only 0.0001 percent of fraud dataset. I try different target rate from 0.1 to 1 and train XGBoost model with the balanced training data. Then I evaluate the XGBoost model on the imbalanced validation set and below is the result I get:</p>
 
-    <li>
-      <h3><a class="post-title" href="/blog/2021/generative-model/">Some notes on generative model</a>
-      </h3>
-      <p>generative model is the future</p>
-      <p class="post-meta"> 10 min read &nbsp; &middot; &nbsp;
-        April 18, 2021
-      </p>
-      <p class="post-tags">
-        <a href="/blog/2021">
-          <i class="fas fa-calendar fa-sm"></i> 2021 </a>
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        
 
-          
 
-          
-    </p>
-    </li>
+<img class="img-fluid rounded z-depth-1" src="/assets/resized/target-rate-result-800x427.png" srcset="    /assets/resized/target-rate-result-480x256.png 480w,    /assets/resized/target-rate-result-800x427.png 800w,/assets/img/target-rate-result.png 1080w" data-zoomable="">
 
-    
+        <!-- <img class="img-fluid rounded z-depth-1 data-zoomable" src="/assets/img/freq-ab-sample.png" style="display: block;margin-left: auto;margin-right: auto;width: 50%;"> -->
+    </div>
+</div>
+<div class="caption">
+    Figure 1: Precision, recall, and roc scores on different target rate.
+</div>
 
-    
-    
-    
-    
+<p>We can see that the graph looks wiggly, and perhaps that the best tradeoff between the three metrics is between 0.3-0.4 target rate. Now I would say that this technique is helpful to some extent if we want to do better downsampling. However, I think that the result is prone to random samples and the random seed that we initialize. So I’m not entirely convinced that this is the best method to overcome extremely imbalanced dataset.</p>
 
-    <li>
-      <h3><a class="post-title" href="/blog/2021/a-year-on-leetcode/">A year on foundational programming (doing leetcode)</a>
-      </h3>
-      <p>it turns out to be super fun!</p>
-      <p class="post-meta"> 4 min read &nbsp; &middot; &nbsp;
-        April 8, 2021
-      </p>
-      <p class="post-tags">
-        <a href="/blog/2021">
-          <i class="fas fa-calendar fa-sm"></i> 2021 </a>
+<h1 id="closing">Closing</h1>
 
-          
+<p>Thanks for reading! If you think I am missing something please comment below. For those interested you can check my code <a href="https://github.com/rezkaaufar/target-rate/blob/master/target-rate-imbalanced-dataset.ipynb" target="_blank" rel="noopener noreferrer">here</a>.</p>
 
-          
-    </p>
-    </li>
-
-    
-
-    
-    
-    
-    
-
-    <li>
-      <h3><a class="post-title" href="/blog/2021/leaving_phd/">Leaving my PhD</a>
-      </h3>
-      <p>only 5 months in, I left my PhD program (this description is intended as clickbait)</p>
-      <p class="post-meta"> 11 min read &nbsp; &middot; &nbsp;
-        March 25, 2021
-      </p>
-      <p class="post-tags">
-        <a href="/blog/2021">
-          <i class="fas fa-calendar fa-sm"></i> 2021 </a>
-
-          
-
-          
-    </p>
-    </li>
-
-    
-  </ul>
+  </article>
 
   
-<nav aria-label="Blog page naviation">
-  <ul class="pagination pagination-lg justify-content-center">
-    <li class="page-item ">
-      <a class="page-link" href="/blog/" tabindex="-1" aria-disabled="1">Newer</a>
-    </li>
-    
-      
-        <li class="page-item "><a class="page-link" href="/blog/index.html" title="blog">1</a></li>
-      
-        <li class="page-item active"><a class="page-link" href="/blog/page/2/index.html" title="blog - page 2">2</a></li>
-      
-    
-    <li class="page-item disabled">
-      <a class="page-link" href="">Older</a>
-    </li>
-  </ul>
-</nav>
-
-
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+      var disqus_shortname  = 'rezka-blog';
+      var disqus_identifier = '/blog/2022/target-rate';
+      var disqus_title      = "Target rate for class imbalance";
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener noreferrer">comments powered by Disqus.</a>
+</noscript>
+  
 
 </div>
 
@@ -316,8 +238,8 @@
     
 <footer class="fixed-bottom">
   <div class="container mt-0">
-    &copy; Copyright 2022 Rezka  Leonandya.
-    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
+    © Copyright 2022 Rezka  Leonandya.
+    Powered by <a href="http://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" target="_blank" rel="noopener noreferrer">al-folio</a> theme.
 
     
     
