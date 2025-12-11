@@ -1,0 +1,89 @@
+---
+layout: post
+title: Leaving my PhD
+description: I have always envisioned myself to be a top researcher working on cutting-edge
+  research in big labs like Google Deepmind or Facebook AI Research. It thrills me
+  to know that maybe in my lifetime I get to see intelligent machines that are capable
+  of learning and communicating with people using natural language. Highly motivated,
+  I said to myself that I want to dedicate my professional life to push the boundary
+  of AI research, especially in NLP.
+date: '2021-03-25'
+tags: []
+---
+
+<h1 id="prologue">Prologue</h1>
+
+I have always envisioned myself to be a top researcher working on cutting-edge research in big labs like Google Deepmind or Facebook AI Research. It thrills me to know that maybe in my lifetime I get to see intelligent machines that are capable of learning and communicating with people using natural language. Highly motivated, I said to myself that I want to dedicate my professional life to push the boundary of AI research, especially in NLP.
+
+
+
+It started in December 2017 when I first got selected to a research collaboration of my university with Facebook AI Research. I had the privilege of working with brilliant colleagues and supervisors in a vibrant team. I often feel like I was the stupidest person in the room and I was just lucky enough to be selected to the program (the selection phase was pretty hard and I genuinely shocked when I got admitted). At the start of the program, all I can feel was that research is completely out of my reach. I was overwhelmed by the level of what I needed to get in order to keep up with the group. After 8 months of dealing with impostor syndrome, anxiety, sleepless nights, struggles, and many more discomfort, I graduated from the master’s program with a completely different outlook: I enjoy research and I wanted to do this for a long time.
+
+
+
+I went back to Indonesia and I had my eyes on the goal: to become an AI researcher. I know that one of the most effective way to become an AI researcher is to start by doing PhD. Hence, I started applying to various PhD openings while also working as an NLP researcher trying to build a portfolio. I didn’t have any expectation back then. I thought that if I fail and didn’t get admitted that year, no worries, I do not have anything to lose. I worked on my PhD proposals, motivation letter, keeping up with the recent developments of NLP research, and etc. I applied to 12 positions. I received a lot of rejection. It hurts but I got used to it. In May 2019, I finally got my first good news. I got accepted! Out of 12 positions that I had applied, I got accepted into 2 programs and all of them are fully funded (not government-funded this time). Best feelings ever. I dare to say that one of the best feelings that I have ever experienced was when I first got a PhD offer. Super excited to begin my journey!
+
+
+
+<em>For those of you who are not familiar with the field, PhD program in machine learning is one of the hardest programs to get into. I am not saying this to brag but to stress the high level of excitement I felt that made me go down the bias hole later. (okay probably a little intention to brag but that is not important).</em>
+
+
+
+<!-- I never regarded myself as a smart student. I think I was just lucky. I was lucky enough to get a PhD program because during my master study (master thesis, to be exact), I had the privilege of working with researchers in AI from big labs. I think my recommendation letter was strong and all my master's supervisors were kind enough to vouch for me. How did I get to be able to work with these super talented researchers? I am not sure either. The master thesis selection was pretty hard but somehow I made it. Again, I think I was just lucky.  -->
+
+<h1 id="the-discussion-to-go-abroad">The discussion to go abroad</h1>
+The first thing I did after hearing the news is that I told my wife. I asked her what she thinks about us moving abroad but honestly my mind was already made up. So when we had the discussion, my reasoning was serving my intuition rather than thinking every possible paths, especially the downsides of this decision. I think it was more of a forceful persuasion rather than a discussion (lol). I didn’t even remember what arguments we had during the discussion. It didn’t felt like a big deal to me but my wife told me that it was one of the most monumental decision that she had to make. She told me that she was extremely hesitant, especially that now we’re moving for potentially 4-5 years, which is a long time.
+
+
+
+First, she had to leave her job which she loves. I dismissed her concern by saying that she can get a job there, she can learn something new online, and other arguments along those lines. I didn’t realize that I was making a huge mistake because I was giving her a solution that wasn’t made considering the whole picture, e.g., how does it like over there, language barrier, transportation infrastructure, cost of living and acquiring new skills, etc. Second, the fact that our son was about to come to the world makes thing harder. I didn’t realize the complexity level of having to take care of a child without any support system in a country far away from home. Yes, the complexity is extremely high. During the discussion with my wife, I told her that it would be fine because we can put our son in the university daycare and they have a good system there and the cost is still affordable (because it’s for university staff) so there is nothing to worry about. Hell I was super wrong (more on this later).
+
+
+
+I ended up saying yes to the offer. My wife eventually said yes because she didn’t want to become a hindrance to my dream (sok-sok an dah lu. lah ngapa jadi bahasa Indo. ya bodo amat lah).
+
+
+
+<h1 id="the-decision-to-go-back">The decision to go back</h1>
+Fast forward, we made it to Germany. A country that we have experienced before as a tourist but never as a resident. Change is inevitable especially when we’re making this huge leap, and the way we perceive change is different from each other. For me personally, the change was still manageable. There was a culture shock especially when dealing with locals that don’t speak English. I had to go through series of bureaucracy which requires me to speak German, even though my German is at the Duolingo “ich kann ein bisschen Deutsch sprechen” level. Grocery shopping is survivable with little vocabularies. Since I spent most of the time at the English speaking university, I didn’t feel drastic change as I have also lived abroad before.
+
+
+
+I had assumed the same thing for my wife, that she can manage the change even though the level of agitation she felt might be higher. But then I noticed a pattern that my wife defaulted to during her day in the life. She spent all day in the flat except for 15 minutes grocery shopping and another 15 minutes going out in the park with our son. I would come home during the night to take care of our son so that she can have some her own time. She told me that she didn’t have any time to take a bath or clean herself during the day when I was at the office. On the weekend, we would go for 2 hours walk along the river to the city park. Doesn’t sound bad? For me personally, life is great. I can finally do research and follow my dream to become an AI researcher and (hopefully) eventually work at FAANG. As a family? I was not sure. Something did not sit right with me regarding her repetitive and constrained routine.
+
+
+
+Initially, leaving the PhD program wasn’t an option that came to our mind. It never occurred to me because I was still enjoying my new job while my wife was trying to let go and look forward. But it just occurred to me that maybe we should have a talk. Hence, these sentences: “what do you think if we cancel all these and went back home? what if we had made the wrong decision?”.  And these sentences came out at the same day just before she was about to told her boss that she had to quit her job. What a coincidence. (For context, we are reunited in Germany only for 1.5 months because my wife lived on a tourist visa while she was still on her 6 months maternity leave. So technically, she was not a legal residence and she hadn’t quit her job yet.) It turns into a long lengthy discussion spanning weeks, involving families and friends. She also eventually admits that she felt suffocated and exhausted by the constrains of living there.
+
+
+
+I mentioned that change is inevitable when faced with this huge leap, and for my wife, the change is highly challenging, and probably not in a good way. First of all she has to deal with the fact that she might be jobless, in the worst case, during our whole stay. There are plenty of reasons why we were skeptical of her career prospects if she stayed. The job demand for her field is scarce. Even if there is a demand, it mostly requires fluency in German or the job opening is placed far away from the city we lived in. Living far from each other was out of the question since we have a son to take care of and there was no one else that we can rely on, except daycare. It turns out that admitting a child into a daycare was not as easy as I had assumed. There was a waiting list of at least 9-12 months before you can get your child admitted. If I want to admit my son directly to daycare, I have to go to a private daycare which costs ~46% of my salary. Not to mention that her field requires more local knowledge so it puts her in disadvantage compared to the locals (unlike me CS grad who can get a job more easily as long as I speak fluent python and <code class="language-plaintext highlighter-rouge">pip install huggingface</code>). Also, the language barrier is real. Probably only 10-15% in the city speaks fluent English. It makes socializing harder. (lesson learn: lebih enak ke english speaking country kayanya, lebih gampang segala macem).
+
+
+
+Of all the possible paths that we outlined, there is only one path that was possible for us: my wife spend at least one year being a stay-at-home mother until we can admit our son to the daycare. This path is doable. A lot of family who is going abroad usually does this and my wife has no problem being a stay-at-home mother temporarily. But there is another aspect that still made us hesitant: financial (ya ujung2nya ke duit). Having a child means extra costs, and the extra costs are twofold: daycare cost and the need to rent bigger flats. Apparently, there is a rule in Germany (and probably Europe) that you need to have at least 12sqm feet for one head and at least a two bedroom for a family of at most 4. Truth is, the price gap between a studio and a two bedroom flat is huge. So if we didn’t have a child, we can rent a room for half price of a two bedroom. That means, having a child means that you have to pay double in rent, and the same applies to the monthly utilities too. But money is not a problem right? I mean she can do side jobs to help cover the expenses? Yes that’s true. But the problem is that if my wife only works for money, then she’ll be doing repetitive non-professional jobs, like working in a factory or etc. Doing blue collar jobs in Germany pays well actually, as Germany has a strong social net. But compared to the job she has back home, the feeling of fulfilling and the impact that she can made far exceeds these decent-paying blue collar jobs.
+
+
+
+<em>She works in the environmental field, so she’s trying to save the Earth one step at a time. (her claim, not mine)</em>
+
+
+
+<h1 id="epilogue">Epilogue</h1>
+All the story that I have told so far essentially is a problem of exploration vs exploitation. Either we try to explore things that we have less idea on how it might unfold or we exploit things that we already know with higher confidence lead to safer state. I always cheer those who go down the exploration path. Despite the bias that I have, I genuinely wanted to go down these paths. Exploration may lead us to uncover stepping stones that are new to us and maybe eventually yield better outcome in the long run. But having a child makes these paths a lot harder to cross. If we were childless back then, I am sure that we would still be living abroad. Who knows, I might have gotten an internship already at FAANG and my wife would probably working on her PhD somewhere in different country.
+
+
+
+The initial trigger of having the discussion stems from my sense of there is something wrong with how we live. Eventually, the discussion also triggers me to rethink my life choice. It puts me more in a panoramic view, to try to reconsider and asks the question: “is doing a PhD what I really want for my endgame?”. I honestly couldn’t and still can’t answer that question. Hell I do not even know what my endgame is at the moment. I initially wanted to become an AI researcher so badly, but as an effect of the discussion, I was not so sure anymore. What I do know is that I still love machine learning to this day and I will keep continue doing that.
+
+
+
+Lastly, this post is turning into more of a marriage story than I had expected to (lol). But if there is anything that I can learn from this story is that do not make a decision when you are emotionally not calm, especially if it is a life changing decision. Be aware of your own bias and let things settle first and then come back when you’re calmer. <strong>Humans act on intuition first</strong>. So when we’re emotionally not calm (excited, sad, angry, etc), our rational module tend to find justification for our intuition rather than work its way to find the most objective truth. That’s what happened to me. I underestimated the complexity of moving abroad and oversimplify things that my wife had to do to settle. All that said, I do not regret the experience. It has been such a rewarding experience for me and us both as a family.
+
+
+
+<hr>
+
+“I don’t know which option you should choose. I could never advise you on that. No matter what kind of wisdom dictates you the option you pick, no one will be able to tell if it’s right or wrong until you arrive to some sort of outcome from your choice. The only thing we’re allowed to do is to believe that we won’t regret the choice we made.” -Levi Ackerman
+
+

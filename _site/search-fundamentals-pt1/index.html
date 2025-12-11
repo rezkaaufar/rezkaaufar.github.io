@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Search fundamentals (part 1)</title>
+  <meta name="description" content="Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.">
+  <style>body {
+    max-width: 80ch;
+    padding: 3em 1em;
+    margin: auto;
+    line-height: 1.6;
+    font-size: 1.08em;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+pre {
+    overflow: auto;
+    background: #f7f7f7;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background: #f7f7f7;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+
+blockquote {
+    border-left: 3px solid #ddd;
+    padding-left: 0.8rem;
+    color: #444;
+    margin: 1rem 0;
+}
+
+header.site-header {
+    margin-bottom: 1.5rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+nav a.active,
+nav a:hover {
+    border-color: #111;
+}
+
+section { margin: 1.8rem 0; }
+
+.meta { color: #555; font-size: 0.95rem; }
+
+.listing { width: 100%; border-collapse: collapse; }
+
+.listing td { padding: 0.2rem 0.15rem; vertical-align: baseline; }
+
+.listing tr + tr td { border-top: 1px solid #eee; }
+
+.listing .date { white-space: nowrap; padding-right: 0.8rem; color: #666; font-size: 0.95rem; }
+
+.tag {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    margin-right: 0.35rem;
+    color: #444;
+}
+
+footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; color: #555; font-size: 0.95rem; }
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    align-items: center;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.footer-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.footer-links a:hover {
+    border-color: #111;
+}
+
+.icon {
+    font-family: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol",sans-serif;
+    margin-right: 0.25rem;
+}
+
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.social-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.social-links a:hover {
+    border-color: #111;
+}
+
+@media (max-width: 640px) {
+    body { font-size: 1em; }
+}
+</style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+  <main>
+    <a href="/" aria-label="Home">← Home</a>
+<h1>Search fundamentals (part 1)</h1>
+<p class="meta">
+  April 29, 2022
+  
+</p>
+
+<p>Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.</p>
+
+<p>In this post, we are going to look at two components of a search engine. In a simplified view, search engine is composed of two main parts: retrieval and reranking.</p>
+
+<p><img src="/assets/resized/search-query-document-1400x459.png" alt="Figure 1: Query and document." /></p>
+
+<p><em>Figure 1: Query and document..</em></p>
+
+<hr />
+
+<h1 id="retrieval">Retrieval</h1>
+<p>In retrieval, we want to return a smaller pool of documents from the huge pools given a query. We essentially want to reduce the number of document candidates that can potentially be of interest according to a given query.</p>
+
+<p>There are many techniques to do retrieval, but the key point is retrieval needs to be fast. In Big-O notation, we want the retrieval to have a time complexity in $\mathcal{O}(1)$ or at most in $\mathcal{O}(\log N)$. Higher time complexity yields to slow and unpleasant experience for users.</p>
+
+<h2 id="retrieval-with-inverted-index">Retrieval with inverted index</h2>
+
+<p>For the sake of simplicity, let’s assume that the query and documents that we have are of string types. To do retrieval fast, we create an inverted index which stores every unique token (vocabulary) that can be found in the document pool and points to document subset containing this token.</p>
+
+<p><img src="/assets/resized/search-inverted-index-1400x631.png" alt="Figure 2: Inverted index." /></p>
+
+<p><em>Figure 2: Inverted index..</em></p>
+
+<p>So instead of doing a string match of each query term to the document term, we can directly access the index to return the list of documents of matched query in $\mathcal{O}(1)$ time complexity.</p>
+
+<p>In popular search libraries such as elastic search, we can adjust further on preprocessing (e.g., tokenizing) and on how to define the match. For preprocessing, we can stem words to only include base word, tokenize word using different delimiters, and many more. For match definition, we can determine whether we want full match of all query term, partial match only, or any other heuristics. These heuristics give you some control on which criteria you want the documents to be returned.</p>
+
+<p><img src="/assets/resized/search-match-1400x689.png" alt="Figure 3: Inverted index match case." /></p>
+
+<p><em>Figure 3: Inverted index match case..</em></p>
+
+<hr />
+
+<h1 id="reranking">Reranking</h1>
+
+<p>We need to assign a score to each of the retrieved documents so that we can get the rank from the most relevant items the least relevant items with respect to the query term. There are many ways to assign score to each retrieved documents, from the older approach like tf-idf and bm25 to the more neural network approach. In this post, we’ll take a look at tf-idf.</p>
+
+<h2 id="tf-idf-scoring">TF-IDF scoring</h2>
+<p>As the name suggest, there are two components in tf-idf: term frequency - inverse document frequency.</p>
+
+<p>Given a word $t$ and document $d$, term frequency $f_{t,d}$ is simply the number of times each word $t$ appeared in document $d$. The term frequency $f_{t,d}$ is given as:</p>
+
+<p><img src="/assets/resized/search-tf-1400x444.png" alt="Figure 4: Term frequency." /></p>
+
+<p><em>Figure 4: Term frequency..</em></p>
+
+<p>Inverse document frequency measures how rare $t$ is across the corpus $D$. Given $N = D$ as the total number of documents in the corpus and $n_t$ as the number of documents having $t$, the $idf(t,D)$ can be calculated as:</p>
+
+<p><img src="/assets/resized/search-idf-1400x444.png" alt="Figure 5: Inverse document frequency." /></p>
+
+<p><em>Figure 5: Inverse document frequency..</em></p>
+
+<p>Then we multiply them together to get the tf-idf score:</p>
+
+<p><img src="/assets/resized/search-tf-idf-1400x631.png" alt="Figure 6: tf-idf final score." /></p>
+
+<p><em>Figure 6: tf-idf final score..</em></p>
+
+<h2 id="calculate-tf-idf-score-for-new-query">Calculate tf-idf score for new query</h2>
+
+<p>Say that your system is running in production, how does it work when you have new query coming in? For term frequency (tf) we need to calculate it real-time. For idf, we can just use the precomputed idf. See the illustration below:</p>
+
+<p><img src="/assets/resized/search-rerank-1400x510.png" alt="Figure 7: Reranked list with tf-idf score." /></p>
+
+<p><em>Figure 7: Reranked list with tf-idf score..</em></p>
+
+<p>Once we have the tf-idf vector, we still need to calculate the similarity between the query and the matched product tf-idf vectors. This step is $\mathcal{O}(m \cdot k)$ where $m$ is the number of matched products and $k$ is the cost of the similarity metric (cosine, euclidean, etc.). To speed this up, approximate nearest neighbor (ANN) reduces it to $\mathcal{O}(\log m \cdot k)$. The details of ANN are out of the scope of this post.</p>
+
+<hr />
+
+<h1 id="closing">Closing</h1>
+
+<p>In the next post we will see other techniques involving retrieval and reranking. Stay tuned and thanks for reading!</p>
+
+<p><a href="http://www.cbrinton.net/ECE20875-2020-Spring/W10/ngrams.pdf" target="_blank" rel="noopener noreferrer">Image source</a> for Figure 4,5 and 6.</p>
+
+
+
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div>© 2025 Rezka Leonandya.</div>
+      <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
+    </div>
+    <div class="meta"><span id="page-size"></span> · <span id="load-time"></span></div>
+  </footer>
+  <script>
+    (function() {
+      const sizeEl = document.getElementById('page-size');
+      const timeEl = document.getElementById('load-time');
+      const update = () => {
+        if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
+        if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+      };
+      if (document.readyState === 'complete') {
+        update();
+      } else {
+        window.addEventListener('load', update, { once: true });
+      }
+    })();
+  </script>
+</body>
+</html>

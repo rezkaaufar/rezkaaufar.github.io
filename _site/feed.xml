@@ -1,0 +1,1134 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://rezkaaufar.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://rezkaaufar.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-12-11T23:31:18+07:00</updated><id>https://rezkaaufar.github.io/feed.xml</id><title type="html">Rezka Leonandya</title><subtitle>Rezka Leonandya&apos;s personal site and blog.</subtitle><author><name>Rezka Leonandya</name></author><entry><title type="html">Target rate for class imbalance</title><link href="https://rezkaaufar.github.io/target-rate/" rel="alternate" type="text/html" title="Target rate for class imbalance" /><published>2022-05-25T00:00:00+07:00</published><updated>2022-05-25T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/target-rate</id><content type="html" xml:base="https://rezkaaufar.github.io/target-rate/"><![CDATA[<p>Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a <a href="https://www.youtube.com/watch?v=rHSpab1Wi9k" target="_blank" rel="noopener noreferrer">talk from stripe</a> where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>.</p>
+
+<h1 id="target-rate">Target rate</h1>
+<p>The objective is to create a model which can predict whether a transaction is fraudulent. The model is a binary classifier which produces a score in the 0-1 range, where 0 indicates no fraud and 1 indicates fraud. Based on what they’ve found, training on imbalance data and validating the metrics on imbalance data produces worse result compared to training and validating on a more balanced data. Why?</p>
+
+<p>With a binary classifier model, we need to choose a threshold that satisfies some criteria on the validation data. This threshold is used to determine whether an instance is going to predicted as fraud or not. What they want to do in their case is that they want to maximize recall while capping FPR (false positive rate).
+Say we have initially a training + validation data with less than 1% fraudulent label (the positive label). If we optimize only for recall and FPR, we can get a low FPR but extremely low precision. Why is this happening? FPR is low because the denominator of the negative label is extremely huge. The model can predict a lot of false positives and still get low FPR in this case. Then during the threshold picking phase on the validation set, we can just pick a relatively low threshold, which results in high recall but extremely low precision. Hence we need to do something on the class imbalance.</p>
+
+<p>However, if we train and validate on a balanced dataset, we are going to be faced with class imbalance again on the production. That is why we need to find a balance that works best in production.</p>
+
+<p>Their idea is to try to create a balanced training set that works well on the extremely imbalanced production data. Basically what we want to find is a percentage of fraud (x%) and the percentage of non-fraud training data instances (100-x%) that maximizes performances on the validation data which still contains the original proportion of the class imbalance. The percentage (x) is called the target rate. Then what we do is we can use grid/exhaustive search, trying out different values of x by keeping every fraudulent dataset and downsample the non-fraudulent dataset to create the dataset according to the target rate. After that, they evaluate the performance in validation set and also the performance in production.</p>
+
+<h1 id="my-own-experiment">My own experiment</h1>
+
+<p>To see how helpful is this target rate idea, I decided to try it out on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>. The dataset is extremely imbalanced with only 0.0001 percent of fraud dataset. I try different target rate from 0.1 to 1 and train XGBoost model with the balanced training data. Then I evaluate the XGBoost model on the imbalanced validation set and below is the result I get:</p>
+
+<p><img src="/assets/resized/target-rate-result-800x427.png" alt="Figure 1: Precision, recall, and roc scores on different target rate." /></p>
+
+<p><em>Figure 1: Precision, recall, and roc scores on different target rate..</em></p>
+
+<p>We can see that the graph looks wiggly, and perhaps that the best tradeoff between the three metrics is between 0.3-0.4 target rate. Now I would say that this technique is helpful to some extent if we want to do better downsampling. However, I think that the result is prone to random samples and the random seed that we initialize. So I’m not entirely convinced that this is the best method to overcome extremely imbalanced dataset.</p>
+
+<h1 id="closing">Closing</h1>
+
+<p>Thanks for reading! If you think I am missing something please comment below. For those interested you can check my code <a href="https://github.com/rezkaaufar/target-rate/blob/master/target-rate-imbalanced-dataset.ipynb" target="_blank" rel="noopener noreferrer">here</a>.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a talk from stripe where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a credit card fraud public dataset.]]></summary></entry><entry><title type="html">Search fundamentals (part 1)</title><link href="https://rezkaaufar.github.io/search-fundamentals-pt1/" rel="alternate" type="text/html" title="Search fundamentals (part 1)" /><published>2022-04-29T00:00:00+07:00</published><updated>2022-04-29T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/search-fundamentals-pt1</id><content type="html" xml:base="https://rezkaaufar.github.io/search-fundamentals-pt1/"><![CDATA[<p>Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.</p>
+
+<p>In this post, we are going to look at two components of a search engine. In a simplified view, search engine is composed of two main parts: retrieval and reranking.</p>
+
+<p><img src="/assets/resized/search-query-document-1400x459.png" alt="Figure 1: Query and document." /></p>
+
+<p><em>Figure 1: Query and document..</em></p>
+
+<hr />
+
+<h1 id="retrieval">Retrieval</h1>
+<p>In retrieval, we want to return a smaller pool of documents from the huge pools given a query. We essentially want to reduce the number of document candidates that can potentially be of interest according to a given query.</p>
+
+<p>There are many techniques to do retrieval, but the key point is retrieval needs to be fast. In Big-O notation, we want the retrieval to have a time complexity in $\mathcal{O}(1)$ or at most in $\mathcal{O}(\log N)$. Higher time complexity yields to slow and unpleasant experience for users.</p>
+
+<h2 id="retrieval-with-inverted-index">Retrieval with inverted index</h2>
+
+<p>For the sake of simplicity, let’s assume that the query and documents that we have are of string types. To do retrieval fast, we create an inverted index which stores every unique token (vocabulary) that can be found in the document pool and points to document subset containing this token.</p>
+
+<p><img src="/assets/resized/search-inverted-index-1400x631.png" alt="Figure 2: Inverted index." /></p>
+
+<p><em>Figure 2: Inverted index..</em></p>
+
+<p>So instead of doing a string match of each query term to the document term, we can directly access the index to return the list of documents of matched query in $\mathcal{O}(1)$ time complexity.</p>
+
+<p>In popular search libraries such as elastic search, we can adjust further on preprocessing (e.g., tokenizing) and on how to define the match. For preprocessing, we can stem words to only include base word, tokenize word using different delimiters, and many more. For match definition, we can determine whether we want full match of all query term, partial match only, or any other heuristics. These heuristics give you some control on which criteria you want the documents to be returned.</p>
+
+<p><img src="/assets/resized/search-match-1400x689.png" alt="Figure 3: Inverted index match case." /></p>
+
+<p><em>Figure 3: Inverted index match case..</em></p>
+
+<hr />
+
+<h1 id="reranking">Reranking</h1>
+
+<p>We need to assign a score to each of the retrieved documents so that we can get the rank from the most relevant items the least relevant items with respect to the query term. There are many ways to assign score to each retrieved documents, from the older approach like tf-idf and bm25 to the more neural network approach. In this post, we’ll take a look at tf-idf.</p>
+
+<h2 id="tf-idf-scoring">TF-IDF scoring</h2>
+<p>As the name suggest, there are two components in tf-idf: term frequency - inverse document frequency.</p>
+
+<p>Given a word $t$ and document $d$, term frequency $f_{t,d}$ is simply the number of times each word $t$ appeared in document $d$. The term frequency $f_{t,d}$ is given as:</p>
+
+<p><img src="/assets/resized/search-tf-1400x444.png" alt="Figure 4: Term frequency." /></p>
+
+<p><em>Figure 4: Term frequency..</em></p>
+
+<p>Inverse document frequency measures how rare $t$ is across the corpus $D$. Given $N = D$ as the total number of documents in the corpus and $n_t$ as the number of documents having $t$, the $idf(t,D)$ can be calculated as:</p>
+
+<p><img src="/assets/resized/search-idf-1400x444.png" alt="Figure 5: Inverse document frequency." /></p>
+
+<p><em>Figure 5: Inverse document frequency..</em></p>
+
+<p>Then we multiply them together to get the tf-idf score:</p>
+
+<p><img src="/assets/resized/search-tf-idf-1400x631.png" alt="Figure 6: tf-idf final score." /></p>
+
+<p><em>Figure 6: tf-idf final score..</em></p>
+
+<h2 id="calculate-tf-idf-score-for-new-query">Calculate tf-idf score for new query</h2>
+
+<p>Say that your system is running in production, how does it work when you have new query coming in? For term frequency (tf) we need to calculate it real-time. For idf, we can just use the precomputed idf. See the illustration below:</p>
+
+<p><img src="/assets/resized/search-rerank-1400x510.png" alt="Figure 7: Reranked list with tf-idf score." /></p>
+
+<p><em>Figure 7: Reranked list with tf-idf score..</em></p>
+
+<p>Once we have the tf-idf vector, we still need to calculate the similarity between the query and the matched product tf-idf vectors. This step is $\mathcal{O}(m \cdot k)$ where $m$ is the number of matched products and $k$ is the cost of the similarity metric (cosine, euclidean, etc.). To speed this up, approximate nearest neighbor (ANN) reduces it to $\mathcal{O}(\log m \cdot k)$. The details of ANN are out of the scope of this post.</p>
+
+<hr />
+
+<h1 id="closing">Closing</h1>
+
+<p>In the next post we will see other techniques involving retrieval and reranking. Stay tuned and thanks for reading!</p>
+
+<p><a href="http://www.cbrinton.net/ECE20875-2020-Spring/W10/ngrams.pdf" target="_blank" rel="noopener noreferrer">Image source</a> for Figure 4,5 and 6.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.]]></summary></entry><entry><title type="html">Uncertainty in the parameters of linear regression</title><link href="https://rezkaaufar.github.io/uncertainty-in-linear-regression/" rel="alternate" type="text/html" title="Uncertainty in the parameters of linear regression" /><published>2022-03-06T00:00:00+07:00</published><updated>2022-03-06T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/uncertainty-in-linear-regression</id><content type="html" xml:base="https://rezkaaufar.github.io/uncertainty-in-linear-regression/"><![CDATA[<p>I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">statsmodels.api</span> <span class="k">as</span> <span class="n">sm</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">sm</span><span class="p">.</span><span class="n">datasets</span><span class="p">.</span><span class="nf">get_rdataset</span><span class="p">(</span><span class="sh">"</span><span class="s">Duncan</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">carData</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">data</span><span class="p">[[</span><span class="sh">'</span><span class="s">prestige</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">education</span><span class="sh">'</span><span class="p">]]</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">sm</span><span class="p">.</span><span class="nf">add_constant</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="sh">'</span><span class="s">income</span><span class="sh">'</span><span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">sm</span><span class="p">.</span><span class="nc">OLS</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">fit</span><span class="p">()</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">results</span><span class="p">.</span><span class="nf">summary</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p><img src="/assets/resized/statsmodels-output-800x480.png" alt="Example output of statsmodels" /></p>
+
+<p><em>Figure 1: Example output of statsmodels.</em></p>
+
+<p>Where does the confidence interval parameter come from? What about the std error, t statistics, and the p-value that is associated with each coefficient? Where do they come from? In this post we are going to take a look on how does this probability metrics came about.</p>
+
+<h2 id="random-variables-in-linear-model">Random variables in linear model</h2>
+
+<p>Probabilistic metrics exist with the notion of random variables. In linear regression, the variable of interest $y$ that we want to predict is assumed to be generated from a normal distribution. In mathematical form, it looks like this:</p>
+
+\[\mu = X w_{true}\]
+
+\[y \sim \mathcal{N}(\mu, \epsilon)\]
+
+<p>This form can be rewritten as:</p>
+
+\[y = X w_{true} + \epsilon\]
+
+\[\epsilon \sim \mathcal{N}(0, \mathbb{I})\]
+
+<p>where $X$ is our observed dataset, $w_{true}$ is the true parameter that we cannot observe, and $\epsilon$ is an independent noise.</p>
+
+<p>Why does it looks like this? Why does we have to assume that $y$ sampled from a normal distribution? The short answer is because we assume linear regression to have this property. In reality, we will never know the value of $w_{true}$, hence we want to approximate $w_{true}$ by looking at the observed data $X$. To do that, we introduce a new variable called $w_{opt}$, the parameter that we can calculate from observed data. I would assume the reader is familiar with the closed form solution to find the optimal $w_{opt}$ that approximates $w_{true}$. The equation is given as:</p>
+
+\[w_{opt} = (X^T X)^{-1} X^T Y\]
+
+<p>where the $Y$ is the label observations in the data.
+Notice the difference here: $y$ is a random variable sampled from a normal distribution, whereas $Y$ is the label observations in the data. We assume that the observed $Y$ does not equal to $X w_{true}$, but rather to $X w_{true}$ plus some corrupted gaussian noise $\epsilon$. Hence, we further assume that $Y$ is the observations that we get from sampling the random variable of interest $y$.</p>
+
+<p>If we look closer to the equation above, we will notice another thing: $w_{opt}$ is calculated by linearly transforming two components: $X$ and $Y$. Since we model $Y$ as a sample from the random variable $y$, we can introduce another random variable $\hat{w}$ that is calculated as:</p>
+
+\[\hat{w} = (X^T X)^{-1} X^T y\]
+
+<p>$\hat{w}$ represents a distribution of learnt parameter values. $w_{opt}$, the variable that we use to approximate $w_{true}$, can be seen as a sample from the distribution of learn parameter values $\hat{w}$. This is because $\hat{w}$ is defined as a linear transformation from the random variable $y$, with $(X^T X)^{-1} X^T$ being the transformer matrix. And since $Y$ is a sample from $y$, $w_{opt}$ is defined by applying the same transformation to the sample $Y$.</p>
+
+<h2 id="probability-density-function-for-hatw">Probability density function for $\hat{w}$</h2>
+
+<p>Now we want turn $\hat{w}$ into a probability density function. To get that, we can apply multivariate gaussian linear transformation rule to $y \sim \mathcal{N}(\mu, \epsilon)$. I will not go into the details of the derivation in this post. For those interested, please see <a href="https://towardsdatascience.com/where-do-confidence-interval-in-linear-regression-come-from-the-case-of-least-square-formulation-78f3d3ac7117" target="_blank" rel="noopener noreferrer">here</a>. Applying the transformation rule yields:</p>
+
+\[\hat{w} \sim N(w_{true}, (X^T X)^{-1} \eta^2)\]
+
+<p>where $\eta^2$ is the variance of each single random variable $\epsilon$. It is defined by</p>
+
+\[\epsilon \sim \mathcal{N}(0, \mathbb{I} \eta^2)\]
+
+<p>where $\mathbb{I}$ is the identity matrix. In this case, $\epsilon$ that we introduce in $y \sim \mathcal{N}(\mu, \epsilon)$ is a multivariate Gaussian noise where it represents noise that is independent at each data point. Hence, the dimension of $\eta^2$ is $n$, where $n$ is the number of data points.</p>
+
+<p>This leaves us with two unknown parameters that we need to define, namely $w_{true}$ and $\eta^2$, before we can get the probabilistic metrics out of $\hat{w}$.</p>
+
+<p>For $w_{true}$, we use $w_{opt}$ as it is only sample that we observed in the training data. For $\eta^2$, we need an observable value for the calculation. Since we already know that $\hat{w}$ is transformed by the random variable $y$, we use the variance of $y$ to represent the noise part for unknown parameters $\eta^2$. By definition, the variance of $y$ is the same as the variance of $\epsilon$ which is the same as the variance of $\eta^2$. 
+The variance of $y$ can be calculated by taking the predicted value $\hat{Y} = X w_{opt}$ versus the observed value $Y$. Plugging this into a standard deviation formula, we get:</p>
+
+\[\eta^2 = \frac{1}{n-1} (\hat{Y} - Y)^T (\hat{Y} - Y)\]
+
+<p>Note that $\eta^2$ becomes a scalar now. That’s it! We can now proceed to look at each of the probabilistic metrics</p>
+
+<h3 id="standard-deviation">Standard deviation</h3>
+
+<p>We have defined this above. The standard deviation of our weight distribution is given by $(X^T X)^{-1} \eta^2$. The $(X^T X)^{-1}$ matrix is of p x p dimension and $\eta^2$ is a scalar, yielding a p x p matrix, where $p$ is the number of features that we have. The variance of each feature is at the main diagonal of this matrix.</p>
+
+<h3 id="confidence-interval">Confidence interval</h3>
+
+<p>Since $\hat{w}$ is a multivariate Gaussian random variable, the confidence interval for each univariate random variable in $\hat{w}$ is just some standard deviation away from its mean. We use the standard deviation parameter that we have computed above to calculate the confidence interval. For the mean, we use each elements in the $w_{opt}$ vector.</p>
+
+<h2 id="t-statistic-and-p--t">T-statistic and $P &gt; t$</h2>
+
+<p>These two metrics measure how likely the mean of the parameter is $0$. Having a $0$ mean indicates that the feature does not contribute to predicting the target variable $Y$. The $P &gt; t$ is the p-value telling us how far is our mean parameter from $0$, represented by t-statistics. High p-value tells us that the parameter is unlikely to be meaningful for the prediction, whereas low p-value tells us that the parameter is likely to have high contribution to the prediction.</p>
+
+<p>We calculate the t-statistics of the feature by:</p>
+
+\[t_j = \frac{\mu_j - 0}{\eta_j}\]
+
+<p>where $\mu_j$ is the j-th feature mean and $\eta_j$ is the j-th standard deviation of the j-th feature. To get the p-value of the j-th feature we evaluate the t-statistics under $\mathcal{N}(0,1)$</p>
+
+<h2 id="closing">Closing</h2>
+
+<p>There were more stuff going on under linear regression that I hadn’t realized before. I hope this post can help you in understanding where does the probabilistic metrics came from.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.]]></summary></entry><entry><title type="html">Hypothesis testing with binomial distribution in an AB test</title><link href="https://rezkaaufar.github.io/ab-test-hypothesis-testing-binomial/" rel="alternate" type="text/html" title="Hypothesis testing with binomial distribution in an AB test" /><published>2021-12-28T00:00:00+07:00</published><updated>2021-12-28T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/ab-test-hypothesis-testing-binomial</id><content type="html" xml:base="https://rezkaaufar.github.io/ab-test-hypothesis-testing-binomial/"><![CDATA[<p>In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!</p>
+
+<h1 id="samples--parameter-inference">Samples &amp; Parameter Inference</h1>
+
+<p>Let’s say that we have completed an AB test and we have sample size $n=10000$ for both the control and variant group. The control have $ns_c=5500$ and the variant have $ns_v=5700$, which represents the number of success we get.</p>
+
+<p>To do a hypothesis test, we need to infer the parameter of the binomial distribution for both the control and variant group. In binomial distribution, the parameter is $\theta$, which represents the probability of getting a positive outcome in a trial. Based on the data, we can infer that:</p>
+
+\[p_c = \frac{ns_c}{n} = \frac{5500}{10000} = 0.55\]
+
+\[p_v = \frac{ns_v}{n} = \frac{5700}{10000} = 0.57\]
+
+<h1 id="binomial-distribution--significance-testing">Binomial Distribution &amp; Significance Testing</h1>
+
+<p>Now we want to determine whether the difference between control and variant group is significant enough so that we can decide which group we want to apply in our system. To do this, we need to find out what is the probability of getting 5700 success (the variant group parameter) assuming that the control distribution with $p_c=0.55$ is true. Mathematically, it is defined as:</p>
+
+\[a(ns) = \sum_{K=ns}^N {N \choose K} P_{0}^{K} (1 - P_{0}^{K})^{N-K}\]
+
+<p>where in this case $ns$ is the variant group successes $ns_v$ and $P_0$ is the control group binomial distribution parameter $p_c$.</p>
+
+<p>In plain words, the formula tells us what is the probability of observing the event plus the probability of observing other events that are equally rare and more extreme. In this case, the event is the variant group successes $ns_v$. Also note that I am using a one-sided test because in an AB test we only care about getting an improvement. We don’t care if the variant group successes is significantly worse than control group success, even though by statistical definition it still counts as significant.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="n">stats</span><span class="p">.</span><span class="nf">binom_test</span><span class="p">(</span><span class="mi">5700</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.55</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="sh">'</span><span class="s">greater</span><span class="sh">'</span><span class="p">)</span>
+<span class="mf">2.9637380107656557e-05</span>
+</code></pre></div></div>
+
+<p>Using python code above, we can see that we get a low p-value, which tells us that it is unlikely to get 5700 successes assuming that the control distribution is true. Hence we can conclude that the variant group yields better conversion.</p>
+
+<p><img src="/assets/resized/gaussian-approx-binomial-480x300.png" alt="Figure 1: Gaussian approximation of binomial distribution of both the control and variant group." /></p>
+
+<p><em>Figure 1: Gaussian approximation of binomial distribution of both the control and variant group..</em></p>
+
+<p>Figure 1 shows the gaussian approximation of both the control and variant binomial distributions. By theory, we know that we can <a href="https://online.stat.psu.edu/stat414/lesson/28/28.1" target="_blank" rel="noopener noreferrer">approximate binomial distribution with a normal distribution</a>. In math notation, the parameter of the normal distribution can be calculated as:</p>
+
+\[\mu = np\]
+
+\[\sigma = np(1-p)\]
+
+<p>where $n$ is the number of trials and $p$ is the probability of success in a trial.</p>
+
+<p>We can use $\sigma$ to calculate the confidence interval around the binomial parameter:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">p</span> <span class="o">=</span> <span class="mf">0.55</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">SE</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">p</span><span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">95% confidence interval of our binomial distribution is between </span><span class="si">{</span><span class="n">np</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">SE</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s"> and </span><span class="si">{</span><span class="n">np</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">SE</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+<span class="mi">95</span><span class="o">%</span> <span class="n">confidence</span> <span class="n">interval</span> <span class="n">of</span> <span class="n">our</span> <span class="n">binomial</span> <span class="n">distribution</span> <span class="ow">is</span> <span class="n">between</span> <span class="mf">0.54</span> <span class="ow">and</span> <span class="mf">0.56</span>
+</code></pre></div></div>
+
+<p>The confidence interval reinforces our initial findings that getting $0.57$ is unlikely assuming that $p_c=0.55$ is true.</p>
+
+<h1 id="closing">Closing</h1>
+
+<p>Thanks for reading my blog post! Hit me on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a>.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!]]></summary></entry><entry><title type="html">Hypothesis testing with normal distribution in an AB test</title><link href="https://rezkaaufar.github.io/ab-test-hypothesis-testing/" rel="alternate" type="text/html" title="Hypothesis testing with normal distribution in an AB test" /><published>2021-11-21T00:00:00+07:00</published><updated>2021-11-21T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/ab-test-hypothesis-testing</id><content type="html" xml:base="https://rezkaaufar.github.io/ab-test-hypothesis-testing/"><![CDATA[<p>AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions.
+In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test.</p>
+
+<h1 id="before-hypothesis-testing">Before hypothesis testing</h1>
+<p>Before doing hypothesis testing, the first thing that we need to understand is that we only have samples from our AB test, not the true underlying distribution. Ideally, we want to do the hypothesis testing using the true underlying distribution. In reality, we do not know anything about the true underlying distribution. We do not know their distribution, let alone the parameters of the distribution. All we can do is to make an assumption about: 1) the form of the true distribution and 2) the approximation of the true parameter of the assumed distribution. The former is mostly decided by looking at the problem and data format, whereas the latter is based on the data samples. For example. if we are working with a normal distribution, then we need to know the true mean. We can then make an assumption that the mean can be approximated with our samples. Same thing can also be said for the standard deviation.</p>
+
+<h1 id="samples">Samples</h1>
+<p>Say that we are making an intervention to our systems and our metric of interest are a continuous value, such as response time of a customer, time it takes for customer to complete an order, etc. We have gathered the experiment data and we assume that the true baseline has mean=0.1 and the true variant b has mean=-0.1.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=-</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">sns</span><span class="p">.</span><span class="nf">histplot</span><span class="p">([</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">],</span><span class="n">kde</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="row mt-3">
+<div class="col-sm mt-3 mt-md-0">
+
+
+
+<img class="img-fluid rounded z-depth-1" src="" srcset="/assets/img/freq-ab-sample.png 432w" data-zoomable="" />
+
+</div>
+</div>
+<div class="caption">
+Figure 1: Example of an AB test sample from two variants.
+</div>
+
+<h1 id="inferring-the-parameter-standard-error">Inferring the parameter: standard error</h1>
+<p>First we need to infer the parameter of the distribution. In real life we do not know the true parameter, so here we just take the mean and calculate the standard deviation and assume that these values are the true parameter:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span><span class="p">.</span><span class="nf">mean</span><span class="p">(),</span> <span class="n">a</span><span class="p">.</span><span class="nf">std</span><span class="p">(),</span> <span class="n">b</span><span class="p">.</span><span class="nf">mean</span><span class="p">(),</span> <span class="n">b</span><span class="p">.</span><span class="nf">std</span><span class="p">()</span>
+<span class="p">(</span><span class="mf">0.10209145722536886</span><span class="p">,</span> <span class="mf">1.004581515836704</span><span class="p">)</span>
+<span class="p">(</span><span class="o">-</span><span class="mf">0.10367983213074679</span><span class="p">,</span> <span class="mf">1.008924455645851</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>With the parameter information at hand, we can plot both distribution with their confidence interval:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a_mu</span><span class="p">,</span> <span class="n">a_std</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="nf">mean</span><span class="p">(),</span> <span class="n">a</span><span class="p">.</span><span class="nf">std</span><span class="p">()</span>
+<span class="n">a_se</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="nf">std</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">//</span> <span class="n">standard</span> <span class="n">error</span>
+<span class="n">a_ci</span> <span class="o">=</span> <span class="p">(</span><span class="n">a_mu</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">a_se</span><span class="p">,</span> <span class="n">a_mu</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">a_se</span><span class="p">)</span>
+
+<span class="n">b_mu</span><span class="p">,</span> <span class="n">b_std</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="nf">mean</span><span class="p">(),</span> <span class="n">b</span><span class="p">.</span><span class="nf">std</span><span class="p">()</span>
+<span class="n">b_se</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="nf">std</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="o">//</span> <span class="n">standard</span> <span class="n">error</span>
+<span class="n">b_ci</span> <span class="o">=</span> <span class="p">(</span><span class="n">b_mu</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">b_se</span><span class="p">,</span> <span class="n">b_mu</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">b_se</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">linspace</span><span class="p">(</span><span class="n">a_mu</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">a_se</span><span class="p">,</span> <span class="n">a_mu</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">a_se</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">stats</span><span class="p">.</span><span class="n">norm</span><span class="p">.</span><span class="nf">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a_mu</span><span class="p">,</span> <span class="n">a_se</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">vlines</span><span class="p">(</span><span class="n">a_ci</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">vlines</span><span class="p">(</span><span class="n">a_ci</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sh">"</span><span class="s">A 95% CI</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">linspace</span><span class="p">(</span><span class="n">b_mu</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">b_se</span><span class="p">,</span> <span class="n">b_mu</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">b_se</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">stats</span><span class="p">.</span><span class="n">norm</span><span class="p">.</span><span class="nf">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">b_mu</span><span class="p">,</span> <span class="n">b_se</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">vlines</span><span class="p">(</span><span class="n">b_ci</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">vlines</span><span class="p">(</span><span class="n">b_ci</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sh">"</span><span class="s">B 95% CI</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="row mt-3">
+<div class="col-sm mt-3 mt-md-0">
+
+
+
+<img class="img-fluid rounded z-depth-1" src="" srcset="/assets/img/freq-ab-sample-ci.png 432w" data-zoomable="" />
+
+</div>
+</div>
+<div class="caption">
+Figure 2: The 95% confidence interval for mean of both baseline and variant b.
+</div>
+
+<p>Since we only have one mean, which is our sample mean, we use standard error to create a confidence interval around the sample mean. The confidence interval relies on a theory called central limit theorem. This theorem states that means of experiments are normally distributed. The standard error of the mean serves as our estimate of the distribution of the experiment means. So, if we multiply it by 2 and add and subtract it from the mean of one of our experiments, we will construct a 95% confidence interval for the true mean. Note that we don’t need to restrict ourselves to the 95% confidence interval.</p>
+
+<p>What we can see from Figure 2 is that the 95% CI of the variants don’t overlap. The lower end of the CI for variant b is above the upper end of the CI for baseline. This is evidence that our result is not by chance, and that the true mean for variant b is higher than the true mean for baseline. In other words, we can conclude that there is a significant increase in our metric when switching from baseline to variant b.</p>
+
+<h1 id="inferring-the-parameter-bootstrap">Inferring the parameter: bootstrap</h1>
+<p>There is another way to estimate the interval of the true mean. Ideally when we want to estimate the interval of the true mean, we would like to be able to simulate an experiment with multiple datasets. In other words, we would like to be able to get multiple sample means from different samples to get the mean of means. Using this mean of means, we can then create a confidence interval. This technique is commonly known as bootstrap. I am not going into the bootstrap detail in this post.</p>
+
+<h1 id="concluding-the-test-using-hypothesis-testing">Concluding the test using hypothesis testing</h1>
+<p>To solidify our conclusion regarding confidence interval, we can state a hypothesis test: is the difference in means statistically different from zero (or any other value)? To achieve this, we need to test our the difference between the two distributions against a null hypothesis. The null hypothesis in this case is a zero difference in mean, represented by a zero-centered normal distribution. To calculate the difference between the two distributions, we recall that the sum or difference of 2 independent normal distributions is also a normal distribution. The resulting mean will be the sum or difference between the two distributions, while the variance will always be the sum of the variance.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">diff_mu</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="nf">mean</span><span class="p">()</span> <span class="o">-</span> <span class="n">a</span><span class="p">.</span><span class="nf">mean</span><span class="p">()</span>
+<span class="n">diff_se</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="nf">var</span><span class="p">()</span><span class="o">/</span><span class="nf">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span><span class="p">.</span><span class="nf">var</span><span class="p">()</span><span class="o">/</span><span class="nf">len</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="n">ci</span> <span class="o">=</span> <span class="p">(</span><span class="n">diff_mu</span> <span class="o">-</span> <span class="mf">1.96</span><span class="o">*</span><span class="n">diff_se</span><span class="p">,</span> <span class="n">diff_mu</span> <span class="o">+</span> <span class="mf">1.96</span><span class="o">*</span><span class="n">diff_se</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">ci</span><span class="p">)</span>
+
+<span class="p">(</span><span class="mf">0.16824798031433202</span><span class="p">,</span> <span class="mf">0.22381185401183407</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">linspace</span><span class="p">(</span><span class="n">diff_mu</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">diff_se</span><span class="p">,</span> <span class="n">diff_mu</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">diff_se</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">stats</span><span class="p">.</span><span class="n">norm</span><span class="p">.</span><span class="nf">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">diff_mu</span><span class="p">,</span> <span class="n">diff_se</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">vlines</span><span class="p">(</span><span class="n">ci</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="p">.</span><span class="mi">05</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">vlines</span><span class="p">(</span><span class="n">ci</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="p">.</span><span class="mi">05</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sh">"</span><span class="s">95% CI</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="row mt-3">
+<div class="col-sm mt-3 mt-md-0">
+
+
+
+<img class="img-fluid rounded z-depth-1" src="" srcset="/assets/img/freq-ab-95-ci.png 432w" data-zoomable="" />
+
+</div>
+</div>
+<div class="caption">
+Figure 3: The 95% confidence interval for the difference between the two distributions.
+</div>
+
+<p>With this at hand, we can say that we are 95% confident that the true difference between the baseline and variant b group falls between -0.22 and -0.17. We can also construct a z statistic by dividing the difference in mean by the standard error of the differences. The z statistic is a measure of how extreme the observed difference is. To further test our hypothesis that the difference between the two means is statistically different, we will assume that the opposite is true, that is, the difference is zero. This is our assumed null hypothesis. Under the null hypothesis, if the difference is indeed zero, we will see the z statistic falls between 2 standard deviations of the mean 95% of the time. If the z statistic falls outside the 2 standard deviations, then we can reject the null hypothesis and conclude that there is a difference between our two distributions.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">z</span> <span class="o">=</span> <span class="n">diff_mu</span> <span class="o">/</span> <span class="n">diff_se</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">stats</span><span class="p">.</span><span class="n">norm</span><span class="p">.</span><span class="nf">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sh">"</span><span class="s">Standard Normal</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">vlines</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="p">.</span><span class="mi">05</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sh">"</span><span class="s">Z statistic</span><span class="sh">"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sh">"</span><span class="s">C1</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="row mt-3">
+<div class="col-sm mt-3 mt-md-0">
+
+
+
+<img class="img-fluid rounded z-depth-1" src="" srcset="/assets/img/freq-ab-z-statistics.png 432w" data-zoomable="" />
+
+</div>
+</div>
+<div class="caption">
+Figure 4: The z-score of our differences plotted over the null hypothesis.
+</div>
+
+<p>This looks like a highly extreme value. It is below -2 which means there is less than a 5% chance that we would see such an extreme value if there were no difference in the groups. The probability of the z statistic plus the probability of observing more extreme values under the null hypothesis are mostly known as p-values. P-values measure how unlikely it is that we are seeing a measurement if the null hypothesis is true. In our case above, we can see from the graph that our p-value is extremely low ($2.5*10^{-45}$ to be exact). This again leads us to conclude that switching from baseline to variant b causes a statistically significant improvement in our metric.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">P-value:</span><span class="sh">"</span><span class="p">,</span> <span class="n">stats</span><span class="p">.</span><span class="n">norm</span><span class="p">.</span><span class="nf">cdf</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+
+<span class="nf">ttest_ind</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+<span class="c1"># the two code above will yield the same value
+</span></code></pre></div></div>
+
+<h1 id="closing">Closing</h1>
+<p>To the naked eye, this might shock us as the sample distribution highly overlaps in Figure 1. Personally. I think that p-value is just one component that we can calculate to help make a decision. It should not be the sole reason to decide on a problem. There may be a case where getting an improvement from -0.01 to 0.01 is not necessarily a good thing. So please be careful and know the downside of using p-value.</p>
+
+<p>Thanks for reading my blog post. In the next post, I will talk about frequentist hypothesis testing using a bernoulli distribution. Stay tuned!</p>
+
+<p>Contact me on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions. In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test.]]></summary></entry><entry><title type="html">Causal model with bayesian network</title><link href="https://rezkaaufar.github.io/structural-causal-model/" rel="alternate" type="text/html" title="Causal model with bayesian network" /><published>2021-08-26T00:00:00+07:00</published><updated>2021-08-26T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/structural-causal-model</id><content type="html" xml:base="https://rezkaaufar.github.io/structural-causal-model/"><![CDATA[<p>In this <a href="https://rezkaaufar.github.io/blog/2021/language-of-causal-model/">previous post</a>, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.</p>
+
+<h1 id="simpsons-paradox-in-an-acyclic-directed-graph">Simpson’s paradox in an acyclic directed graph</h1>
+<p>I have mentioned about simpson’s paradox briefly in my previous blog post. Here I am going to illustrate another perspective on how simpson’s paradox can affect the result of classical machine learning. Consider a (true) causal graph below.</p>
+
+<p><img src="/assets/img/scm-graph.png" alt="Figure 1: An example of a true causal graph between 5 variables" /></p>
+
+<p><em>Figure 1: An example of a true causal graph between 5 variables.</em></p>
+
+<p>Assume that we have data with these 5 variables in a spreadsheet style (think pandas dataframe) and we are tasked to find the effect on how exposure to sun ($T$) on the illness ($Y$). Without any knowledge of causal inference, we might think to just incorporate $T$ as feature and create a linear regression model on the label $Y$. Once we have the model, we use the coefficient to gauge and measure the relationship between exposure to sun and illness. If the coefficient is a positive number, then it tells us that there is a positive relationship, and vice versa if the coefficient is a negative number.</p>
+
+<p><img src="/assets/img/scm-regression.png" alt="Figure 2: Results of two linear regressions using different features. (&lt;a href=&quot;https://www.youtube.com/watch?v=5JsFZbGqJzc&amp;t=1516s&amp;ab_channel=ODSAIGlobal&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;credits&lt;/a&gt;)" /></p>
+
+<p><em>Figure 2: Results of two linear regressions using different features. (<a href="https://www.youtube.com/watch?v=5JsFZbGqJzc&amp;t=1516s&amp;ab_channel=ODSAIGlobal" target="_blank" rel="noopener noreferrer">credits</a>).</em></p>
+
+<p>Looking at Figure 2 above, if we use $T$ as the single feature to predict $Y$, we got test RMSE of 10 and a coefficient of 0.99, meaning that there is a positive relationship between exposure to sun and illness. But if we were to add $C$ (type of car owned) as feature, then we would have an even better test RMSE of 7.7, hinting that type of car owned is helpful in predictive power. But if we inspect the coefficient, we see that now $T$ and $Y$ have a negative relationship, whereas $C$ and $Y$ have a positive relationship. How can this happen? How can knowing the type of car owned results in more predictive power to illness? To the naked eye, this seems pretty unintuitive. But if we know the true causal graph we will immediately realized that knowing $C$ indirectly tells us the age of the person, which gives it the predictive power to illness. This is another example of simpson’s paradox in a acyclic directed graph which we can use to distinguish flow of correlation vs causation.</p>
+
+<hr />
+
+<h1 id="bayesian-network">Bayesian Network</h1>
+
+<p>We know that strong correlation between variables do not imply a causal effect. With counterfactuals, we introduce potential outcomes $(Y1, Y0)$ to be able to capture the causal effect. With structural causal model (SCM), the goal is to model the causal interdependencies between variables. One tool that we can use to achieve this is to use probabilistic graphical models (PGM). With PGM, we can model the relationships between features. PGM as a term encompasses many different approaches. In our case, one of the graph models that we can use to capture causal model is a bayesian network. Bayesian network is a directed acyclic graph that captures the interdependencies between variables. Nodes represent random variables, whereas edges represent relationships (the conditional probabilities) between variables.</p>
+
+<p><img src="/assets/img/scm-bn-example.png" alt="Figure 3: Illustration of a bayesian network" /></p>
+
+<p><em>Figure 3: Illustration of a bayesian network.</em></p>
+
+<p>In a bayesian network, the value of a node is independent of the rest of the variables in the graph given its parents. The relationship between arbitrary nodes are not necessarily causal. Therefore, we need to assume that the directed edges are the actual causal effect. This is where the unconfoundedness assumption plays in SCM. We need to believe and be sure that the bayesian network that we build have no unmeasured confounders.</p>
+
+<h2 id="how-to-build-bayesian-network">How to build bayesian network?</h2>
+<p>So now we might ask: how do we build this bayesian network? If we have a lot of features, do we need to manually specify the causal relationships between the features that we have? There are some ways in which we can utilize correlation to automatically build the bayesian network, such as the <a href="https://arxiv.org/abs/1803.01422" target="_blank" rel="noopener noreferrer">NOTEARS</a> algorithm. This automatic training is also known as structure learning. However, we can’t just blindly use the result. It’s better to have an expert to review the structure and fix the relationship (add, remove, or flip edges) in the bayesian network if deemed necessary.</p>
+
+<p><img src="/assets/img/scm-bn-build.png" alt="Figure 4: Steps to build a bayesian network" /></p>
+
+<p><em>Figure 4: Steps to build a bayesian network.</em></p>
+
+<p>Figure 4 above shows the steps in building a bayesian network:</p>
+
+<ul>
+<li>First, we can use some algorithm (NOTEARS) to automatically build edges between our variables.</li>
+<li>As a consequence of the learning process, the edges have weights. Hence we can remove some edges that are below a certain threshold. This results in an initial causal structure build automatically from the algorithm.</li>
+<li>We can then further proceed to fix the causal structure by flipping, removing, or adding edges based on our domain knowledge.</li>
+</ul>
+
+<h2 id="what-lies-underneath-bayesian-network">What lies underneath bayesian network?</h2>
+<p>In the classical literature, bayesian networks are mostly either fully discrete or fully gaussian. This means that all the nodes in the graph are either discrete or continuous. The reason is because of closure properties: fully discrete allows us to model the conditional probability distribution with conditional table and they are all jointly multinomial random variable, whereas fully gaussian allows every operation (conditional, marginal, etc) to always result in another gaussian. There are other approaches where we use a non-parametric version of bayesian network which allows us to work flexibly with different types of distributions.</p>
+
+<h2 id="parameter-estimation-in-bayesian-network">Parameter estimation in bayesian network</h2>
+<p>The structure tells us the causal relationships, and for each of these relationships, there is a distribution which tells us the probability of attaining a certain state given for any variable given the states of the parent node. In a fully discrete bayesian network, the size of the conditional probability table would be the number of states of current node multiplied by the parents state. This would be total parameter that we need to estimate from data. To estimate these parameters, one can use maximum likelihood estimation (usually just involves taking counts and fractions) which produces a point estimate or use bayesian estimation and allows us to put a prior belief on the estimate.</p>
+
+<p><img src="/assets/img/scm-bn-trained.png" alt="Figure 5: A conditional probability distributions for each node in bayesian network" /></p>
+
+<p><em>Figure 5: A conditional probability distributions for each node in bayesian network.</em></p>
+
+<p>Figure 5 shows the illustration after fitting the parameters of our 3 variables on the observational data. Each node is governed by a conditional probability. If a variable does not have any parents, then it’s just its own probability.</p>
+
+<hr />
+
+<h1 id="the-operation-in-bayesian-network">The operation in bayesian network</h1>
+<p>With a bayesian network defined, one might ask: what can do with it? There are two operations that we can apply on a bayesian networks node: conditioning and intervention. Do note that conditioning is not always the same as the causal effect, that is why it is better to always do an intervention if we are able to and especially if we want to gain insight using the bayesian network.</p>
+
+<h2 id="conditioning">Conditioning</h2>
+<p>Conditioning is an observational inference: having observed the data that we have, what would the probability of a certain variable be given that we observe some parents state. Since conditioning is observational, we can do conditioning between any arbitrary nodes without having to follow the directed edge (yes including between nodes that doesn’t have any directed arrows). Conditioning is usually done in a setting where one cannot do an intervention. 
+In conditioning, we can have a non-causal correlation flowing from one node to another node if we are not careful, leading to an incorrect interpretation. In other words, conditioning between arbitrary nodes without regarding the causal effect might lead to a spurious correlation. Consider this case below:</p>
+
+<p><img src="/assets/img/scm-ass-caus.png" alt="Figure 6: Association vs causation in a graph (&lt;a href=&quot;https://www.bradyneal.com/causal-inference-course&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;credits&lt;/a&gt;)" /></p>
+
+<p><em>Figure 6: Association vs causation in a graph (<a href="https://www.bradyneal.com/causal-inference-course" target="_blank" rel="noopener noreferrer">credits</a>).</em></p>
+
+<p>The true causal effect from treatment $T$ to outcome $Y$ flows through $M1$ and $M2$. However, in the case above there are two other paths in which non-causal correlation can flow from $T$ to $Y$:</p>
+
+<ul>
+<li>
+$W1$, $W2$, $W3$
+
+
+</li>
+<li>
+$X1$, $X2$, $X3$
+
+
+</li>
+</ul>
+
+<p>The $W$ path is known as confounder path. In bayesian network, confounder path can mess with the treatment effect because it affect how treatment $T$ is assigned, making $Y$ also affected. The only way to measure the treatment effect correctly in this case is by conditioning on all possible confounder. In the case of bayesian network, if we intervene on $T$, then the non-causal association in the W path is automatically blocked. If we cannot do an intervention and would want to derive treatment effect from observational data, then the W path needs to be conditioned on, otherwise the non-causal association will render the causal effect incorrect. In the $W$ path, conditioning on children of colliders (either $W1$ or $W3$) also blocks the non-causal association, so it doesn’t have to be on the confounder node.</p>
+
+<p>The $X$ path is known as colliders. Contrary to the confounder, conditioning on the collider can make non-causal association flows through the path. We will not go into details but here is an excellent <a href="http://corysimon.github.io/articles/berksons-paradox-are-handsome-men-really-jerks/" target="_blank" rel="noopener noreferrer">example of colliders</a>. The idea is that if we have colliders, we should not apply conditioning on that variable as it can mess with our interpretation.</p>
+
+<p><img src="/assets/img/scm-cond-intv.png" alt="Figure 7: Visual illustration on the difference between conditioning and intervening (&lt;a href=&quot;https://www.bradyneal.com/causal-inference-course&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;credits&lt;/a&gt;)" /></p>
+
+<p><em>Figure 7: Visual illustration on the difference between conditioning and intervening (<a href="https://www.bradyneal.com/causal-inference-course" target="_blank" rel="noopener noreferrer">credits</a>).</em></p>
+
+<h2 id="intervention">Intervention</h2>
+<p>To gain insight from our model, we want to query our model under different observation. With intervention, we can replace the probability distributions of a certain state. If this state has a children, then we can simulate what would have happened to the children marginal probability if we do an intervention to the node. Unlike conditioning, intervention on a node will only affect its children according to the causal direction.
+Figure 8 and 9 below shows how we can do an intervention to simulate the target variable.</p>
+
+<p><img src="/assets/img/scm-bn-before-intv.png" alt="Figure 8: Marginal probability of getting high or low grades before doing an intervention" /></p>
+
+<p><em>Figure 8: Marginal probability of getting high or low grades before doing an intervention.</em></p>
+
+<p>Figure 8 shows the calculation of the joint probability between Grade, Study, and School Support, and the marginal probability of Grade. Remember that $P(S)$,  $P(SS)$, and $P(G \mid S, SS)$ are calculated from data. These are the parameters that we estimated after we have the causal structure. With the estimated parameter and causal structure, we calculate the marginal probability of Grade. This is the marginal probability that we learn from data before we do any intervention.</p>
+
+<p><img src="/assets/img/scm-bn-after-intv.png" alt="Figure 9: Marginal probability of getting high or low grades after doing an intervention on the study variable" /></p>
+
+<p><em>Figure 9: Marginal probability of getting high or low grades after doing an intervention on the study variable.</em></p>
+
+<p>Figure 9 shows how it would look like to Grade variable if we do an intervention on Study. Here we force $P(S)$ to hold a certain value: in plain English we can interpret this as forcing everyone to Study. We can see after intervening, the marginal probability of Grade from 0.605 to 0.875 on the marginal probability $P(G=\text{High})$. This means that we can assume that if we nudge students to study more then it would yield better grades that is good for the school.</p>
+
+<p>Please note that when doing intervention, we assume that the change in the target variables marginal probability happens on the whole population. However, when we build the causal structure and fit the parameters for every variables, we do it on the observational data. So it’s important to make sure that we have enough data first. Ensuring that we have enough data is most commonly known as fulfilling the <a href="https://www.bradyneal.com/Introduction_to_Causal_Inference-Dec17_2020-Neal.pdf" target="_blank" rel="noopener noreferrer">positivity/overlap</a> assumption.</p>
+
+<hr />
+
+<h1 id="recap-and-closing">Recap and closing</h1>
+<p>In this post we cover structural causal model as a way to capture causal language. We have seen:</p>
+
+<ul>
+<li>Simpson’s paradox in a graph.</li>
+<li>Directed acyclic graph, especially bayesian network, as a structure to model both association and causation relationship between variables.</li>
+<li>How to build bayesian network given data.</li>
+<li>Condition and intervention as operations that we can apply in bayesian network.</li>
+</ul>
+
+<p>Thanks for reading this post! Contact me on twitter for feedback <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[In this previous post, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.]]></summary></entry><entry><title type="html">Understanding the language of causal model</title><link href="https://rezkaaufar.github.io/language-of-causal-model/" rel="alternate" type="text/html" title="Understanding the language of causal model" /><published>2021-07-09T00:00:00+07:00</published><updated>2021-07-09T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/language-of-causal-model</id><content type="html" xml:base="https://rezkaaufar.github.io/language-of-causal-model/"><![CDATA[<p>“Correlation does not imply causation”</p>
+
+<p>You might hear this jargon everywhere since it is quite pervasive if you work in data science/machine learning. Also, you might have seen this image about spurious correlation:</p>
+
+<p><img src="/assets/img/corr-col.png" alt="Figure 1: spurious correlation (&lt;a href=&quot;https://www.kaggle.com/general/187094&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;credits&lt;/a&gt;)" /></p>
+
+<p><em>Figure 1: spurious correlation (<a href="https://www.kaggle.com/general/187094" target="_blank" rel="noopener noreferrer">credits</a>).</em></p>
+
+<p>But what does it mean, really? What does “correlation does not imply causation” really mean? Given a data $X$ and a target variable $Y$, can we estimate direct causal effect? If so, how can we know that we have modeled causation in a correct way? Is there a formal way to capture this English statement? Yes!</p>
+
+<p>In causal inference, there are at least two formal ways to discuss causation: one is based on counterfactuals (or potential outcomes) and the other one is based on causal directed acyclic graph (or structural causal model). The latter involves Judea Pearl’s do-calculus. For the rest of this post I am going to use the former, which is the language of counterfactuals to draw the intuition.
+Okay, enough intro. The best way to start understanding why correlation $\neq$ causation is to understand the simpson’s paradox.</p>
+
+<hr />
+
+<h1 id="simpsons-paradox">Simpson’s paradox</h1>
+
+<p>Imagine we are developing a treatment for both men and women. We want to know the causal effect of the treatment. Specifically, we want to draw a conclusion from the treatment with the following possibility:</p>
+
+<ul>
+<li>Treatment is good for men (S1)</li>
+<li>Treatment is good for women (S2)</li>
+<li>Treatment is bad overall (S3)</li>
+</ul>
+
+<p>Now, simpson’s paradox occurs when people equate probabilistic statements with the statements (S1), (S2), and (S3) above. How does the probabilistic statements look like? Consider the data below</p>
+
+<p><img src="/assets/img/table-causal.png" alt="Table 1: illustrative data" /></p>
+
+<p><em>Table 1: illustrative data.</em></p>
+
+<p>From the table, we have treatment $T$ that is binary (given and not given), feature (or covariate) $X$ that is also binary (men and women) and the outcome $Y$ that is also binary (working and not working). The numbers in the column is the sum of treatment that is working ($Y=1$). Consequently, we have the probabilistic interpretation as follows:</p>
+
+<ul>
+<li>
+$$P(Y=1 | T=1, X=1) = 0.15$$ 
+(Group 1)
+
+
+</li>
+<li>
+$$P(Y=1 | T=0, X=1) = 0.10$$
+(Group 2)
+
+
+</li>
+<li>
+$$P(Y=1 | T=1, X=0) = 0.30$$
+(Group 3)
+
+
+</li>
+<li>
+$$P(Y=1 | T=0, X=0) = 0.20$$
+(Group 4)
+
+
+</li>
+<li>
+$$P(Y=1 | T=1) = 0.16$$
+(Group 5)
+
+
+</li>
+<li>
+$$P(Y=1 | T=0) = 0.19$$
+(Group 6)
+
+
+</li>
+</ul>
+
+<p>From the probabilistic interpretation above, we can derive three key probabilistic statements:</p>
+
+<ul>
+<li>
+$$P(Y=1 | T=1, X=1) - P(Y=1 | T=0, X=1) &gt; 0$$
+(P1)
+
+
+</li>
+<li>
+$$P(Y=1 | T=1, X=0) - P(Y=1 | T=0, X=0) &gt; 0$$
+(P2)
+
+
+</li>
+<li>
+$$P(Y=1 | T=1) - P(Y=1 | T=0) &lt; 0$$
+(P3)
+
+
+</li>
+</ul>
+
+<p>Remember: simpson’s paradox occur when people equate probabilistic statements (P1-P3) with the English statements (S1-S3). We see from the example above, all (P1), (P2), and (P3) are true. But in causal inference, it is NOT possible for (S1), (S2), and (S3) to all be true. If the treatment is good for both men and women (S1-S2), then it should not be possible that the overall treatment is bad (S3). But why does our observation says otherwise? Again, the error is in equating (P1-P3) with (S1-S3).</p>
+
+<p>How does this happen then? Is it because of the sample size that is not comparable between groups? Well we can still have more or less the same sample size and still fall to simpson’s paradox (<a href="https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s897-machine-learning-for-healthcare-spring-2019/lecture-notes/MIT6_S897S19_lec14note.pdf" target="_blank" rel="noopener noreferrer">example</a>). To understand why this is happening, we need to understand the effect of confounding variable.</p>
+
+<h1 id="confounding-variable">Confounding variable</h1>
+<p>Let’s take a closer look at Table 1. Do you notice a pattern in the treatment assignment? You can see that the there are more treated men than those who doesn’t receive treatment. On the other hand, there are less treated women than those who doesn’t receive treatment. We might wonder: gender probably affects the treatment assignment, therefore there are more men who received treatment than women, which led to non-comparable groups formed between men and woman. In this case, gender is a confounding variable. Confounding variable is a common cause that is both affecting the treatment and the treatment outcome. Usually confounding variable is unobserved.</p>
+
+<p><img src="/assets/img/confound-graph.png" alt="Figure 2: directed acyclic graph illustrating confounding variable (&lt;a href=&quot;https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;credits&lt;/a&gt;)" /></p>
+
+<p><em>Figure 2: directed acyclic graph illustrating confounding variable (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf" target="_blank" rel="noopener noreferrer">credits</a>).</em></p>
+
+<p>There is an information flow between the treatment to the outcome via the confounding variable, resulting in (P1-P3) to all be true. In this case, $X$ is the confounding variable: the gender.</p>
+
+<h1 id="correlation-does-not-imply-causation-in-a-formal-way">Correlation does not imply causation (in a formal way)</h1>
+<p>To capture the English statements (S1-S3) above, we use counterfactuals. We start by introducing $(Y1, Y0)$ where $Y1$ is the outcome if one is treated and $Y0$ is the outcome if one is not treated. We observe:</p>
+
+\[Y = T Y1 + (1 - T) Y0\]
+
+<p>To put it simply, $Y1$ denotes the outcome I WOULD observe if I WERE to take the treatment, $Y0$ denotes the outcome I WOULD observe if I WERE to not take the treatment, whereas $Y$ denotes the outcome that I do observe just in the observational data. In reality, we never observe $Y1$ and $Y0$ in the observational data on any person, that is why when we derive conclusion DIRECTLY from Y, we observe the simpson’s paradox. We’ll see more details regarding counterfactuals in the next section.</p>
+
+<p>The correct translation of (S1-S3) is:</p>
+
+<ul>
+<li>
+$$P(Y1=1 | X=1) - P(Y0=1 |X=1) &gt; 0$$ 
+(C1)
+
+
+</li>
+<li>
+$$P(Y1=1 | X=0) - P(Y0=1 |X=0) &gt; 0$$ 
+(C2)
+
+
+</li>
+<li>
+$P(Y1=1) - P(Y0=1) &lt; 0$ 
+(C3)
+
+
+</li>
+</ul>
+
+<p>These three statements cannot be all true. If the first two statements hold, then:</p>
+
+\[P(Y1=1) - P(Y0=1) = \sum_{x=0}^1 [P(Y1=1 | X=x) - P(Y0=1 | X=x)] P(x)\]
+
+<p>This is why if the treatment is good for both men and women (S1-S2) , then it is not possible that the overall treatment is bad (S3).
+In summary:</p>
+
+<ul>
+- (C1) = (E1) $\neq$ (P1)
+- (C2) = (E2) $\neq$ (P2)
+- (C3) = (E3) $\neq$ (P3)
+</ul>
+
+<p>and (E3) cannot be true if (E1) and/or (E2) hold.
+In general, we have:</p>
+
+\[P(Y=1 | T=1, X=1) - P(Y=1 | T=0, X=1) \neq P(Y1=1 | X=1) - P(Y0=1 |X=1)\]
+
+\[P(Y=1 | T=1, X=0) - P(Y=1 | T=0, X=0) \neq P(Y1=1 | X=0) - P(Y0=1 |X=0)\]
+
+\[P(Y=1 | T=1) - P(Y=1 | T=0) \neq P(Y1=1) - P(Y0=1)\]
+
+<p>In other words, correlation (left hand side) does not imply causation (right hand side). The left hand side can also be called the probabilistic quantity and the right hand side can be called causal quantity.</p>
+
+<h1 id="counterfactuals">Counterfactuals</h1>
+<p>I mentioned above that in order to capture the causal statements, we can use counterfactuals (or potential outcome). But what does it mean? In our binary treatment example, counterfactuals are the outcomes that we could have observed if we can give treatment and not give treatment to a person simultaneously. Ideally, to measure the true causal effect, we would want to put everyone in the population in both the treatment group and control group(s). Consider the men group in Table 1: the true causal effect is the difference between all 1450 people for the treatment group and all 1450 people for the control group. In other words, we want both the outcome for treatment and no treatment to be available for everyone. But in this case (and almost always) the counterfactuals cannot be observed, hence we take the naive difference between n=1400 and n=50.</p>
+
+<p>So how do we derive the correct causal effect then? How can we get $Y1$ and $Y0$ so that we can reliably say that my treatment has an effect? Do we have to fill in all the counterfactuals so that we have the same number of instances between groups? As far as I understand, there are two ways we can derive causal effect reliably:</p>
+
+<ul>
+<li>Randomized controlled trial (or AB Test).</li>
+<li>Conditioning on all possible confounding variables.</li>
+</ul>
+
+<p>The former usually does not involve in filling all the counterfactuals (which we’ll see more below). The latter approach is used in a situation where it is almost impossible to do randomized controlled trials (e.g. telling non-smoker to smoke to determine the causal effect of smoking to impotence). The latter is also mostly used on observational data. Furthermore, in the latter case we can take it further by filling the counterfactuals to get the best causal effect estimate.</p>
+
+<h1 id="randomized-controlled-trials">Randomized controlled trials</h1>
+<p>RCT/AB test removes the effects of confounding to the treatment. Directed edge from $X-&gt;T$ is removed.</p>
+
+<p><img src="/assets/img/rct-causal.png" alt="Figure 3: effects of RCT on the edge between confounding to treatment (&lt;a href=&quot;https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;credits&lt;/a&gt;)" /></p>
+
+<p><em>Figure 3: effects of RCT on the edge between confounding to treatment (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf" target="_blank" rel="noopener noreferrer">credits</a>).</em></p>
+
+<p>This means that the treatment assignments are now purely random. Consequently, this makes $T$ independent of $(Y1, Y0)$, or in other words, the treatment does not affect the potential outcome anymore. Note the difference: treatment $T$ still affect the actual outcome $Y$ but the treatment DOES NOT affect the potential outcome $Y1$, $Y0$. For more intuition regarding this I highly recommend checking out <a href="https://www.bradyneal.com/causal-inference-course" target="_blank" rel="noopener noreferrer">Brady Neal’s causal inference course</a>.
+With the independence, we have</p>
+
+\[P(Y=1 | T=1, X=x) = P(Y1 = 1 | X=x)\]
+
+<p>hence we can assume that the probabilistic quantity (P1-P1) is now the same as the causal quantity (C1-C3). Therefore, we can derive the causal effect directly from the probabilistic quantity and do your statistical test to determine whether it is significant (the usual AB Test). In RCT, afaik, we can sort of trust the outcome because of the randomized treatment assignment without having to approximate the counterfactuals.</p>
+
+<h1 id="observational-data">Observational data</h1>
+<p>In the case of most observational data, where the treatment assignment is not random, we can only recover the causal effect by CONDITIONING on all possible confounding variables.</p>
+
+<p><img src="/assets/img/conditioning-causal.png" alt="Figure 4: effects of conditioning on confounding variable, blocking the path (&lt;a href=&quot;https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;credits&lt;/a&gt;)" /></p>
+
+<p><em>Figure 4: effects of conditioning on confounding variable, blocking the path (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf" target="_blank" rel="noopener noreferrer">credits</a>).</em></p>
+
+<p>Essentially, we want the independence between $T$ and $(Y1, Y0)$ to happen here but we do this via conditioning on the confounding variables. We have:</p>
+
+\[(Y0,Y1) \perp T | X\]
+
+<p>This condition reduces the causal effect into a probabilisitic quantity. In the above example, if we assume that gender is our confounding variable, conditioning on it would yield:</p>
+
+<p>\(P(Y1 = 1) = \sum_x P(Y = 1 | T = 1, X=x) P(X=x)\)
+, where there is only one $x$, namely gender</p>
+
+<p>Now, to further calculate the causal effect in a non-randomized observational data, it is common to approximate the unobserved counterfactuals with a prediction. In the men group above, we can train a model to predict the unobserved counterfactuals to fill the missing data points (so we have treated men n=1450, not treated men n=1450) and then predict the average treatment effect between the two groups. There are many ways to create this approximate causal model and they usually involve a lot of assumption. For more details I highly recommend to also check <a href="https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s897-machine-learning-for-healthcare-spring-2019/lecture-notes/MIT6_S897S19_lec14note.pdf" target="_blank" rel="noopener noreferrer">this MIT lecture notes</a>. The most important assumption is of no unmeasured confounders, which only holds when we observe all possible variables that influence both treatment decisions and potential outcomes. In reality, one has to consult with a domain expert to make sure that all variables that influence treatments and potential outcomes are observed.</p>
+
+<h1 id="application-in-industry">Application in industry</h1>
+<p>This is something that I am curious about, but unfortunately I haven’t found the opportunity that allowed me to implement causal inference in a work setting. So I can’t speak from experience. 
+Here are some examples of causal inference that I know can be beneficial in industry:</p>
+
+<h4 id="uplift-modeling">Uplift modeling</h4>
+<p>It is aimed at quantifying the treatment effect and identifying the characteristics of individuals most likely to benefit from the benefit. With this information, one thing we can do is to better choose individuals for the next cycle. The characteristics identification is essentially a prediction of counterfactuals for a customer in an experiment setting. Afaik, uplift can also be used to generate demand by giving user more targeted coupons or voucher. Uplift modeling can be used together with AB Test (offline) or multi armed bandit (online).</p>
+
+<h4 id="causal-dags-for-forecasting">Causal DAGs for forecasting</h4>
+<p>I do not know much about this since this is probably still a new field. One example that I know of is from Lyft (check this <a href="https://www.youtube.com/watch?v=5wbLy4SDuo4&amp;ab_channel=TheTWIMLAIPodcastwithSamCharrington" target="_blank" rel="noopener noreferrer">talk</a> from Sean Taylor). At Lyft, they create a causal DAGs with prior experimental evidence to model the causal effect of things. In the causal DAGs, there are:</p>
+
+<ul>
+<li>pure parent nodes that they control (price level, how much we spend on driver incentives)</li>
+<li>outcome nodes that they monitor (marketplace outcome, things that happen)</li>
+<li>pure parent nodes that they do not control (how many people request driver organically)</li>
+</ul>
+
+<p>They seem to have another model (like policy variables) that produces plan. This plan is then inserted into the structural causal model to sort of simulate what would happen in the outcome nodes.</p>
+
+<p>Sean mentioned that in the business context, they need to estimate the effects of choices they make, and making those choices are causes in both the causality and causal inference senses. The estimates produced by their causal models are inputs to decision problems. Ultimately, they still need to do some decision-making (either by humans or algorithmically) that is informed by their models. I think that they cover more complex interventions involving multiple treatments and outcomes.</p>
+
+<p>If you know any other implementation of causal inference in industry, please do let me know!</p>
+
+<h1 id="recap-and-closing">Recap and closing</h1>
+<p>What this post covered:</p>
+
+<ul>
+<li>Correlation vs causation in a formal way.</li>
+- Counterfactuals as a causal language to capture causal effect correctly. By introducing potential outcomes $(Y1, Y0)$ we see where the failure is.
+<li>RCT and conditioning on confounding variables as a way to reliably calculate causal effect in an experiment.</li>
+</ul>
+
+<p>What this post doesn’t cover:</p>
+
+<ul>
+<li>List of assumptions that need to hold for the counterfactuals to work.</li>
+<li>Structural causal model (Pearl): another causal language to describe and capture causal effect.</li>
+</ul>
+
+<p>Thanks for reading this post! I am a noob in causal inference so please do inform me if there is an error or mistake on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[“Correlation does not imply causation”]]></summary></entry><entry><title type="html">Tesla in CVPR 2021</title><link href="https://rezkaaufar.github.io/cvpr-2021-tesla/" rel="alternate" type="text/html" title="Tesla in CVPR 2021" /><published>2021-07-06T00:00:00+07:00</published><updated>2021-07-06T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/cvpr-2021-tesla</id><content type="html" xml:base="https://rezkaaufar.github.io/cvpr-2021-tesla/"><![CDATA[<p>Akhir juni 2021, Andrej Karpathy selaku director of AI nya tesla melakukan sebuah presentasi mengenai gimana cara self-driving cars bekerja di Tesla. Nah di post kali ini mau gue bahas kesimpulan gue abis nonton video tersebut. Postingan ini ditulis menggunakan Bahasa Indonesia + Bahasa Inggris yang tidak baku.</p>
+
+<hr />
+
+<h1 id="pake-kamera-doang">Pake kamera doang</h1>
+
+<p>Sebelumnya, self-driving car menggunakan LIDAR untuk pre-mapping situasi jalanan ke format point cloud yang diubah lagi ke HD maps. Konsekuensi menggunakan cara ini adalah mereka mesti rekam dulu situasi jalanan pake lidar terus disimpen. Jadinya manual harus ada orang yang nyetir mobil dengan LIDAR muter-muterin jalan untuk dapetin HD mapsnya. Nah nanti pas testing si self-driving car tinggal lokalisasi situasi jalanan dan navigasi dari HD map yang udah ada untuk melakukan prediksi dia mau ngapain. Nah sekarang, Tesla mau mulai untuk pakai vision-based sensor aja. Jadi mereka langsung bikin map dari kamera pada waktu itu juga. Artinya, si mobil ini ga perlu dikasih HD maps sebelum dia turun kejalan. Semua kondisi jalanan langsung diprediksi saat si mobil jalan sendiri. Menggunakan 8 kamera, si mobil on the spot memprediksi ini jalan nyambungnya kemana, dimana ada lampu merah, zebra cross, pejalan kaki, pesepeda, gedung, dll. Ini bagian menurut gue keren banget. Neural network memang super powerful untuk perception problem.</p>
+
+<p><img src="/assets/img/tesla-cars.png" alt="Image" />
+<em>Ilustrasi kamera+radar sensor+lidar yang digunakan oleh Tesla</em></p>
+
+<p>Sebelumnya juga Tesla menggunakan sensor radar untuk membantu prediksi navigasi self-driving car mereka. Fungsi sensor radar ini adalah memberikan mobil informasi mengenai informasi depth-velocity-acceleration. Depth adalah informasi mengenai seberapa jauh objek yang sekarang ada di sekitar mobil, velocity adalah kecepatan dari objek lain yang ada di sekitar mobil, sedangkan acceleration adalah informasi mengenai percepatan dari objek lain yang ada di sekitar mobil. Jadi ya informasi ini penting banget biar si mobil tau objek di sekeliling dia ada apa aja dan gimana cara navigasi yang aman.</p>
+
+<p>Berikut adalah beberapa masalah dari menggunakan radar:</p>
+
+<ul>
+<li>Secara acak (random) sensor radar memberikan angka yang gak akurat.</li>
+<li>Masalah saat perlambatan dadakan. Ada banyak kasus menggunakan sensor radar, mobil pas ngerem jadinya kasar tidak santai.</li>
+<li>Masalah sensor radar bingung gak tau mana stationary object yang benar. Tiba-tiba ngerem pas ada jembatan, tiba-tiba ngerem pas ada mobil parkir dipinggir jalan.</li>
+</ul>
+
+<p>Berdasarkan masalah diatas, mereka akhirnya fokus full invest di sensor kamera aja. Terus gimana dong dapetin informasi depth-velocity-acceleration diatas? Tesla pake neural network buat prediksi depth-velocity-acceleration. Jadi sensor radar diganti sama kamera yang dipersenjatai dengan neural network.</p>
+
+<h1 id="kualitas-data">Kualitas data</h1>
+
+<p>Kunci dari neural network yang bagus performanya? Ini kata mereka:</p>
+
+<p><img src="/assets/img/tesla-data.png" alt="Image" />
+<em>Kunci suksesnya neural network</em></p>
+
+<p>Untuk dapetin data yang bagus gimana caranya? Mereka pake iterative labelling buat dapetin dataset depth-velocity-acceleration yang bagus.</p>
+
+<ul>
+<li>Cara pertama mereka cara yang cuma ngerecord data aja yang banyak dalam bentuk video, jadi mereka bisa dapetin benefit of hindsight yang tidak bisa mereka dapatkan di prediction time. Contoh misal kalo lagi nyetir, didepan ada mobil terus ngeluarin debu-debu. Si neural network bisa jadi udah gak ngeliat mobil didepannya. Kalo kita tambahin data video yang dilabelin secara konsisten, si NN bisa tau oh ini mah debu doang tapi didepan gue masih ada mobil. Dengan kata lain: record -&gt; figure out what happened -&gt; label frame -&gt; use this for prediction.</li>
+<li>Untuk kasus edge cases mereka bikin triggers. Trigger adalah hand programmed rule yang nentuin oke case mana nih yang mesti gue benerin labelnya. Deploy seed neural network, deploy in shadow mode, make prediction, Terus bikin trigger untuk dapetin case2 yang ada inaccuracies buat nanti dibenerin scr otomatis maupun manual.
+Total data yang terkumpul ada 1.5 petabytes. seberapa besar itu neural networknya? :)</li>
+</ul>
+
+<p><img src="/assets/img/tesla-iterative.png" alt="Image" />
+<em>Iterative labeling nya Tesla</em></p>
+
+<h1 id="arsitektur-neural-network">Arsitektur neural network</h1>
+
+<p>Mereka pake backbone net kayak resnet abis itu ada beberapa head yang process informasi dari backbone untuk output kayak direction, kinematics, dll. Karena di self-driving cars banyak task yang diprediksi, sepertinya beberapa head itu digroup untuk task yang mirip: misal satu head buat prediksi pixel level classification kayak depth, satu head buat prediksi object level, satu head buat classification satu image, etc. Karpathy juga bilang banyak bagian branch dan head nya yang pake transformers, convolutions, dan juga recurrent neural network.</p>
+
+<p><img src="/assets/img/tesla-nn.png" alt="Image" />
+<em>Neural network nya Tesla</em></p>
+
+<h1 id="ml-ops">ML Ops</h1>
+
+<p>Mungkin ini bagian yang paling menarik. Dengan neural network yang super besar dan data yang banyak, gimana mereka handle tech stack nya mereka? Mereka pake in-house supercomputer dan semuanya mereka handle end-to-end. Ngerjain semua stack end-to-end ngasih mereka keuntungan dimana mereka bisa iterasi cepet. Jadi semuanya terintegrasi secara vertikal, dari mulai chip, gpu dan npu, filesystem sendiri, proses buat ngitung gradient secara terdistribusi, semua lah. Mereka investasi gila-gilaan di ML OPS. 5760 gpu nodes dan 1.6tbs filesystem. Ada npu (neural processing unit) jg dan processing chip bikin sendiri.</p>
+
+<p><img src="/assets/img/tesla-sc.png" alt="Image" />
+<em>Supercomputer nya Tesla</em></p>
+
+<p><img src="/assets/img/tesla-npu.png" alt="Image" />
+<em>Neural processing unit nya Tesla, lebih terspesialisasi untuk komputasi neural network</em></p>
+
+<hr />
+
+<p>Terima kasih sudah membaca!</p>
+
+<p>P.S. gambarnya gue crop dari youtube karena gue males jadi ya jelek lah gambarnya intinya gitu.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Akhir juni 2021, Andrej Karpathy selaku director of AI nya tesla melakukan sebuah presentasi mengenai gimana cara self-driving cars bekerja di Tesla. Nah di post kali ini mau gue bahas kesimpulan gue abis nonton video tersebut. Postingan ini ditulis menggunakan Bahasa Indonesia + Bahasa Inggris yang tidak baku.]]></summary></entry><entry><title type="html">A primer on decision tree</title><link href="https://rezkaaufar.github.io/decision-tree-a-primer/" rel="alternate" type="text/html" title="A primer on decision tree" /><published>2021-06-18T00:00:00+07:00</published><updated>2021-06-18T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/decision-tree-a-primer</id><content type="html" xml:base="https://rezkaaufar.github.io/decision-tree-a-primer/"><![CDATA[<p>Decision tree is the crux of many popular algorithms in data science: xgboost, lightgbm, catboost, etc. In this post I aim to explain how decision tree works in both classification and regression setting. This post is meant as a learning notes also for myself.</p>
+
+<hr />
+
+<h1 id="classification-decision-trees">Classification decision trees</h1>
+<p>Given series of features $X$ and a categorical label $Y$, decision tree works by finding which feature in our instances to split and further divide the instances so that we have a leaf that represent the final prediction. For classification trees, we usually do the split based on a technique called gini impurity (the most popular technique). In practice there are several ways to calculate the split for a leaf. Deciding a split based on gini impurity involves several steps:</p>
+
+<ul>
+<li>Calculate gini impurity for a leaf</li>
+<li>Calculate total gini impurity for a split</li>
+<li>Decide the split based on feature that has the lowest total gini impurity.</li>
+<li>Repeat step 1-3 until convergence / stopping criteria</li>
+</ul>
+
+<p><img src="/assets/img/classif-toy-dataset.png" alt="Image" />
+<em>Figure 1: A toy dataset that is used to illustrate the classification section.</em></p>
+
+<h2 id="gini-impurity-for-a-leaf">Gini impurity for a leaf</h2>
+
+<p>Gini impurity for a leaf is calculated as:</p>
+
+\[1 - (\sum_{c=1}^C p_{c}^2)\]
+
+<p>where $p_{c}$ is the class probability and $C$ is the total number of class. For binary classification, the equation would become:</p>
+
+\[1 - y_{1}^2 - y_{0}^2\]
+
+<p>where $y_1$ is the yes class probability and $y_0$ is the no class probability.</p>
+
+<p>For example, if we split the dataset on the “loves sugar” column, we would have:</p>
+
+<p><img src="/assets/img/loves-sugar.png" alt="Image" />
+<em>Figure 2: A split example on the “loves sugar” column.</em></p>
+
+<p>where the gini impurity for the left leaf is given by:</p>
+
+\[1 - (\frac{1}{1+3})^2 - (\frac{3}{1+3})^2 = 0.375\]
+
+<p>and the right gini impurity:</p>
+
+\[1 - (\frac{2}{2+1})^2 - (\frac{1}{2+1})^2 = 0.444\]
+
+<h2 id="total-gini-impurity-for-a-split">Total gini impurity for a split</h2>
+
+<p>Once we have the gini impurity for each leaf, we need to calculate the gini impurity for a split. Note that these two are different quantities. The gini impurity for a split is the quantity that we use to decide which feature we want to split our instance first. To assess the total gini impurity for a split, we do a weighted average of gini impurities for each leaves:</p>
+
+\[(\frac{4}{4+3}) 0.375 - (\frac{3}{4+3}) 0.444\]
+
+<p>The idea behind gini impurity is that the more homogeneous sample that we can divide based on a split, then the more pure the split is, hence the lower gini impurity score (0 being the most pure).</p>
+
+<h2 id="gini-impurity-for-multi-categorical-variable-and-numeric-continuous-variables">Gini impurity for multi categorical variable and numeric continuous variables</h2>
+<p>For categorical variable with category greater than 2, we calculate gini impurity for every possible split. For example, if we have a categorical variable with value 1,2, and 3, we split:</p>
+
+<ul>
+<li>based on 1 and not 1 (2 and 3)</li>
+<li>based on 2 and not 2 (1 and 3)</li>
+<li>based on 3 and not 3 (1 and 2)</li>
+</ul>
+
+<p>and then we follow the exact same steps as above. The idea is to binarize the split so that we can calculate the leaf gini impurity and split total gini impurity. The same thing also applies to continuous variable. Coming back to our example, “age” column is a numeric continuous variable. To make a split on that variable, we do something like this:</p>
+
+<p><img src="/assets/img/gini-impurity.png" alt="Image" />
+<em>Figure 3: Gini impurity for continuous variables.</em></p>
+
+<p>Note that we do this on a sorted column because we want the split to be on the sorted instances. The idea is that we decide a split criteria for the continuous variable and we do the exact same steps as the above: treating the split as a binary choice. In the above case, the split criteria is computed based on the mean of every adjacent instances. After we get the mean we then split the instances and calculate the gini impurity like in Figure 2. In practice, there are many ways to decide the split criteria.</p>
+
+<h2 id="choosing-the-split">Choosing the split</h2>
+<p>Based on the example above, we have multiple split criterias and their gini impurity scores. We choose the split that has the lowest gini impurity and made it our first split.</p>
+
+<h2 id="adding-branches">Adding branches</h2>
+<p>We do the same thing as above but now we only consider samples that are included in the node. As we split more, the instances that end up in the leaf will be smaller and smaller.</p>
+
+<h2 id="deciding-when-to-stop-adding-leaves">Deciding when to stop (adding leaves)</h2>
+<p>We stop when we consider a leaf contains only homogeneous instances. We do not need to split more if all instances on a leaf already belong to one label.  We can also stop based on some stopping criteria, for example, by maximum depth. Know when to stop is related to overfitting issue. Splitting perfectly on a training set lead to overfitting whereas splitting fewer lead to underfitting.
+If by stopping criteria we end up with impure leaf (3 yes label and 1 no label) then we take the majority as the decision.</p>
+
+<h2 id="do-classification-decision-trees-have-probabilities">Do classification decision trees have probabilities?</h2>
+<p>It is easy to fall into thinking that a classifier always have a probability interpretation. But decision tree is a non-parametric model. It does not have a probabilistic interpretation. One might get a pseudo-probability based on an <a href="https://rpmcruz.github.io/machine%20learning/2018/02/09/probabilities-trees.html" target="_blank" rel="noopener noreferrer">impure node</a>.</p>
+
+<hr />
+
+<h1 id="regression-decision-trees">Regression decision trees</h1>
+<p>For regression trees, the leaf produces a continuous value, which is usually an average $y$ over the splitted samples. Therefore, to evaluate the split, the sum of squared residuals (SSR) of every splitted samples are usually used. These are the steps:</p>
+
+<ul>
+<li>Calculate the average predicted value of a leaf</li>
+<li>Calculate sum of squared residuals (average predicted value - sample value) of every samples in both sides of the split</li>
+<li>Decide the split based on a feature that has the lowest sum of squared residuals</li>
+<li>Repeat step 1 -3 until convergence / stopping criteria</li>
+</ul>
+
+<p><img src="/assets/img/regression-toy-dataset.png" alt="Image" />
+<em>Figure 1: A toy dataset to illustrate this regression section.</em></p>
+
+<h2 id="deciding-the-values-to-split-our-featurecolumn">Deciding the values to split our feature/column</h2>
+<p>In regression trees, we do this by sorting the column of our features and then we take the average of the adjacent value. This average value will be our threshold to split our feature into two groups. After the split, we calculate the average predicted value of the leaf.</p>
+
+<h2 id="sum-of-squared-residuals">Sum of squared residuals</h2>
+<p>After we get the average predicted value of the leaf, we then calculate the sum of squared residuals, which is given by:</p>
+
+\[\sum_i (y - f(x_{i}))^2\]
+
+<p>where $y$ is our label and $f(x_{i})$ is our prediction value. Here the prediction depends on the average predicted value of the leaf/ where the sample ends up after being splitted.</p>
+
+<p>Refer to the two figures below for an example of how to do calculate sum of squared residuals for a split:</p>
+
+<p><img src="/assets/img/ssr-1.png" alt="Image" />
+<em>Figure 2a: Example of splitting at a threshold value.</em></p>
+
+<p>Figure 2a shows how we can calculate a sum of squared residuals for one threshold split, which is at 100 mg. We do this for all possible threshold value for this column:</p>
+
+<p><img src="/assets/img/ssr-2.png" alt="Image" />
+<em>Figure 2b: Another example of splitting at a threshold value.</em></p>
+
+<h2 id="choosing-the-root-for-both-single-variable-and-multiple-variables">Choosing the root for both single variable and multiple variables</h2>
+<p>If we have multiple variables, we do the same as above for every variable possible and we choose the split that has the lowest sum of squared residuals. If we have a binary column, we are just doing one split. Remember that the idea of a split is that we split the instances into two groups and then we move further from there.</p>
+
+<p><img src="/assets/img/ssr-all.png" alt="Image" />
+<em>Figure 3: Illustration to get the smallest SSR in multiple variables. The values are all made up.</em></p>
+
+<h2 id="adding-branches-1">Adding branches</h2>
+<p>We do the same thing as in the classification decision tree. Further split only consider samples that are included in the node. As we split more, the instances that end up in the leaf will be smaller and smaller.</p>
+
+<h2 id="deciding-when-to-stop-adding-leaves-1">Deciding when to stop (adding leaves)</h2>
+<p>There are multiple ways to do this. The most common one is that we stop when there are less than $k$ instances in the leaf. $k$ is usually set at 20. We can also stop based on some stopping criteria, for example, by maximum depth. Know when to stop is related to overfitting issue. Splitting perfectly on a training set lead to overfitting whereas splitting fewer lead to underfitting.
+With stopping criteria we then take the average $y$ values of every instances in the leaf and use that as our prediction.</p>
+
+<hr />
+
+<h1 id="closing">Closing</h1>
+
+<p>Decision tree is a non-parametric model that powers several most popular models in data science. In practice, there are many ways to decide which features to split. This post highlights one of the most popular technique for splitting: gini impurity for classification and sum of squared residuals for regression.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Decision tree is the crux of many popular algorithms in data science: xgboost, lightgbm, catboost, etc. In this post I aim to explain how decision tree works in both classification and regression setting. This post is meant as a learning notes also for myself.]]></summary></entry><entry><title type="html">Core components of recommender systems</title><link href="https://rezkaaufar.github.io/recsys-core-components/" rel="alternate" type="text/html" title="Core components of recommender systems" /><published>2021-05-08T00:00:00+07:00</published><updated>2021-05-08T00:00:00+07:00</updated><id>https://rezkaaufar.github.io/recsys-core-components</id><content type="html" xml:base="https://rezkaaufar.github.io/recsys-core-components/"><![CDATA[<p>The way that recsys is usually taught by starting from its taxonomy (collaborative filtering, content based, hybrid based) is confusing to me at first. In this post I am going to take another path to explain recsys by discussing the core components first and then draw the connection to the recsys taxonomy. Essentially, the majority of recsys objective is to map items and users on the same vector space through a learning objectives so that we can determine items to give to users for a recommendation or which items to show in a similar items page. My post is mostly based on this wonderful talk by <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="_blank" rel="noopener noreferrer">James Kirk from Spotify</a> so I highly recommend you to watch the video to gain further understanding.</p>
+
+<p>Main components of a recommendation system:</p>
+
+<ol>
+<li>Interactions Matrix</li>
+<li>User and Item Features</li>
+<li>User and Item Representation Function</li>
+<li>Learning Objective</li>
+<li>Prediction Function</li>
+</ol>
+
+<p>Let’s go through it one by one!</p>
+
+<hr />
+
+<h2 id="interaction-matrix">Interaction Matrix</h2>
+<p>Interaction Matrix is the main components of a recsys, usually of $M \times N$ size, where $M$ is the number of users and $N$ is the number of items. Note that user-item definition in a recsys is not restrictive to an actual user or item. The user is the receiving and acting entity on the recommendation, whereas the item is the passive entity that is being recommended to the user.</p>
+
+<p>The matrix contains the interaction value between a user and an item. The interaction value can be:</p>
+
+<ul>
+<li>positive (likes, 5-star review, purchases, views, etc) or negative (downvotes, 1-star review, skips, etc).</li>
+<li>binary or continuous, depending on the data and the problem.</li>
+<li>explicit or implicit. explicit interactions are usually an exact number given by the user (upvotes/downvotes, ratings, etd). implicit interactions are actions that are suggested but not stated clearly (views, clicks, counts, etc)</li>
+</ul>
+
+<p><img src="/assets/img/interaction-matrix.png" alt="Image" />
+<em>Source: <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="_blank" rel="noopener noreferrer">James Kirk’s slides</a></em></p>
+
+<p>Interaction value should reflect what is the intended effect that we want to happen in our recommender system. For example, if we want users to purchase more given our recommender system, then we want our interaction value to be related to purchase. If we want users to engage more in our platform, then our interaction value should be related to engagement.</p>
+
+<p>We might also want to handle and preprocess our interaction matrix before using it. In some settings, users can give negative explicit interaction. Negative interactions can be a rich signals for the recsys to learn from but we need to be careful in handling them. Some loss functions such as learning-to-rank cannot accomodate negative signals. Interaction matrix is also usually sparse, so we need to handle missing value. In explicit interactions, we can’t just replace them with zeroes as it indicates that the user do not like the item. Hence we just go about modelling with sparse data. In implicit interactions, it is much safer to replace with zeroes as it indicates no action from the user (no views, no plays, etc).  Missing values are usually what we want to predict with our recsys: giving item recommendation to a particular user that hasn’t been interacted by the user.</p>
+
+<hr />
+
+<h2 id="useritem-features">User/Item Features</h2>
+<p>There are two types of features in a recsys:</p>
+
+<ul>
+<li>Indicator features: which represents user and item individually. The feature is unique to every user/item and encoded as one-hot vector. Since indicator is unique to every user/item, this feature does not scale to a lot of users. Indicator feature alone also cannot be used to solve cold-start problem (new users who does not have any interaction data).</li>
+<li>Metadata features: any information that we know about user/item that can be incorporated to the recsys. Examples: age, gender, number of child, location, word embeddings, image representation, etc. In some cases, it might be beneficial to preprocess metadata features before using it in our recsys model. For example: converting any string/categorical metadata feature to a numerical type.</li>
+</ul>
+
+<p>In a lot of libraries out there, if we do not specify any metadata features for item and user and use interaction matrix solely in our recsys, then by default only the indicator feature is used. The model is only going to learn representation that is unique for every user/item.</p>
+
+<p><img src="/assets/img/user-item-features.png" alt="Image" />
+<em>Source: <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="_blank" rel="noopener noreferrer">James Kirk’s slides</a></em></p>
+
+<ul>
+<li>Pure collaborative filtering is an approach where a recsys uses only indicator features.</li>
+<li>Pure content-based filtering is an approach where a recsys uses only metadata features for the item and only indicator features for the user. Pure content-based does not share metadata features among users.</li>
+<li>When both indicator and metadata features are used they’re known as a hybrid recsys.</li>
+</ul>
+
+<hr />
+
+<h2 id="useritem-representation-function">User/Item Representation Function</h2>
+<p>In recsys we want to find a good representation for the user and item. A representation is typically a low-dimensional vector that encodes information regarding the user and item. Getting the representation involves transforming the user/item features via a representation function. Some examples of representation function:</p>
+
+<ol>
+<li>Linear Kernels</li>
+<li>Neural Networks (Fully Connected, Transformers, Word2vec, Autoencoder)</li>
+<li>Passthrough (None)</li>
+</ol>
+
+<p>Depending on the design, there are many ways to choose our representation function. Linear kernels are effective with both indicator and metadata features. Linear kernels are also a natural choice for matrix factorization problem. If we have an unstructured data, e.g., text/image that we want to utilize, we can use separate architecture like word2vec or autoencoder to get the text/image representation and then feed it into our recsys representation function. We can also use different representation function for different features, for example, linear kernels for indicator and metadata and passthrough for text/image (directly using representation output from the word2vec or autoencoder).</p>
+
+<hr />
+
+<h2 id="prediction-function">Prediction Function</h2>
+<p>A function that outputs the estimated items’ relevance to a particular user. This function converts user/item representation into a prediction. The prediction itself can vary depending on the design: it can be a score that tells us how relevant an item to a user but it can also be a relevance rank on several items for a particular user. Some examples of prediction function:</p>
+
+<ol>
+<li>Dot product</li>
+<li>Cosine similarity</li>
+<li>Euclidian distance</li>
+<li>Neural network</li>
+</ol>
+
+<hr />
+
+<h2 id="learning-objective">Learning Objective</h2>
+<p>This is essentially our loss function that let us uncover the best representation for the user/item. The learning objective converts both the user/item representation and prediction into a loss to learn the best parameter for the recsys model. Learning objective can have a huge impact on the output of the recommendation system. Changes in learning objective can dramatically affect how our recsys feel to the user. Examples of loss function characteristics:</p>
+
+<ul>
+<li>Some loss functions learn to approximate the interaction value of a user-item and some loss functions learn to uprank positive interaction and downrank negative interactions for a particular user. The former predicts the interaction value and the latter predicts the ranking of items (learning-to-rank).</li>
+<li>Some loss function accomodate negative interactions.</li>
+<li>Some loss function are sensitive to interaction magnitude.</li>
+<li>Some loss function only account for pairs with interactions (sparse), some loss can be made to compare every interaction pairs (dense), and some loss can learn by comparing pairs with interactions by sampling (sampled).</li>
+</ul>
+
+<p>Due to these differences in nature, we must choose learning objective that best fit our goal. Some examples of loss function:</p>
+
+<ol>
+<li>Root-mean-square error</li>
+<li>KL Divergence</li>
+<li>Alternating least square</li>
+<li>Bayesian personalized ranking (learning-to-rank)</li>
+<li>Weighted approximately ranked pairwise (learning-to-rank)</li>
+</ol>
+
+<hr />
+
+<h1 id="combining-it-all-together">Combining it all together</h1>
+
+<p><img src="/assets/img/recsys-build.png" alt="Image" />
+<em>Common architecture of a recommender system. Source: <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="_blank" rel="noopener noreferrer">James Kirk’s slides</a></em></p>
+
+<p>There we have it: the architecture of recommender systems. Let’s try to design a recommender system based on some cases:</p>
+
+<p>For you page. The example case is to recommend item on a homepage personalized for every user:</p>
+
+<ul>
+<li>Interaction matrix: user-item (binary or continuous)</li>
+<li>User features: indicator, metadata</li>
+<li>Item features: indicator, metadata</li>
+<li>User representation: linear</li>
+<li>Item representation: linear</li>
+<li>Learning objective: RMSE, binary cross entropy, WARP, BPE</li>
+<li>Prediction function: dot product, cosine similarity</li>
+</ul>
+
+<p>Similar items. The example case is to recommend item given another item:</p>
+
+<ul>
+<li>Interaction matrix: item-item (binary or continuous)</li>
+<li>User features: indicator, metadata</li>
+<li>Item features: same as user features</li>
+<li>User representation: linear</li>
+<li>Item representation: linear</li>
+<li>Learning objective: RMSE, binary cross entropy, WARP, BPE</li>
+<li>Prediction function: dot product, cosine similarity</li>
+</ul>
+
+<p>With this architecture, we can also incorporate more complex feature representation into the system. For example, if we want to utilize the social graph between user-user, then we can introduce graph neural network that takes an input of user graph (user features) and outputs the representation to be further processed (user representation).</p>
+
+<p><a href="https://arxiv.org/pdf/1902.07243.pdf" target="_blank" rel="noopener noreferrer">For you page</a> utilizing social graph structure:</p>
+
+<ul>
+<li>Interaction matrix: user-item (binary or continuous)</li>
+<li>User features: user-user graph</li>
+<li>Item features: indicator, metadata, etc</li>
+<li>User representation: graph neural network</li>
+<li>Item representation: linear</li>
+<li>Learning objective: custom RMSE</li>
+<li>Prediction function: feed forward neural network</li>
+</ul>
+
+<p>Simpler recsys such as user-based and item-based that does not require training also fits in this architecture. Let’s take a look:</p>
+
+<p>User-based recsys:</p>
+
+<ul>
+  <li>Interaction matrix: user-item</li>
+  <li>User Features: Indicator but we use the row in the interaction matrix</li>
+  <li>Item Features: -</li>
+  <li>User representation: -</li>
+  <li>Item representation: -</li>
+  <li>Learning objective: -</li>
+  <li>Prediction function: dot product, cosine similarity. to predict the rating of an item $y$ that user $x$ hasn’t seen, we query top $k$ users that are similar to user $x$ (have rated item $y$) and calculate the weighted average of the ratings.</li>
+</ul>
+
+<p>Item-based recsys:</p>
+
+<ul>
+  <li>Interaction matrix: user-item</li>
+  <li>User Features: -</li>
+  <li>Item Features: Indicator but we use the column in the interaction matrix</li>
+  <li>User representation: -</li>
+  <li>Item representation: -</li>
+  <li>Learning objective: -</li>
+  <li>Prediction function: dot product, cosine similarity. to predict the rating of an item $y$ that user $x$ hasn’t seen, we query top $k$ users that are similar to item $y$ ($y$ has been rated by user $x$) and calculate the weighted average of the ratings.</li>
+</ul>
+
+<h2 id="is-there-a-recsys-model-that-does-not-fit-into-this-architecture">Is there a recsys model that does not fit into this architecture?</h2>
+
+<p>Yes! In some cases we can use the interaction matrix to design the training data and not use it as our label. You can find some of the examples <a href="https://eugeneyan.com/writing/recommender-systems-graph-and-nlp-pytorch/" target="_blank" rel="noopener noreferrer">here</a> where the author tries to create a pseudo-sentences of products to then be fed into a word2vec training. This setting does not use the interaction matrix as the label.</p>
+
+<p>Thanks for reading! Contact me on twitter if you spot any mistake.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[The way that recsys is usually taught by starting from its taxonomy (collaborative filtering, content based, hybrid based) is confusing to me at first. In this post I am going to take another path to explain recsys by discussing the core components first and then draw the connection to the recsys taxonomy. Essentially, the majority of recsys objective is to map items and users on the same vector space through a learning objectives so that we can determine items to give to users for a recommendation or which items to show in a similar items page. My post is mostly based on this wonderful talk by James Kirk from Spotify so I highly recommend you to watch the video to gain further understanding.]]></summary></entry></feed>

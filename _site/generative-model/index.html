@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Some notes on generative model</title>
+  <meta name="description" content="Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding.">
+  <style>body {
+    max-width: 80ch;
+    padding: 3em 1em;
+    margin: auto;
+    line-height: 1.6;
+    font-size: 1.08em;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+pre {
+    overflow: auto;
+    background: #f7f7f7;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background: #f7f7f7;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+
+blockquote {
+    border-left: 3px solid #ddd;
+    padding-left: 0.8rem;
+    color: #444;
+    margin: 1rem 0;
+}
+
+header.site-header {
+    margin-bottom: 1.5rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+nav a.active,
+nav a:hover {
+    border-color: #111;
+}
+
+section { margin: 1.8rem 0; }
+
+.meta { color: #555; font-size: 0.95rem; }
+
+.listing { width: 100%; border-collapse: collapse; }
+
+.listing td { padding: 0.2rem 0.15rem; vertical-align: baseline; }
+
+.listing tr + tr td { border-top: 1px solid #eee; }
+
+.listing .date { white-space: nowrap; padding-right: 0.8rem; color: #666; font-size: 0.95rem; }
+
+.tag {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    margin-right: 0.35rem;
+    color: #444;
+}
+
+footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; color: #555; font-size: 0.95rem; }
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    align-items: center;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.footer-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.footer-links a:hover {
+    border-color: #111;
+}
+
+.icon {
+    font-family: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol",sans-serif;
+    margin-right: 0.25rem;
+}
+
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.social-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.social-links a:hover {
+    border-color: #111;
+}
+
+@media (max-width: 640px) {
+    body { font-size: 1em; }
+}
+</style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+  <main>
+    <a href="/" aria-label="Home">← Home</a>
+<h1>Some notes on generative model</h1>
+<p class="meta">
+  April 18, 2021
+  
+</p>
+
+<p>Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding.</p>
+
+<hr />
+
+<h2 id="discriminative-vs-generative">Discriminative vs Generative</h2>
+<p>Discriminative models directly capture the conditional probability of $p(y|x)$. Given a feature $x$ and a label $y$, the model can then discriminate between different input instances. Discriminative models are pervasive in the machine learning community.</p>
+
+<p>Generative models, on the other hand, capture the joint probability $p(x,y)$. Hence, during predictions, generative model has the data generating process information compared to a discriminative model.  Now one might wonder, what about the deep generative models like VAE, GAN, or flow-based? All these model do not have a label $y$ (though some do depending on the task). But they are still categorized as generative model because they can generate samples after you train the model. These models capture $p(x)$. In short, if after training you can generate a new data by sampling from your model, then your model is a generative model.</p>
+
+<p>Generative models themselves differ in many ways. There are many ways to model the data generating process, depending on the design choice. It can be supervised or unsupervised, it can be factorized differently depending on the architecture design, etc. Below I am going to list some examples but these are not an exhaustive list of generative models. I am leaving out the technical depth out of this post and only discuss the high-level overview.</p>
+
+<hr />
+
+<h2 id="examples-of-generative-model">Examples of Generative Model</h2>
+
+<h3 id="naive-bayes-nb">Naive Bayes (NB)</h3>
+<p>NB captures $p(x,y)$ by factorizing it into $p(x|y) p(y)$. The naive part comes from the assumption that every features $x_i$ are conditionally independent from each other given a category $y$, hence</p>
+
+\[p(x|y) p(y) = p(y) \prod_{i} p(x_{i}|y)\]
+
+<p>$p(x|y)$ can be represented by a distribution. For example, in a text classification task<sup>1</sup>, one can use multinomial distribution<sup>2</sup> over distinct words given $y$ (the parameters of $p(x|y)$ is of $y \times v$ matrix, where $v$ is total number of vocab). The classification rule is $argmax_y p(x|y) p(y)$. For $p(y)$, it is usually an empirical categorical distribution of $y$, whereas one can use maximum likelihood to estimate the parameter of $p(x|y)$. In the text classification example, one could sample words from the multinomial distribution given a label $y$. But it is not clear how many $k$ words you want in the instances, so I think the $k$ needs to be decided. The sampling will give us garbled texts since there is no notion of sequence (also nobody train NB to generate new samples). To make a prediction, we use the classification rule.
+There is a sequential version of NB: hidden markov model (HMM) but I am not discussing it in this post.</p>
+
+<h3 id="latent-dirichlet-allocation-lda">Latent Dirichlet Allocation (LDA)</h3>
+<p>LDA is widely used in topic modeling task where the objective is to automatically retrieve hidden topics for a given documents<sup>3</sup>. LDA assumes that a document is composed by a mixture of topics, and these topics generate the series of word inside the documents. The topic is a latent variable where one cannot observe during training. Given this assumption, LDA by definition is a hierarchical bayesian model. Below is the graphical model visualization:</p>
+
+<p><img src="/assets/img/lda.png" alt="Image" />
+<em>Source: <a href="https://jmlr.org/papers/volume3/blei03a/blei03a.pdf" target="_blank" rel="noopener noreferrer">original paper</a></em></p>
+
+<p>There are three main parameters of this model<sup>4</sup>: $\theta$, for the document-topic distribution ($M \times K$ matrix), $\beta$, for the topic-word distribution ($K \times V$ matrix), and $z_n$, for the word assignment ($K$ vector per document-word level). The objective of LDA is to find the best value for these parameters given the data that we have. This is a bayesian inference task where the goal is to calculate the posterior distribution for these parameters. We cannot calculate the posterior analytically because computing the denominator is intractable. Hence to approximate the posterior, most advocate for either markov chain monte carlo (mcmc) or variational inference (VI). The original LDA paper uses VI but there exists some MCMC approaches as well.  For the VI approach, they use mean-field variational inference<sup>5</sup>, which breaks the interdependence between each latent variables, making it easier to calculate. After the bayesian inference is done, we get the approximated posterior distribution for $\theta$, $\beta$, and $z_n$. We can use these distributions to generate new sample after training, following the data generating process above. The sampling, like in NB, will result in garbled texts as there is no notion of sequence here. Given a document consisting of words, we can use LDA to get the most likely topics for the document by generating the mixture of topic first using $\theta$ and then greedily assign given word to a topic based on $\beta$ and $z_n$.</p>
+
+<h3 id="generative-rnn-for-text-classification">Generative RNN for Text Classification</h3>
+<p><a href="https://arxiv.org/pdf/1703.01898.pdf" target="_blank" rel="noopener noreferrer">Generative RNN</a> uses the same factorization $p(x|y) = p(x|y) p(y)$ as in NB. The difference here is that since the model is an RNN, $p(x|y)$ can be further factorized into $\prod_{i} p(x_i| x_{&lt;i}, y)$. During training, the label $y$ is used as an input to the RNN, transformed into its own trainable embedding. The authors experimented with two models: sharing the parameters for every label or uses different parameters for each label. During prediction, they compute $argmax_y p(x|y) p(y)$ using empirical categorical distribution for $p(y)$. Sampling from generative RNN is pretty straightforward. We can just first sample the label and starts the sequential process of RNN that generates a new data instances one token at a time. To stop the generative process one might include EOS token or determine the sentence length in advance.</p>
+
+<h3 id="generative-rnng-recurrent-neural-network-grammar">Generative RNNG (Recurrent Neural Network Grammar)</h3>
+<p>In my opinion, <a href="https://arxiv.org/pdf/1602.07776.pdf" target="_blank" rel="noopener noreferrer">RNNG</a> is a cool model. RNNG design allows it to model $p(x,y)$ directly without any factorization. It is based on a top-down generation algorithm that relies on a stack data structure.  We can imagine that at each timesteps, RNNG generates an action that produces both words $x$ and a well-formed parse tree $y$. I’m omitting a lot of details here, but there are 3 main actions in the generative version:</p>
+
+<ul>
+<li>NT(s), which generates a non-terminal S</li>
+<li>GEN(x), which generates a word</li>
+<li>REDUCE, which completes a partially open subtree in the stack</li>
+</ul>
+
+<p>For the discriminative version $p(y|x)$, GEN(x) is replaced by SHIFT action that consumes a given sentence from a buffer data structure.
+Sampling a parsed sentence from this model is easy. We can run the sequential process of the RNNG and let it run until it hits the stop token, yielding a well-formed parse tree with a sentence. In the original paper, besides evaluating RNNG on a syntactic parsing task, the generative RNNG is also used to measure the perplexity in a language model setting. In order to evaluate RNNG as a language model, they do MCMC approximation, importance sampling, to calculate the marginal probability $p(x) = \sum_y p(x, y)$. For the parsing task, from the samples of the importance sampling above, they retrieve the MAP parse tree which is the tree $\hat{y}$ that has the highest probability under the joint probability $p(x,y)$.</p>
+
+<h3 id="variational-autoencoder-vae">Variational Autoencoder (VAE)</h3>
+<p>When I first studied VAE, I view it from a deep learning perspective: an autoencoder which maps $x$ to a latent space $z$ (encoding) and then maps it back to the data space $x$ (decoding), Aside from the reconstruction loss, VAE introduces regularization term on the encoder network to be close to a multivariate gaussian, since VAE maps to a distribution rather than a single point.
+VAE has a bayesian interpretation that explains why there are two losses and why the encoder-decoder come into existence. Given a data point $x = (x_1, .. x_n)$, we assume that there is a latent variable $z_i$ for each $x_i$ and there is a joint distribution $p(x,z) = p(x|z) p(z)$ which explains where the data is coming from. In VAE, $p(z)$ is a multivariate gaussian and $p(x|z)$ is parameterized by a neural network. Now the objective here is to do a bayesian inference: we want to find the best $z$ given an observed data, or in other words, find the posterior distribution:</p>
+
+\[p(z|x) = \frac{p(x|z)p(z)}{p(x)}\]
+
+<!-- $a$ -->
+<p>Calculating exact $p(x)$ is intractable, cause it requires us to marginalize all possible $z$. Hence we can approximate the posterior by introducing variational distribution $q(z|x)$. Ignoring some math derivation, we arrive at this objective function<sup>6</sup>:</p>
+
+\[\log p(x) \geq \mathbb{E}_{z \sim q}[\log p_{\theta}(x|z)] - KL(q_{\phi}(z|x)||p(z))\]
+
+<!-- $a$ -->
+<p>where the left term is known as the ELBO and the right term is KL divergence<sup>7</sup> between $q_{\phi}(z|x)$ and $p(z)$. Notice that in VAE, the latent variable $z$ is produced by the same parameter of the encoder network. This is known as an amortized inference. 
+Here it becomes clear that $q_{\phi}(z|x)$ is the encoder network and $p_{\theta}(x|z)$ is the decoder network. We can interpret ELBO as the reconstruction error and the negative KL divergence as the regularization term. We have arrived from the bayesian interpretation to the deep learning perspective. 
+Once the model is trained, we can sample from the gaussian distribution $p(z)$ and then feed it into our decoder network $p_{\theta}(x|z)$.</p>
+
+<h3 id="generative-adversarial-network-gan">Generative Adversarial Network (GAN)</h3>
+<p>When it first came out, GANs are widely popular for generating good quality image. GAN attempts to model $p(x)$ by introducing two agents: a discriminator $D$ and a generator $G$. The generator learns to generate plausible data, and the discriminator learns to distinguish generator fake’s data from the real data. During training, the generator generates fake data and the discriminator has to predict which one is fake.  As training progresses, the generator gets better at generating data and it becomes harder for the discriminator to tell which one is fake. At the end of training, $p(x)$ is modeled by the generator $G$ hence we can directly sample new data from this network. In this setting GAN is trained in an unsupervised way because we can create the label automatically for the discriminator.</p>
+
+<p>Steps:</p>
+
+<ol>
+  <li>We introduce $p(z)$, a distribution of noise which we can sample from (uniform, normal, etc).</li>
+  <li>We feed the sampled z into the generator $G(z)$ and it will output a data point (an image in the original paper). Consequently, the generator gets to have a probability distribution over the data that it generates $p_g(x)$.</li>
+  <li>We present the data from $p_g(x)$ and $p_r(x)$, which is a probability distribution over the real data, to the discriminator network.</li>
+</ol>
+
+<p>Both $D$ and $G$ are playing a minimax game in which the loss function is as follow:</p>
+
+\[\min_G \max_D L(D, G)= \mathbb{E}_{x\sim p_{r}(x)}[\log D(x)] + \mathbb{E}_{x\sim p_{g}(x)}[\log(1 - D(x))]\]
+
+<p>where the right term is equal to $\mathbb{E}_{z \sim p(z)}[\log(1 - D(G(z)))]$</p>
+
+<p>With further math derivations, it can be shown that the above loss function is a Jensen-Shannon divergence<sup>8</sup> (JS divergence) that quantifies similarity between the fake data distribution $p_g(x)$ and the real data distribution $p_r(x)$. If $D$ and $G$ are at their optimal values when $p_g(x) = p_r(x)$ then the JS divergence is minimized at 0.</p>
+
+<hr />
+
+<h2 id="closing">Closing</h2>
+<p>To conclude, generative models allow us to sample from the model after training because we design a data generating process assumption into the model. We have seen that generative model can be design in many ways, for example: factorizing into $p(x|y) p(y)$ with a label $y$, designing a model to capture the joint $p(x,y)$ directly, assuming a latent variable, and a zero-sum game setting. There are plenty of another approaches in generative models that I do not mention in the post, such as autoregressive<sup>9</sup> models and flow-based models (I might create a part 2 related to this some other time).</p>
+
+<p>Thank you for reading my post! Please contact me on twitter if you spot any mistake.</p>
+
+<hr />
+
+<h4 id="footnote">Footnote</h4>
+
+<ol>
+  <li>NB is not tied to a text based problem.</li>
+  <li>One can use different distributions, such as gaussian and categorical for $p(x\mid y)$. For gaussian and categorical, the distribution has different parameter for every feature $x_{i}$. This means that we have different distribution for each $p(x_{i}\mid y)$, instead of the same distribution for every $x_{i}$ in the text classification examples above.</li>
+  <li>LDA is not tied to a text based problem.</li>
+  <li>This post excludes other parameters in the LDA. In practice, other parameters in LDA ($\alpha$, $\eta$) can also be approximated using either VI or MCMC, depending on the design choice. Refer to the original paper for more details.</li>
+  <li>What still confuses to me is that if one would use mean-field VI for VAE instead of amortized, the mean-field VI would separate the variational distribution $q$ per data-point level, instead of per latent variables. I don’t have an answer to this yet.</li>
+  <li>This is the same objective that we get if we use variational inference in LDA. The difference is in VAE $q$ is parameterized by neural network, whereas in LDA $q$ is parameterized with the same distribution as the true parameter. The learning is then achieved via variational EM.</li>
+  <li>KL divergence equals to 0 when $q_{\phi}(z\mid x) = p(z)$. And it is not symmetric.</li>
+  <li>JS divergence is symmetric.</li>
+  <li>They’re not the same as recurrent in RNN.</li>
+</ol>
+
+<hr />
+
+<h4 id="useful-links">Useful links</h4>
+<ul>
+<li><a href="http://brooksandrew.github.io/simpleblog/articles/latent-dirichlet-allocation-under-the-hood/" target="_blank" rel="noopener noreferrer">http://brooksandrew.github.io/simpleblog/articles/latent-dirichlet-allocation-under-the-hood/</a></li>
+<li><a href="http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/" target="_blank" rel="noopener noreferrer">http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/</a></li>
+<li><a href="https://jonathan-hui.medium.com/machine-learning-latent-dirichlet-allocation-lda-1d9d148f13a4" target="_blank" rel="noopener noreferrer">https://jonathan-hui.medium.com/machine-learning-latent-dirichlet-allocation-lda-1d9d148f13a4</a></li>
+<li><a href="https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/" target="_blank" rel="noopener noreferrer">https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/</a></li>
+<li><a href="https://bjlkeng.github.io/posts/variational-bayes-and-the-mean-field-approximation/" target="_blank" rel="noopener noreferrer">https://jeffreyling.github.io/2018/01/09/vaes-are-bayesian.html</a></li>
+<li><a href="https://blog.evjang.com/2016/08/variational-bayes.html" target="_blank" rel="noopener noreferrer">https://blog.evjang.com/2016/08/variational-bayes.html</a></li>
+<li><a href="https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html#generative-adversarial-network-gan" target="_blank" rel="noopener noreferrer">https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html#generative-adversarial-network-gan</a></li>
+</ul>
+
+
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div>© 2025 Rezka Leonandya.</div>
+      <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
+    </div>
+    <div class="meta"><span id="page-size"></span> · <span id="load-time"></span></div>
+  </footer>
+  <script>
+    (function() {
+      const sizeEl = document.getElementById('page-size');
+      const timeEl = document.getElementById('load-time');
+      const update = () => {
+        if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
+        if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+      };
+      if (document.readyState === 'complete') {
+        update();
+      } else {
+        window.addEventListener('load', update, { once: true });
+      }
+    })();
+  </script>
+</body>
+</html>

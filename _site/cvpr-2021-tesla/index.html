@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tesla in CVPR 2021</title>
+  <meta name="description" content="Akhir juni 2021, Andrej Karpathy selaku director of AI nya tesla melakukan sebuah presentasi mengenai gimana cara self-driving cars bekerja di Tesla. Nah di post kali ini mau gue bahas kesimpulan gue abis nonton video tersebut. Postingan ini ditulis menggunakan Bahasa Indonesia + Bahasa Inggris yang tidak baku.">
+  <style>body {
+    max-width: 80ch;
+    padding: 3em 1em;
+    margin: auto;
+    line-height: 1.6;
+    font-size: 1.08em;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+pre {
+    overflow: auto;
+    background: #f7f7f7;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background: #f7f7f7;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+
+blockquote {
+    border-left: 3px solid #ddd;
+    padding-left: 0.8rem;
+    color: #444;
+    margin: 1rem 0;
+}
+
+header.site-header {
+    margin-bottom: 1.5rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+nav a.active,
+nav a:hover {
+    border-color: #111;
+}
+
+section { margin: 1.8rem 0; }
+
+.meta { color: #555; font-size: 0.95rem; }
+
+.listing { width: 100%; border-collapse: collapse; }
+
+.listing td { padding: 0.2rem 0.15rem; vertical-align: baseline; }
+
+.listing tr + tr td { border-top: 1px solid #eee; }
+
+.listing .date { white-space: nowrap; padding-right: 0.8rem; color: #666; font-size: 0.95rem; }
+
+.tag {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    margin-right: 0.35rem;
+    color: #444;
+}
+
+footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; color: #555; font-size: 0.95rem; }
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    align-items: center;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.footer-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.footer-links a:hover {
+    border-color: #111;
+}
+
+.icon {
+    font-family: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol",sans-serif;
+    margin-right: 0.25rem;
+}
+
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.social-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.social-links a:hover {
+    border-color: #111;
+}
+
+@media (max-width: 640px) {
+    body { font-size: 1em; }
+}
+</style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+  <main>
+    <a href="/" aria-label="Home">← Home</a>
+<h1>Tesla in CVPR 2021</h1>
+<p class="meta">
+  July  6, 2021
+  
+</p>
+
+<p>Akhir juni 2021, Andrej Karpathy selaku director of AI nya tesla melakukan sebuah presentasi mengenai gimana cara self-driving cars bekerja di Tesla. Nah di post kali ini mau gue bahas kesimpulan gue abis nonton video tersebut. Postingan ini ditulis menggunakan Bahasa Indonesia + Bahasa Inggris yang tidak baku.</p>
+
+<hr />
+
+<h1 id="pake-kamera-doang">Pake kamera doang</h1>
+
+<p>Sebelumnya, self-driving car menggunakan LIDAR untuk pre-mapping situasi jalanan ke format point cloud yang diubah lagi ke HD maps. Konsekuensi menggunakan cara ini adalah mereka mesti rekam dulu situasi jalanan pake lidar terus disimpen. Jadinya manual harus ada orang yang nyetir mobil dengan LIDAR muter-muterin jalan untuk dapetin HD mapsnya. Nah nanti pas testing si self-driving car tinggal lokalisasi situasi jalanan dan navigasi dari HD map yang udah ada untuk melakukan prediksi dia mau ngapain. Nah sekarang, Tesla mau mulai untuk pakai vision-based sensor aja. Jadi mereka langsung bikin map dari kamera pada waktu itu juga. Artinya, si mobil ini ga perlu dikasih HD maps sebelum dia turun kejalan. Semua kondisi jalanan langsung diprediksi saat si mobil jalan sendiri. Menggunakan 8 kamera, si mobil on the spot memprediksi ini jalan nyambungnya kemana, dimana ada lampu merah, zebra cross, pejalan kaki, pesepeda, gedung, dll. Ini bagian menurut gue keren banget. Neural network memang super powerful untuk perception problem.</p>
+
+<p><img src="/assets/img/tesla-cars.png" alt="Image" />
+<em>Ilustrasi kamera+radar sensor+lidar yang digunakan oleh Tesla</em></p>
+
+<p>Sebelumnya juga Tesla menggunakan sensor radar untuk membantu prediksi navigasi self-driving car mereka. Fungsi sensor radar ini adalah memberikan mobil informasi mengenai informasi depth-velocity-acceleration. Depth adalah informasi mengenai seberapa jauh objek yang sekarang ada di sekitar mobil, velocity adalah kecepatan dari objek lain yang ada di sekitar mobil, sedangkan acceleration adalah informasi mengenai percepatan dari objek lain yang ada di sekitar mobil. Jadi ya informasi ini penting banget biar si mobil tau objek di sekeliling dia ada apa aja dan gimana cara navigasi yang aman.</p>
+
+<p>Berikut adalah beberapa masalah dari menggunakan radar:</p>
+
+<ul>
+<li>Secara acak (random) sensor radar memberikan angka yang gak akurat.</li>
+<li>Masalah saat perlambatan dadakan. Ada banyak kasus menggunakan sensor radar, mobil pas ngerem jadinya kasar tidak santai.</li>
+<li>Masalah sensor radar bingung gak tau mana stationary object yang benar. Tiba-tiba ngerem pas ada jembatan, tiba-tiba ngerem pas ada mobil parkir dipinggir jalan.</li>
+</ul>
+
+<p>Berdasarkan masalah diatas, mereka akhirnya fokus full invest di sensor kamera aja. Terus gimana dong dapetin informasi depth-velocity-acceleration diatas? Tesla pake neural network buat prediksi depth-velocity-acceleration. Jadi sensor radar diganti sama kamera yang dipersenjatai dengan neural network.</p>
+
+<h1 id="kualitas-data">Kualitas data</h1>
+
+<p>Kunci dari neural network yang bagus performanya? Ini kata mereka:</p>
+
+<p><img src="/assets/img/tesla-data.png" alt="Image" />
+<em>Kunci suksesnya neural network</em></p>
+
+<p>Untuk dapetin data yang bagus gimana caranya? Mereka pake iterative labelling buat dapetin dataset depth-velocity-acceleration yang bagus.</p>
+
+<ul>
+<li>Cara pertama mereka cara yang cuma ngerecord data aja yang banyak dalam bentuk video, jadi mereka bisa dapetin benefit of hindsight yang tidak bisa mereka dapatkan di prediction time. Contoh misal kalo lagi nyetir, didepan ada mobil terus ngeluarin debu-debu. Si neural network bisa jadi udah gak ngeliat mobil didepannya. Kalo kita tambahin data video yang dilabelin secara konsisten, si NN bisa tau oh ini mah debu doang tapi didepan gue masih ada mobil. Dengan kata lain: record -&gt; figure out what happened -&gt; label frame -&gt; use this for prediction.</li>
+<li>Untuk kasus edge cases mereka bikin triggers. Trigger adalah hand programmed rule yang nentuin oke case mana nih yang mesti gue benerin labelnya. Deploy seed neural network, deploy in shadow mode, make prediction, Terus bikin trigger untuk dapetin case2 yang ada inaccuracies buat nanti dibenerin scr otomatis maupun manual.
+Total data yang terkumpul ada 1.5 petabytes. seberapa besar itu neural networknya? :)</li>
+</ul>
+
+<p><img src="/assets/img/tesla-iterative.png" alt="Image" />
+<em>Iterative labeling nya Tesla</em></p>
+
+<h1 id="arsitektur-neural-network">Arsitektur neural network</h1>
+
+<p>Mereka pake backbone net kayak resnet abis itu ada beberapa head yang process informasi dari backbone untuk output kayak direction, kinematics, dll. Karena di self-driving cars banyak task yang diprediksi, sepertinya beberapa head itu digroup untuk task yang mirip: misal satu head buat prediksi pixel level classification kayak depth, satu head buat prediksi object level, satu head buat classification satu image, etc. Karpathy juga bilang banyak bagian branch dan head nya yang pake transformers, convolutions, dan juga recurrent neural network.</p>
+
+<p><img src="/assets/img/tesla-nn.png" alt="Image" />
+<em>Neural network nya Tesla</em></p>
+
+<h1 id="ml-ops">ML Ops</h1>
+
+<p>Mungkin ini bagian yang paling menarik. Dengan neural network yang super besar dan data yang banyak, gimana mereka handle tech stack nya mereka? Mereka pake in-house supercomputer dan semuanya mereka handle end-to-end. Ngerjain semua stack end-to-end ngasih mereka keuntungan dimana mereka bisa iterasi cepet. Jadi semuanya terintegrasi secara vertikal, dari mulai chip, gpu dan npu, filesystem sendiri, proses buat ngitung gradient secara terdistribusi, semua lah. Mereka investasi gila-gilaan di ML OPS. 5760 gpu nodes dan 1.6tbs filesystem. Ada npu (neural processing unit) jg dan processing chip bikin sendiri.</p>
+
+<p><img src="/assets/img/tesla-sc.png" alt="Image" />
+<em>Supercomputer nya Tesla</em></p>
+
+<p><img src="/assets/img/tesla-npu.png" alt="Image" />
+<em>Neural processing unit nya Tesla, lebih terspesialisasi untuk komputasi neural network</em></p>
+
+<hr />
+
+<p>Terima kasih sudah membaca!</p>
+
+<p>P.S. gambarnya gue crop dari youtube karena gue males jadi ya jelek lah gambarnya intinya gitu.</p>
+
+
+
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div>© 2025 Rezka Leonandya.</div>
+      <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
+    </div>
+    <div class="meta"><span id="page-size"></span> · <span id="load-time"></span></div>
+  </footer>
+  <script>
+    (function() {
+      const sizeEl = document.getElementById('page-size');
+      const timeEl = document.getElementById('load-time');
+      const update = () => {
+        if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
+        if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+      };
+      if (document.readyState === 'complete') {
+        update();
+      } else {
+        window.addEventListener('load', update, { once: true });
+      }
+    })();
+  </script>
+</body>
+</html>

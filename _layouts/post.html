@@ -1,0 +1,14 @@
+---
+layout: default
+---
+<a href="{{ '/' | relative_url }}" aria-label="Home">← Home</a>
+<h1>{{ page.title }}</h1>
+<p class="meta">
+  {{ page.date | date: "%B %e, %Y" }}
+  {% if page.tags and page.tags.size > 0 %}
+    ·
+    {% for tag in page.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+  {% endif %}
+</p>
+{% if page.image %}\n<p><img src="{{ page.image }}" alt=""></p>\n{% endif %}
+{{ content }}

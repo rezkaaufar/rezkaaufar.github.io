@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Target rate for class imbalance</title>
+  <meta name="description" content="Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a talk from stripe where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a credit card fraud public dataset.">
+  <style>body {
+    max-width: 80ch;
+    padding: 3em 1em;
+    margin: auto;
+    line-height: 1.6;
+    font-size: 1.08em;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+pre {
+    overflow: auto;
+    background: #f7f7f7;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background: #f7f7f7;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+
+blockquote {
+    border-left: 3px solid #ddd;
+    padding-left: 0.8rem;
+    color: #444;
+    margin: 1rem 0;
+}
+
+header.site-header {
+    margin-bottom: 1.5rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+nav a.active,
+nav a:hover {
+    border-color: #111;
+}
+
+section { margin: 1.8rem 0; }
+
+.meta { color: #555; font-size: 0.95rem; }
+
+.listing { width: 100%; border-collapse: collapse; }
+
+.listing td { padding: 0.2rem 0.15rem; vertical-align: baseline; }
+
+.listing tr + tr td { border-top: 1px solid #eee; }
+
+.listing .date { white-space: nowrap; padding-right: 0.8rem; color: #666; font-size: 0.95rem; }
+
+.tag {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    margin-right: 0.35rem;
+    color: #444;
+}
+
+footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; color: #555; font-size: 0.95rem; }
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    align-items: center;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.footer-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.footer-links a:hover {
+    border-color: #111;
+}
+
+.icon {
+    font-family: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol",sans-serif;
+    margin-right: 0.25rem;
+}
+
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.social-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.social-links a:hover {
+    border-color: #111;
+}
+
+@media (max-width: 640px) {
+    body { font-size: 1em; }
+}
+</style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+  <main>
+    <a href="/" aria-label="Home">← Home</a>
+<h1>Target rate for class imbalance</h1>
+<p class="meta">
+  May 25, 2022
+  
+</p>
+
+<p>Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a <a href="https://www.youtube.com/watch?v=rHSpab1Wi9k" target="_blank" rel="noopener noreferrer">talk from stripe</a> where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>.</p>
+
+<h1 id="target-rate">Target rate</h1>
+<p>The objective is to create a model which can predict whether a transaction is fraudulent. The model is a binary classifier which produces a score in the 0-1 range, where 0 indicates no fraud and 1 indicates fraud. Based on what they’ve found, training on imbalance data and validating the metrics on imbalance data produces worse result compared to training and validating on a more balanced data. Why?</p>
+
+<p>With a binary classifier model, we need to choose a threshold that satisfies some criteria on the validation data. This threshold is used to determine whether an instance is going to predicted as fraud or not. What they want to do in their case is that they want to maximize recall while capping FPR (false positive rate).
+Say we have initially a training + validation data with less than 1% fraudulent label (the positive label). If we optimize only for recall and FPR, we can get a low FPR but extremely low precision. Why is this happening? FPR is low because the denominator of the negative label is extremely huge. The model can predict a lot of false positives and still get low FPR in this case. Then during the threshold picking phase on the validation set, we can just pick a relatively low threshold, which results in high recall but extremely low precision. Hence we need to do something on the class imbalance.</p>
+
+<p>However, if we train and validate on a balanced dataset, we are going to be faced with class imbalance again on the production. That is why we need to find a balance that works best in production.</p>
+
+<p>Their idea is to try to create a balanced training set that works well on the extremely imbalanced production data. Basically what we want to find is a percentage of fraud (x%) and the percentage of non-fraud training data instances (100-x%) that maximizes performances on the validation data which still contains the original proportion of the class imbalance. The percentage (x) is called the target rate. Then what we do is we can use grid/exhaustive search, trying out different values of x by keeping every fraudulent dataset and downsample the non-fraudulent dataset to create the dataset according to the target rate. After that, they evaluate the performance in validation set and also the performance in production.</p>
+
+<h1 id="my-own-experiment">My own experiment</h1>
+
+<p>To see how helpful is this target rate idea, I decided to try it out on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>. The dataset is extremely imbalanced with only 0.0001 percent of fraud dataset. I try different target rate from 0.1 to 1 and train XGBoost model with the balanced training data. Then I evaluate the XGBoost model on the imbalanced validation set and below is the result I get:</p>
+
+<p><img src="/assets/resized/target-rate-result-800x427.png" alt="Figure 1: Precision, recall, and roc scores on different target rate." /></p>
+
+<p><em>Figure 1: Precision, recall, and roc scores on different target rate..</em></p>
+
+<p>We can see that the graph looks wiggly, and perhaps that the best tradeoff between the three metrics is between 0.3-0.4 target rate. Now I would say that this technique is helpful to some extent if we want to do better downsampling. However, I think that the result is prone to random samples and the random seed that we initialize. So I’m not entirely convinced that this is the best method to overcome extremely imbalanced dataset.</p>
+
+<h1 id="closing">Closing</h1>
+
+<p>Thanks for reading! If you think I am missing something please comment below. For those interested you can check my code <a href="https://github.com/rezkaaufar/target-rate/blob/master/target-rate-imbalanced-dataset.ipynb" target="_blank" rel="noopener noreferrer">here</a>.</p>
+
+
+
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div>© 2025 Rezka Leonandya.</div>
+      <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
+    </div>
+    <div class="meta"><span id="page-size"></span> · <span id="load-time"></span></div>
+  </footer>
+  <script>
+    (function() {
+      const sizeEl = document.getElementById('page-size');
+      const timeEl = document.getElementById('load-time');
+      const update = () => {
+        if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
+        if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+      };
+      if (document.readyState === 'complete') {
+        update();
+      } else {
+        window.addEventListener('load', update, { once: true });
+      }
+    })();
+  </script>
+</body>
+</html>

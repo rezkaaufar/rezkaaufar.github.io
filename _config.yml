@@ -1,0 +1,70 @@
+name: Rezka Leonandya
+author: Rezka Leonandya
+title: Rezka Leonandya
+description: "Rezka Leonandya's personal site and blog."
+lang: en
+url: https://rezkaaufar.github.io
+permalink: /:title/
+
+collections:
+  news:
+    output: true
+    permalink: /news/:title/
+  projects:
+    output: true
+    permalink: /projects/:title/
+
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+feed:
+  collections:
+    - posts
+    - news
+    - projects
+
+sass:
+  style: compressed
+
+kramdown:
+  input: GFM
+  math_engine: mathjax
+  math_engine_opts:
+    preview: "none"
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: post
+  - scope:
+      path: ""
+      type: "news"
+    values:
+      layout: news
+  - scope:
+      path: ""
+      type: "projects"
+    values:
+      layout: project
+
+# Featherweight toggles (kept simple)
+compression:
+  css: true
+  seo: true
+  favicon: false
+  blogs: true
+
+# Exclude old Astro build artifacts if they linger
+exclude:
+  - node_modules
+  - dist
+  - src
+  - public
+  - package-lock.json
+  - package.json
+  - tsconfig.json
+  - astro.config.mjs
+  - migration.md

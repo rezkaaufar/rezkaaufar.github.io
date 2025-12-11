@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hypothesis testing with binomial distribution in an AB test</title>
+  <meta name="description" content="In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!">
+  <style>body {
+    max-width: 80ch;
+    padding: 3em 1em;
+    margin: auto;
+    line-height: 1.6;
+    font-size: 1.08em;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+pre {
+    overflow: auto;
+    background: #f7f7f7;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background: #f7f7f7;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+
+blockquote {
+    border-left: 3px solid #ddd;
+    padding-left: 0.8rem;
+    color: #444;
+    margin: 1rem 0;
+}
+
+header.site-header {
+    margin-bottom: 1.5rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+nav a.active,
+nav a:hover {
+    border-color: #111;
+}
+
+section { margin: 1.8rem 0; }
+
+.meta { color: #555; font-size: 0.95rem; }
+
+.listing { width: 100%; border-collapse: collapse; }
+
+.listing td { padding: 0.2rem 0.15rem; vertical-align: baseline; }
+
+.listing tr + tr td { border-top: 1px solid #eee; }
+
+.listing .date { white-space: nowrap; padding-right: 0.8rem; color: #666; font-size: 0.95rem; }
+
+.tag {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    margin-right: 0.35rem;
+    color: #444;
+}
+
+footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; color: #555; font-size: 0.95rem; }
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    align-items: center;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.footer-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.footer-links a:hover {
+    border-color: #111;
+}
+
+.icon {
+    font-family: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol",sans-serif;
+    margin-right: 0.25rem;
+}
+
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.social-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.social-links a:hover {
+    border-color: #111;
+}
+
+@media (max-width: 640px) {
+    body { font-size: 1em; }
+}
+</style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+  <main>
+    <a href="/" aria-label="Home">← Home</a>
+<h1>Hypothesis testing with binomial distribution in an AB test</h1>
+<p class="meta">
+  December 28, 2021
+  
+</p>
+
+<p>In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!</p>
+
+<h1 id="samples--parameter-inference">Samples &amp; Parameter Inference</h1>
+
+<p>Let’s say that we have completed an AB test and we have sample size $n=10000$ for both the control and variant group. The control have $ns_c=5500$ and the variant have $ns_v=5700$, which represents the number of success we get.</p>
+
+<p>To do a hypothesis test, we need to infer the parameter of the binomial distribution for both the control and variant group. In binomial distribution, the parameter is $\theta$, which represents the probability of getting a positive outcome in a trial. Based on the data, we can infer that:</p>
+
+\[p_c = \frac{ns_c}{n} = \frac{5500}{10000} = 0.55\]
+
+\[p_v = \frac{ns_v}{n} = \frac{5700}{10000} = 0.57\]
+
+<h1 id="binomial-distribution--significance-testing">Binomial Distribution &amp; Significance Testing</h1>
+
+<p>Now we want to determine whether the difference between control and variant group is significant enough so that we can decide which group we want to apply in our system. To do this, we need to find out what is the probability of getting 5700 success (the variant group parameter) assuming that the control distribution with $p_c=0.55$ is true. Mathematically, it is defined as:</p>
+
+\[a(ns) = \sum_{K=ns}^N {N \choose K} P_{0}^{K} (1 - P_{0}^{K})^{N-K}\]
+
+<p>where in this case $ns$ is the variant group successes $ns_v$ and $P_0$ is the control group binomial distribution parameter $p_c$.</p>
+
+<p>In plain words, the formula tells us what is the probability of observing the event plus the probability of observing other events that are equally rare and more extreme. In this case, the event is the variant group successes $ns_v$. Also note that I am using a one-sided test because in an AB test we only care about getting an improvement. We don’t care if the variant group successes is significantly worse than control group success, even though by statistical definition it still counts as significant.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="n">stats</span><span class="p">.</span><span class="nf">binom_test</span><span class="p">(</span><span class="mi">5700</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.55</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="sh">'</span><span class="s">greater</span><span class="sh">'</span><span class="p">)</span>
+<span class="mf">2.9637380107656557e-05</span>
+</code></pre></div></div>
+
+<p>Using python code above, we can see that we get a low p-value, which tells us that it is unlikely to get 5700 successes assuming that the control distribution is true. Hence we can conclude that the variant group yields better conversion.</p>
+
+<p><img src="/assets/resized/gaussian-approx-binomial-480x300.png" alt="Figure 1: Gaussian approximation of binomial distribution of both the control and variant group." /></p>
+
+<p><em>Figure 1: Gaussian approximation of binomial distribution of both the control and variant group..</em></p>
+
+<p>Figure 1 shows the gaussian approximation of both the control and variant binomial distributions. By theory, we know that we can <a href="https://online.stat.psu.edu/stat414/lesson/28/28.1" target="_blank" rel="noopener noreferrer">approximate binomial distribution with a normal distribution</a>. In math notation, the parameter of the normal distribution can be calculated as:</p>
+
+\[\mu = np\]
+
+\[\sigma = np(1-p)\]
+
+<p>where $n$ is the number of trials and $p$ is the probability of success in a trial.</p>
+
+<p>We can use $\sigma$ to calculate the confidence interval around the binomial parameter:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">p</span> <span class="o">=</span> <span class="mf">0.55</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">SE</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">p</span><span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">95% confidence interval of our binomial distribution is between </span><span class="si">{</span><span class="n">np</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">SE</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s"> and </span><span class="si">{</span><span class="n">np</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">SE</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+<span class="mi">95</span><span class="o">%</span> <span class="n">confidence</span> <span class="n">interval</span> <span class="n">of</span> <span class="n">our</span> <span class="n">binomial</span> <span class="n">distribution</span> <span class="ow">is</span> <span class="n">between</span> <span class="mf">0.54</span> <span class="ow">and</span> <span class="mf">0.56</span>
+</code></pre></div></div>
+
+<p>The confidence interval reinforces our initial findings that getting $0.57$ is unlikely assuming that $p_c=0.55$ is true.</p>
+
+<h1 id="closing">Closing</h1>
+
+<p>Thanks for reading my blog post! Hit me on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a>.</p>
+
+
+
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div>© 2025 Rezka Leonandya.</div>
+      <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
+    </div>
+    <div class="meta"><span id="page-size"></span> · <span id="load-time"></span></div>
+  </footer>
+  <script>
+    (function() {
+      const sizeEl = document.getElementById('page-size');
+      const timeEl = document.getElementById('load-time');
+      const update = () => {
+        if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
+        if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+      };
+      if (document.readyState === 'complete') {
+        update();
+      } else {
+        window.addEventListener('load', update, { once: true });
+      }
+    })();
+  </script>
+</body>
+</html>
