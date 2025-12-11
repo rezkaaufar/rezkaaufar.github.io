@@ -13,8 +13,7 @@ MSc in Artificial Intelligence from the University of Amsterdam.
   <li><a href="mailto:rezka.aufar@gmail.com"><span class="icon">✉️</span>Email</a></li>
   <li><a href="https://github.com/rezkaaufar" target="_blank" rel="noreferrer"><span class="icon">🐙</span>GitHub</a></li>
   <li><a href="https://www.linkedin.com/in/aufarleo" target="_blank" rel="noreferrer"><span class="icon">🔗</span>LinkedIn</a></li>
-  <li><a href="https://twitter.com/rezkaaufar" target="_blank" rel="noreferrer"><span class="icon">🐦</span>Twitter</a></li>
-  <li><a href="https://www.strava.com/athletes/14066894" target="_blank" rel="noreferrer"><span class="icon">🏃‍♂️</span>Strava</a></li>
+  <li><a href="https://leetcode.com/u/rezka/" target="_blank" rel="noreferrer"><span class="icon">🧩</span>LeetCode</a></li>
 </ul>
 
 ## Latest writing
