@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://rezkaaufar.github.io/feed/projects.xml" rel="self" type="application/atom+xml" /><link href="https://rezkaaufar.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-12-11T23:31:18+07:00</updated><id>https://rezkaaufar.github.io/feed/projects.xml</id><title type="html">Rezka Leonandya | Projects</title><subtitle>Rezka Leonandya&apos;s personal site and blog.</subtitle><author><name>Rezka Leonandya</name></author><entry><title type="html">project 6</title><link href="https://rezkaaufar.github.io/projects/6_project/" rel="alternate" type="text/html" title="project 6" /><published>2025-12-11T23:31:18+07:00</published><updated>2025-12-11T23:31:18+07:00</updated><id>https://rezkaaufar.github.io/projects/6_project</id><content type="html" xml:base="https://rezkaaufar.github.io/projects/6_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4001/feed/projects.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4001/" rel="alternate" type="text/html" hreflang="en" /><updated>2025-12-11T23:42:24+07:00</updated><id>http://localhost:4001/feed/projects.xml</id><title type="html">Rezka Leonandya | Projects</title><subtitle>Rezka Leonandya&apos;s personal site and blog.</subtitle><author><name>Rezka Leonandya</name></author><entry><title type="html">project 6</title><link href="http://localhost:4001/projects/6_project/" rel="alternate" type="text/html" title="project 6" /><published>2025-12-11T23:42:24+07:00</published><updated>2025-12-11T23:42:24+07:00</updated><id>http://localhost:4001/projects/6_project</id><content type="html" xml:base="http://localhost:4001/projects/6_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
 It’s easy to include images in a flexible 3-column grid format.
 Make your photos 1/3, 2/3, or full width.</p>
 
@@ -88,7 +88,7 @@ Here’s the code for the last row of images above:</p>
         <img src="/assets/img/11.jpg" alt="example image" class="img-fluid rounded z-depth-1" />
     <span class="nt">&lt;/div&gt;</span>
 <span class="nt">&lt;/div&gt;</span>
-</code></pre></div></div>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[a project with no image]]></summary></entry><entry><title type="html">project 5</title><link href="https://rezkaaufar.github.io/projects/5_project/" rel="alternate" type="text/html" title="project 5" /><published>2025-12-11T23:31:18+07:00</published><updated>2025-12-11T23:31:18+07:00</updated><id>https://rezkaaufar.github.io/projects/5_project</id><content type="html" xml:base="https://rezkaaufar.github.io/projects/5_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
+</code></pre></div></div>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[a project with no image]]></summary></entry><entry><title type="html">project 5</title><link href="http://localhost:4001/projects/5_project/" rel="alternate" type="text/html" title="project 5" /><published>2025-12-11T23:42:24+07:00</published><updated>2025-12-11T23:42:24+07:00</updated><id>http://localhost:4001/projects/5_project</id><content type="html" xml:base="http://localhost:4001/projects/5_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
 It’s easy to include images in a flexible 3-column grid format.
 Make your photos 1/3, 2/3, or full width.</p>
 
@@ -178,7 +178,7 @@ Here’s the code for the last row of images above:</p>
         <img src="/assets/img/11.jpg" alt="example image" class="img-fluid rounded z-depth-1" />
     <span class="nt">&lt;/div&gt;</span>
 <span class="nt">&lt;/div&gt;</span>
-</code></pre></div></div>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[a project with a background image]]></summary></entry><entry><title type="html">project 4</title><link href="https://rezkaaufar.github.io/projects/4_project/" rel="alternate" type="text/html" title="project 4" /><published>2025-12-11T23:31:18+07:00</published><updated>2025-12-11T23:31:18+07:00</updated><id>https://rezkaaufar.github.io/projects/4_project</id><content type="html" xml:base="https://rezkaaufar.github.io/projects/4_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
+</code></pre></div></div>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[a project with a background image]]></summary></entry><entry><title type="html">project 4</title><link href="http://localhost:4001/projects/4_project/" rel="alternate" type="text/html" title="project 4" /><published>2025-12-11T23:42:24+07:00</published><updated>2025-12-11T23:42:24+07:00</updated><id>http://localhost:4001/projects/4_project</id><content type="html" xml:base="http://localhost:4001/projects/4_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
 It’s easy to include images in a flexible 3-column grid format.
 Make your photos 1/3, 2/3, or full width.</p>
 
@@ -268,7 +268,7 @@ Here’s the code for the last row of images above:</p>
         <img src="/assets/img/11.jpg" alt="example image" class="img-fluid rounded z-depth-1" />
     <span class="nt">&lt;/div&gt;</span>
 <span class="nt">&lt;/div&gt;</span>
-</code></pre></div></div>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[another without an image]]></summary></entry><entry><title type="html">project 3</title><link href="https://rezkaaufar.github.io/projects/3_project/" rel="alternate" type="text/html" title="project 3" /><published>2025-12-11T23:31:18+07:00</published><updated>2025-12-11T23:31:18+07:00</updated><id>https://rezkaaufar.github.io/projects/3_project</id><content type="html" xml:base="https://rezkaaufar.github.io/projects/3_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
+</code></pre></div></div>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[another without an image]]></summary></entry><entry><title type="html">project 3</title><link href="http://localhost:4001/projects/3_project/" rel="alternate" type="text/html" title="project 3" /><published>2025-12-11T23:42:24+07:00</published><updated>2025-12-11T23:42:24+07:00</updated><id>http://localhost:4001/projects/3_project</id><content type="html" xml:base="http://localhost:4001/projects/3_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
 It’s easy to include images in a flexible 3-column grid format.
 Make your photos 1/3, 2/3, or full width.</p>
 
@@ -358,7 +358,7 @@ Here’s the code for the last row of images above:</p>
         <img src="/assets/img/11.jpg" alt="example image" class="img-fluid rounded z-depth-1" />
     <span class="nt">&lt;/div&gt;</span>
 <span class="nt">&lt;/div&gt;</span>
-</code></pre></div></div>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[a project that redirects to another website]]></summary></entry><entry><title type="html">project 2</title><link href="https://rezkaaufar.github.io/projects/2_project/" rel="alternate" type="text/html" title="project 2" /><published>2025-12-11T23:31:18+07:00</published><updated>2025-12-11T23:31:18+07:00</updated><id>https://rezkaaufar.github.io/projects/2_project</id><content type="html" xml:base="https://rezkaaufar.github.io/projects/2_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
+</code></pre></div></div>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[a project that redirects to another website]]></summary></entry><entry><title type="html">project 2</title><link href="http://localhost:4001/projects/2_project/" rel="alternate" type="text/html" title="project 2" /><published>2025-12-11T23:42:24+07:00</published><updated>2025-12-11T23:42:24+07:00</updated><id>http://localhost:4001/projects/2_project</id><content type="html" xml:base="http://localhost:4001/projects/2_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
 It’s easy to include images in a flexible 3-column grid format.
 Make your photos 1/3, 2/3, or full width.</p>
 
@@ -448,7 +448,7 @@ Here’s the code for the last row of images above:</p>
         <img src="/assets/img/11.jpg" alt="example image" class="img-fluid rounded z-depth-1" />
     <span class="nt">&lt;/div&gt;</span>
 <span class="nt">&lt;/div&gt;</span>
-</code></pre></div></div>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[a project with a background image]]></summary></entry><entry><title type="html">project 1</title><link href="https://rezkaaufar.github.io/projects/1_project/" rel="alternate" type="text/html" title="project 1" /><published>2025-12-11T23:31:18+07:00</published><updated>2025-12-11T23:31:18+07:00</updated><id>https://rezkaaufar.github.io/projects/1_project</id><content type="html" xml:base="https://rezkaaufar.github.io/projects/1_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
+</code></pre></div></div>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[a project with a background image]]></summary></entry><entry><title type="html">project 1</title><link href="http://localhost:4001/projects/1_project/" rel="alternate" type="text/html" title="project 1" /><published>2025-12-11T23:42:24+07:00</published><updated>2025-12-11T23:42:24+07:00</updated><id>http://localhost:4001/projects/1_project</id><content type="html" xml:base="http://localhost:4001/projects/1_project/"><![CDATA[<p>Every project has a beautiful feature showcase page.
 It’s easy to include images in a flexible 3-column grid format.
 Make your photos 1/3, 2/3, or full width.</p>
 
