@@ -33,7 +33,7 @@
 
   <footer>
     <div class="footer-top">
-      <div>© {{ site.time | date: '%Y' }} {{ site.author }}.</div>
+      <div>© <span id="copyright-year">{{ site.time | date: '%Y' }}</span> {{ site.author }}.</div>
       <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
     </div>
     <div class="meta"><span id="page-size"></span>{% raw %} · {% endraw %}<span id="load-time"></span></div>
@@ -42,9 +42,11 @@
     (function() {
       const sizeEl = document.getElementById('page-size');
       const timeEl = document.getElementById('load-time');
+      const yearEl = document.getElementById('copyright-year');
       const update = () => {
         if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
         if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
       };
       if (document.readyState === 'complete') {
         update();
