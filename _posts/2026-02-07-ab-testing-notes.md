@@ -56,7 +56,7 @@ z_alpha = norm.ppf(1 - alpha)
 x_crit = mu0 + z_alpha * se_diff
 ```
 
-We can see at $n=200$ the threshold is actually to the right of the green dashed line (the MDE). This shows that with such a small sample, even if we hit our exact target of $0.02$, it wouldn't be "statistically significant." You would need a massive, lucky fluke to actually reject the null. As $n$ hits $20,000$, the black threshold line moves significantly to the left of our $0.02$ target, meaning almost any result near our MDE will be correctly identified as a winner.
+We can see at $n=200$ the threshold is actually to the right of the green dashed line (the MDE). This shows that with such a small sample, even if we hit our exact target of $0.02$, it wouldn't be "statistically significant." We would need a massive, lucky fluke to actually reject the null. As $n$ hits $20,000$, the black threshold line moves significantly to the left of our $0.02$ target, meaning almost any result near our MDE will be correctly identified as a winner.
 
 Notice how the power changes as we have increased sample as well. Power is the entire rest of the green curve to the right of the significant line. It represents all the times the treatment actually worked and we correctly identified it as a winner. If we have power of 80%, this means that if the 2% lift is real, we will correctly identify it 4 out of 5 times.
 
@@ -73,11 +73,11 @@ Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and 
 
 Here we observe the following:
 
-At $n=3,024$, the significant threshold is positioned perfectly so that 5% of the Blue Curve is to its right (your $\alpha$ or False Positive risk) and 20% of the Green Curve is to its left (your $\beta$ or False Negative risk)
+At $n=3,024$, the significant threshold is positioned perfectly so that 5% of the Blue Curve is to its right (our $\alpha$ or False Positive risk) and 20% of the Green Curve is to its left (our $\beta$ or False Negative risk)
 
 We can also observe that he curves are just "skinny" enough that the Green Shaded Area (Power) covers exactly 80% of the Treatment distribution. This means if the 2% lift is   real, we will correctly identify it 4 out of 5 times.
 
-Also even if your result lands slightly to the left of the "True Effect" ($0.02$), as long as it stays to the right of the black threshold ($\approx 0.013$), we still detect it as statistical significant.
+Also even if our result lands slightly to the left of the "True Effect" ($0.02$), as long as it stays to the right of the black threshold ($\approx 0.013$), we still detect it as statistical significant.
 
 # Next post
 
