@@ -27,7 +27,7 @@ We can plot both our distribution above with varying sample size n:
 
 We can see that as the sample size increases, the gap between the two distributions also increases. This is because the standard error decreases as the sample size increases. And this will affect our AB testing later.
 
-Now that we have the control and treatment distribution, we can do aa hypothesis testing by constructing a third distribution, which is the distribution of difference in the means. I will not go over the theory too deep here, but this approach is based on the Central Limit Theorem, where the distribution of the difference between two means will approach a normal distribution as the sample size increases.
+Now that we have the control and treatment distribution, we can do a hypothesis testing by constructing a third distribution, which is the distribution of difference in the means. I will not go over the theory too deep here, but this approach is based on the Central Limit Theorem, where the distribution of the difference between two means will approach a normal distribution as the sample size increases.
 
 We calculate the se_diff, mu0, and mu1 
 
@@ -41,7 +41,14 @@ mu0 = 0
 mu1 = mde
 ```
 
-We set mu0 to 0 because this is our null hypothesis. We assume that there is no mean difference in both control and treatment, whereas mu1 is our mde, which is the effect that we want to see.
+We set mu0 to 0 because this is our null hypothesis. We assume that there is no mean difference in both control and treatment, whereas mu1 is our MDE, which is the effect that we want to see. Technically, mu1 is calculated like this:
+
+```python
+mean_diff = p_treat - p_base
+mu1 = mean_diff - 0
+```
+
+which basically is equal to our MDE.
 
 Now we can plot the distribution of this mean difference and see how all different components interact and how does the shape of the distribution change as we adjust the sample size. 
 
