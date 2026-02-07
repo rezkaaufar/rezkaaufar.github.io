@@ -45,7 +45,7 @@ We set mu0 to 0 because this is our null hypothesis. We assume that there is no 
 
 ```python
 mean_diff = p_treat - p_base
-mu1 = mean_diff - 0
+mu1 = mean_diff - mu0
 ```
 
 which basically is equal to our MDE.
