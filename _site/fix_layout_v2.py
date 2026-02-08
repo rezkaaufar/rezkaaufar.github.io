@@ -1,0 +1,63 @@
+content = r'''<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: 'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% seo %}
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='central' font-size='52'%3E🧠%3C/text%3E%3C/svg%3E">
+  {% if site.compression.css %}<style>{% include main.css %}</style>{% endif %}
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1K5SB4G23C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1K5SB4G23C');
+  </script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+  <main>
+    {{ content }}
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div>© <span id="copyright-year">{{ site.time | date: '%Y' }}</span> {{ site.author }}.</div>
+      <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
+    </div>
+    <div class="meta"><span id="page-size"></span>{% raw %} · {% endraw %}<span id="load-time"></span></div>
+  </footer>
+  <script>
+    (function() {
+      const sizeEl = document.getElementById('page-size');
+      const timeEl = document.getElementById('load-time');
+      const yearEl = document.getElementById('copyright-year');
+      const update = () => {
+        if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
+        if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      };
+      if (document.readyState === 'complete') {
+        update();
+      } else {
+        window.addEventListener('load', update, { once: true });
+      }
+    })();
+  </script>
+</body>
+</html>
+'''
+
+with open('_layouts/default.html', 'w') as f:
+    f.write(content)
+print("Updated _layouts/default.html successfully.")

@@ -3,8 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Some notes on generative model</title>
-  <meta name="description" content="Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding.">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Some notes on generative model | Rezka Leonandya</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Some notes on generative model" />
+<meta name="author" content="Rezka Leonandya" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding." />
+<meta property="og:description" content="Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding." />
+<link rel="canonical" href="https://rezkaaufar.github.io/generative-model/" />
+<meta property="og:url" content="https://rezkaaufar.github.io/generative-model/" />
+<meta property="og:site_name" content="Rezka Leonandya" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-18T00:00:00+07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Some notes on generative model" />
+<meta name="twitter:site" content="@rezkaaufar" />
+<meta name="twitter:creator" content="@Rezka Leonandya" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rezka Leonandya"},"dateModified":"2021-04-18T00:00:00+07:00","datePublished":"2021-04-18T00:00:00+07:00","description":"Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding.","headline":"Some notes on generative model","mainEntityOfPage":{"@type":"WebPage","@id":"https://rezkaaufar.github.io/generative-model/"},"url":"https://rezkaaufar.github.io/generative-model/"}</script>
+<!-- End Jekyll SEO tag -->
+
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='central' font-size='52'%3E🧠%3C/text%3E%3C/svg%3E">
   <style>body {
     max-width: 80ch;
@@ -143,6 +162,14 @@ footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; co
     body { font-size: 1em; }
 }
 </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1K5SB4G23C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1K5SB4G23C');
+  </script>
   <script>
     window.MathJax = {
       tex: {
@@ -285,7 +312,7 @@ Once the model is trained, we can sample from the gaussian distribution $p(z)$ a
 
   <footer>
     <div class="footer-top">
-      <div>© 2025 Rezka Leonandya.</div>
+      <div>© <span id="copyright-year">2026</span> Rezka Leonandya.</div>
       <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
     </div>
     <div class="meta"><span id="page-size"></span> · <span id="load-time"></span></div>
@@ -294,9 +321,11 @@ Once the model is trained, we can sample from the gaussian distribution $p(z)$ a
     (function() {
       const sizeEl = document.getElementById('page-size');
       const timeEl = document.getElementById('load-time');
+      const yearEl = document.getElementById('copyright-year');
       const update = () => {
         if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
         if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
       };
       if (document.readyState === 'complete') {
         update();

@@ -3,8 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Page not found</title>
-  <meta name="description" content="Rezka Leonandya's personal site and blog.">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Page not found | Rezka Leonandya</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Page not found" />
+<meta name="author" content="Rezka Leonandya" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Rezka Leonandya’s personal site and blog." />
+<meta property="og:description" content="Rezka Leonandya’s personal site and blog." />
+<link rel="canonical" href="https://rezkaaufar.github.io/404.html" />
+<meta property="og:url" content="https://rezkaaufar.github.io/404.html" />
+<meta property="og:site_name" content="Rezka Leonandya" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Page not found" />
+<meta name="twitter:site" content="@rezkaaufar" />
+<meta name="twitter:creator" content="@Rezka Leonandya" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"Rezka Leonandya"},"description":"Rezka Leonandya’s personal site and blog.","headline":"Page not found","url":"https://rezkaaufar.github.io/404.html"}</script>
+<!-- End Jekyll SEO tag -->
+
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='central' font-size='52'%3E🧠%3C/text%3E%3C/svg%3E">
   <style>body {
     max-width: 80ch;
@@ -143,6 +161,14 @@ footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; co
     body { font-size: 1em; }
 }
 </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1K5SB4G23C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1K5SB4G23C');
+  </script>
   <script>
     window.MathJax = {
       tex: {
@@ -167,7 +193,7 @@ footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; co
 
   <footer>
     <div class="footer-top">
-      <div>© 2025 Rezka Leonandya.</div>
+      <div>© <span id="copyright-year">2026</span> Rezka Leonandya.</div>
       <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
     </div>
     <div class="meta"><span id="page-size"></span> · <span id="load-time"></span></div>
@@ -176,9 +202,11 @@ footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; co
     (function() {
       const sizeEl = document.getElementById('page-size');
       const timeEl = document.getElementById('load-time');
+      const yearEl = document.getElementById('copyright-year');
       const update = () => {
         if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
         if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
       };
       if (document.readyState === 'complete') {
         update();

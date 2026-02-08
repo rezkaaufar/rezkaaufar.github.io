@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>AB test notes | Rezka Leonandya</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="AB test notes" />
+<meta name="author" content="Rezka Leonandya" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="AB testing is a common method used in tech companies to evaluate the effectiveness of different strategies. In this post I try to go over the concept and visualize it to make it easier to remember." />
+<meta property="og:description" content="AB testing is a common method used in tech companies to evaluate the effectiveness of different strategies. In this post I try to go over the concept and visualize it to make it easier to remember." />
+<link rel="canonical" href="https://rezkaaufar.github.io/ab-testing-notes/" />
+<meta property="og:url" content="https://rezkaaufar.github.io/ab-testing-notes/" />
+<meta property="og:site_name" content="Rezka Leonandya" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-02-07T00:00:00+07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="AB test notes" />
+<meta name="twitter:site" content="@rezkaaufar" />
+<meta name="twitter:creator" content="@Rezka Leonandya" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rezka Leonandya"},"dateModified":"2026-02-07T00:00:00+07:00","datePublished":"2026-02-07T00:00:00+07:00","description":"AB testing is a common method used in tech companies to evaluate the effectiveness of different strategies. In this post I try to go over the concept and visualize it to make it easier to remember.","headline":"AB test notes","mainEntityOfPage":{"@type":"WebPage","@id":"https://rezkaaufar.github.io/ab-testing-notes/"},"url":"https://rezkaaufar.github.io/ab-testing-notes/"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='central' font-size='52'%3E🧠%3C/text%3E%3C/svg%3E">
+  <style>body {
+    max-width: 80ch;
+    padding: 3em 1em;
+    margin: auto;
+    line-height: 1.6;
+    font-size: 1.08em;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+pre {
+    overflow: auto;
+    background: #f7f7f7;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background: #f7f7f7;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+
+blockquote {
+    border-left: 3px solid #ddd;
+    padding-left: 0.8rem;
+    color: #444;
+    margin: 1rem 0;
+}
+
+header.site-header {
+    margin-bottom: 1.5rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+nav a.active,
+nav a:hover {
+    border-color: #111;
+}
+
+section { margin: 1.8rem 0; }
+
+.meta { color: #555; font-size: 0.95rem; }
+
+.listing { width: 100%; border-collapse: collapse; }
+
+.listing td { padding: 0.2rem 0.15rem; vertical-align: baseline; }
+
+.listing tr + tr td { border-top: 1px solid #eee; }
+
+.listing .date { white-space: nowrap; padding-right: 0.8rem; color: #666; font-size: 0.95rem; }
+
+.tag {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    margin-right: 0.35rem;
+    color: #444;
+}
+
+footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; color: #555; font-size: 0.95rem; }
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    align-items: center;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.footer-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.footer-links a:hover {
+    border-color: #111;
+}
+
+.icon {
+    font-family: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol",sans-serif;
+    margin-right: 0.25rem;
+}
+
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.social-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.social-links a:hover {
+    border-color: #111;
+}
+
+@media (max-width: 640px) {
+    body { font-size: 1em; }
+}
+</style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1K5SB4G23C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1K5SB4G23C');
+  </script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+  <main>
+    <a href="/" aria-label="Home">← Home</a>
+<h1>AB test notes</h1>
+<p class="meta">
+  February  7, 2026
+  
+</p>
+
+<p>I have known AB Testing and used it for a while in my work but sometimes I find myself remembering the equation too much and unsure about how things worked under the hood. In this post I try to go over the concept and visualize it to make it easier to remember.</p>
+
+<h1 id="mde-power-alpha-and-sample-size">MDE, power, alpha, and sample size</h1>
+
+<p>We start off with two distributions of a conversion metrics, one for the control group and one for the treatment group. Here is the detail of our distributions:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">p_base</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">p_treat</span> <span class="o">=</span> <span class="mf">0.12</span>
+<span class="n">se0</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="n">p_base</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p_base</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">se1</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="n">p_treat</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p_treat</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>We can plot both our distribution above with varying sample size n:</p>
+
+<p><img src="/assets/img/control-v-treatment.png" alt="Control vs treatment" /></p>
+
+<p><em>Figure 1: Control versus treatment distribution</em></p>
+
+<p>We can see that as the sample size increases, the gap between the two distributions also increases. This is because the standard error decreases as the sample size increases. And this will affect our AB testing later.</p>
+
+<p>Now that we have the control and treatment distribution, we can do a hypothesis testing by constructing a third distribution, which is the distribution of difference in the means. I will not go over the theory too deep here, but this approach is based on the Central Limit Theorem, where the distribution of the difference between two means will approach a normal distribution as the sample size increases.</p>
+
+<p>We calculate the se_diff, mu0, and mu1</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Standard Errors
+</span><span class="n">se0</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="n">p_base</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p_base</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">se1</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="n">p_treat</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p_treat</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">se_diff</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="n">se0</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">se1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">mu0</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">mu1</span> <span class="o">=</span> <span class="n">mde</span>
+</code></pre></div></div>
+
+<p>We set mu0 to 0 because this is our null hypothesis. We assume that there is no mean difference in both control and treatment, whereas mu1 is our MDE, which is the effect that we want to see. Technically, mu1 is calculated like this:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mean_diff</span> <span class="o">=</span> <span class="n">p_treat</span> <span class="o">-</span> <span class="n">p_base</span>
+<span class="n">mu1</span> <span class="o">=</span> <span class="n">mean_diff</span> <span class="o">-</span> <span class="n">mu0</span>
+</code></pre></div></div>
+
+<p>which basically is equal to our MDE.</p>
+
+<p>Now we can plot the distribution of this mean difference and see how all different components interact and how does the shape of the distribution change as we adjust the sample size.</p>
+
+<p><img src="/assets/img/ab-testing-distributions.png" alt="AB testing distributions" />
+<em>Figure 2: Comparison of difference distributions with expanded range</em></p>
+
+<p>The solid black line (threshold) represents the critical value, which is the value that we use to determine if our result is statistically significant. This black line is calculated based on the z-score of the alpha value and the standard error of the difference in means.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Significance Threshold (Critical Value)
+</span><span class="n">z_alpha</span> <span class="o">=</span> <span class="n">norm</span><span class="p">.</span><span class="nf">ppf</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span>
+<span class="n">x_crit</span> <span class="o">=</span> <span class="n">mu0</span> <span class="o">+</span> <span class="n">z_alpha</span> <span class="o">*</span> <span class="n">se_diff</span>
+</code></pre></div></div>
+
+<p>We can see at $n=200$ the threshold is actually to the right of the green dashed line (the MDE). This shows that with such a small sample, even if we hit our exact target of $0.02$, it wouldn’t be “statistically significant.” We would need a massive, lucky fluke to actually reject the null. As $n$ hits $20,000$, the black threshold line moves significantly to the left of our $0.02$ target, meaning almost any result near our MDE will be correctly identified as a winner.</p>
+
+<p>Notice how the power changes as we have increased sample as well. Power is the entire rest of the green curve to the right of the significant line. It represents all the times the treatment actually worked and we correctly identified it as a winner. If we have power of 80%, this means that if the 2% lift is real, we will correctly identify it 4 out of 5 times.</p>
+
+<p>Now we can see that there is indeed a relationship between the MDE, alpha, beta and the minimum sample size required. For a test to be valid in detecting our MDE, we need to have a sample size that is large enough to reject the null hypothesis.</p>
+
+<h1 id="deciding-sample-sizes">Deciding sample sizes</h1>
+
+<p>In an AB test, what we want usually is to determine the minimum sample size to be able to conclude an experiment given the experiment config. Hence, what we usually do is that we set alpha, beta (power), and our MDE to calculate how many samples do we need to run the AB test.</p>
+
+<p>Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and MDE of 0.02</p>
+
+<p><img src="/assets/img/one-tail-min-sample-size.png" alt="Min sample size" />
+<em>Figure 3: Distribution of difference when by setting alpha=5%, beta=20%, and MDE of 0.02</em></p>
+
+<p>Here we observe the following:</p>
+
+<p>At $n=3,024$, the significant threshold is positioned perfectly so that 5% of the Blue Curve is to its right (our $\alpha$ or False Positive risk) and 20% of the Green Curve is to its left (our $\beta$ or False Negative risk)</p>
+
+<p>We can also observe that he curves are just “skinny” enough that the Green Shaded Area (Power) covers exactly 80% of the Treatment distribution. This means if the 2% lift is  real, we will correctly identify it 4 out of 5 times.</p>
+
+<h1 id="what-to-do-if-your-test-is-statsig-but-effect-size-is-below-your-mde">What to do if your test is statsig but effect size is below your MDE?</h1>
+
+<p>In this case, I believe we can reject the null hypothesis. If our result lands slightly to the left of the “True Effect” ($0.02$), as long as it stays to the right of the black threshold ($\approx 0.013$), we can still detect it as statistical significant. It is still good to proceed with the treatment if we observe an increase in our metrics.</p>
+
+<p>If the effect size is positive but it is below the significance threshold (not statistically significant), then this warrants a further decision and investigation. It could be that the true effect size is indeed smaller than the MDE and requires more sample size to detect it. We can consider to continue the experiment with higher sample size if the cost of running the experiment is low and the potential benefit is high. Otherwise, we can consider to stop the experiment and try again with a different approach.</p>
+
+<p>The other case where we should not proceed with the treatment is when we do not reach statistical significance or if the effect size is negative. Negative effect means that the outcome of the treatment is worse than the control.</p>
+
+<h1 id="what-happens-if-we-have-unequal-split-between-control-and-treatment">What happens if we have unequal split between control and treatment?</h1>
+
+<p>Lets say we have 90% control and 10% treatment.</p>
+
+<p><img src="/assets/img/imbalanced-ab-test.png" alt="Imbalanced split" />
+<em>Figure 4: Distribution of difference when by setting alpha=5%, beta=20%, and MDE of 0.02 and unequal split between control and treatment</em></p>
+
+<p>In this case, the standard error of the distribution of the mean difference increases, which means that we need a larger sample size to achieve the same level of statistical significance. So an unequal split in an AB test requires higher samples.</p>
+
+\[SE_{diff} = \sqrt{\frac{\sigma^2_{control}}{\mathbf{n_{small}}} + \frac{\sigma^2_{treatment}}{n_{large}}}\]
+
+<p>From the formula above, a tiny sample in either group will blow up the total error.</p>
+
+<p>Same case can also be said if we have 10% control and 90% treatment. Even though here we are aggresively rolling out to new users and impacting the main metrics already, the changes cannot be fully trusted until we have enough sample to reach statistical significance.</p>
+
+
+
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div>© <span id="copyright-year">2026</span> Rezka Leonandya.</div>
+      <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
+    </div>
+    <div class="meta"><span id="page-size"></span> · <span id="load-time"></span></div>
+  </footer>
+  <script>
+    (function() {
+      const sizeEl = document.getElementById('page-size');
+      const timeEl = document.getElementById('load-time');
+      const yearEl = document.getElementById('copyright-year');
+      const update = () => {
+        if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
+        if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      };
+      if (document.readyState === 'complete') {
+        update();
+      } else {
+        window.addEventListener('load', update, { once: true });
+      }
+    })();
+  </script>
+</body>
+</html>
