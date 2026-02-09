@@ -98,6 +98,7 @@ $$Z = \frac{(\hat{p}_1 - \hat{p}_0) - 0}{SE_{observed}}$$
 
 If $Z$ > $Z\_{\alpha}$ (1.96 in $N(0,1)$), then we can reject the null hypothesis and conclude that the treatment is statistically significant.
 
+Another way to look at it is to look at our observed $\hat{p}\_1$ and if it is above the black threshold ($x_{crit} = 0 + 1.96 \cdot SE_{diff}$) ($\approx 0.013$), then we can reject the null hypothesis and conclude that the treatment is statistically significant.
 
 # What to do if your test is statsig but effect size is below your MDE?
 
