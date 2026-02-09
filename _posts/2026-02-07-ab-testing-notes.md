@@ -10,7 +10,11 @@ I have known AB Testing and used it for a while in my work but sometimes I find 
 
 # MDE, power, alpha, and sample size
 
-We start off with two distributions of a conversion metrics, one for the control group and one for the treatment group. Here is the detail of our distributions:
+We start off by looking at the relationship between minimum detectable effect (MDE), power (1-beta), alpha, and sample size. In an AB test, we usually want set MDE, power, and alpha to calculate the minimum sample size required to run the AB test.
+
+Before we go to the sample size calculation, we start off by varying sample size and see how it affects the distributions of the control and treatment groups. 
+
+We begin with two distributions of a conversion metrics, one for the control group and one for the treatment group. Here is the detail of our distributions:
 
 ```python
 p_base = 0.1
@@ -19,7 +23,7 @@ se0 = np.sqrt(p_base * (1 - p_base) / n)
 se1 = np.sqrt(p_treat * (1 - p_treat) / n)
 ```
 
-We can plot both our distribution above with varying sample size n:
+Here we assume that our control group conversion is 10% and our target treatment group conversion is 12%. We can plot both our distribution above with varying sample size n:
 
 ![Control vs treatment](/assets/img/control-v-treatment.png)
 
@@ -29,7 +33,7 @@ We can see that as the sample size increases, the gap between the two distributi
 
 Now that we have the control and treatment distribution, we can do a hypothesis testing by constructing a third distribution, which is the distribution of difference in the means. I will not go over the theory too deep here, but this approach is based on the Central Limit Theorem, where the distribution of the difference between two means will approach a normal distribution as the sample size increases.
 
-We calculate the se_diff, mu0, and mu1 
+For the hypothesis testing, we calculate three components: the standard error of the difference (se_diff), the null hypothesis (mu0), and the alternative hypothesis (mu1).
 
 ```python
 # Standard Errors
@@ -48,9 +52,9 @@ mean_diff = p_treat - p_base
 mu1 = mean_diff - mu0
 ```
 
-which basically is equal to our MDE.
+which basically is equal to our MDE. In this phase where we haven't done any AB testing, we assume that the treatment group is better than the control group by MDE.
 
-Now we can plot the distribution of this mean difference and see how all different components interact and how does the shape of the distribution change as we adjust the sample size. 
+Now we can plot the distribution of this mean difference by varying the sample size and observe how it affects our power and how does the shape of the distribution change as we adjust the sample size. 
 
 ![AB testing distributions](/assets/img/ab-testing-distributions.png)
 *Figure 2: Comparison of difference distributions with expanded range*
@@ -71,7 +75,7 @@ Now we can see that there is indeed a relationship between the MDE, alpha, beta 
 
 # Deciding sample sizes
 
-In an AB test, what we want usually is to determine the minimum sample size to be able to conclude an experiment given the experiment config. Hence, what we usually do is that we set alpha, beta (power), and our MDE to calculate how many samples do we need to run the AB test.
+As mentioned above, in an AB test what we want is to determine the minimum sample size to be able to conclude an experiment given the experiment config. Hence, what we usually do is that we set alpha, beta (power), and our MDE to calculate how many samples do we need to run the AB test.
 
 Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and MDE of 0.02
 
@@ -83,6 +87,17 @@ Here we observe the following:
 At $n=3,024$, the significant threshold is positioned perfectly so that 5% of the Blue Curve is to its right (our $\alpha$ or False Positive risk) and 20% of the Green Curve is to its left (our $\beta$ or False Negative risk)
 
 We can also observe that he curves are just "skinny" enough that the Green Shaded Area (Power) covers exactly 80% of the Treatment distribution. This means if the 2% lift is  real, we will correctly identify it 4 out of 5 times.
+
+# Concluding the experiment
+
+Once we have our AB test results, we can conclude the experiment by checking if the result is statistically significant. 
+
+With the observed $\hat{p}_1$ from our treatment group $\hat{p}_0$ from our control group, and $SE_{observed}$ as the standard error of the difference in means, we calculate z-score
+
+$$Z = \frac{(\hat{p}_1 - \hat{p}_0) - 0}{SE_{observed}}$$
+
+If $Z$ > $Z_{\alpha}$ (1.96 in $N(0,1)$), then we can reject the null hypothesis and conclude that the treatment is statistically significant.
+
 
 # What to do if your test is statsig but effect size is below your MDE?
 
