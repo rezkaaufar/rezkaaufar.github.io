@@ -1,6 +1,6 @@
 ---
 layout: post
-title: AB test notes
+title: Notes on doing AB test properly
 description: AB testing is a common method used in tech companies to evaluate the effectiveness of different strategies. In this post I try to go over the concept and visualize it to make it easier to remember.
 date: '2026-02-07'
 tags: []
@@ -10,7 +10,7 @@ I have known AB Testing and used it for a while in my work but sometimes I find 
 
 # MDE, power, alpha, and sample size
 
-We start off by looking at the relationship between minimum detectable effect (MDE), power (1-beta), alpha, and sample size. In an AB test, we usually want set MDE, power, and alpha to calculate the minimum sample size required to run the AB test.
+We start off by looking at the relationship between minimum detectable effect (MDE), power (1-beta), alpha, and sample size. In an AB test, we set MDE, power, and alpha to calculate the minimum sample size required to run the AB test.
 
 Before we go to the sample size calculation, we start off by varying sample size and see how it affects the distributions of the control and treatment groups. 
 
@@ -92,11 +92,11 @@ We can also observe that he curves are just "skinny" enough that the Green Shade
 
 Once we have our AB test results, we can conclude the experiment by checking if the result is statistically significant. 
 
-With the observed $\hat{p}_1$ from our treatment group $\hat{p}_0$ from our control group, and $SE_{observed}$ as the standard error of the difference in means, we calculate z-score
+With the observed $\hat{p}\_1$ from our treatment group $\hat{p}\_0$ from our control group, and $SE\_{observed}$ as the standard error of the difference in means, we calculate z-score
 
 $$Z = \frac{(\hat{p}_1 - \hat{p}_0) - 0}{SE_{observed}}$$
 
-If $Z$ > $Z_{\alpha}$ (1.96 in $N(0,1)$), then we can reject the null hypothesis and conclude that the treatment is statistically significant.
+If $Z$ > $Z\_{\alpha}$ (1.96 in $N(0,1)$), then we can reject the null hypothesis and conclude that the treatment is statistically significant.
 
 
 # What to do if your test is statsig but effect size is below your MDE?

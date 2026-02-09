@@ -3,27 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Hypothesis testing with normal distribution in an AB test | Rezka Leonandya</title>
-<meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="Hypothesis testing with normal distribution in an AB test" />
-<meta name="author" content="Rezka Leonandya" />
-<meta property="og:locale" content="en" />
-<meta name="description" content="AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions. In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test." />
-<meta property="og:description" content="AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions. In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test." />
-<link rel="canonical" href="https://rezkaaufar.github.io/ab-test-hypothesis-testing/" />
-<meta property="og:url" content="https://rezkaaufar.github.io/ab-test-hypothesis-testing/" />
-<meta property="og:site_name" content="Rezka Leonandya" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2021-11-21T00:00:00+07:00" />
-<meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Hypothesis testing with normal distribution in an AB test" />
-<meta name="twitter:site" content="@rezkaaufar" />
-<meta name="twitter:creator" content="@Rezka Leonandya" />
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rezka Leonandya"},"dateModified":"2021-11-21T00:00:00+07:00","datePublished":"2021-11-21T00:00:00+07:00","description":"AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions. In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test.","headline":"Hypothesis testing with normal distribution in an AB test","mainEntityOfPage":{"@type":"WebPage","@id":"https://rezkaaufar.github.io/ab-test-hypothesis-testing/"},"url":"https://rezkaaufar.github.io/ab-test-hypothesis-testing/"}</script>
-<!-- End Jekyll SEO tag -->
-
+  <title>Hypothesis testing with normal distribution in an AB test</title>
+  <meta name="description" content="AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions. In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='central' font-size='52'%3E🧠%3C/text%3E%3C/svg%3E">
   <style>body {
     max-width: 80ch;
