@@ -57,7 +57,7 @@ which basically is equal to our MDE. In this phase where we haven't done any AB 
 Now we can plot the distribution of this mean difference by varying the sample size and observe how it affects our power and how does the shape of the distribution change as we adjust the sample size. 
 
 ![AB testing distributions](/assets/img/ab-testing-distributions.png)
-*Figure 2: Comparison of difference distributions with expanded range*
+*Figure 2: Comparison of mean difference distributions with varying samples*
 
 The solid black line (threshold) represents the critical value, which is the value that we use to determine if our result is statistically significant. This black line is calculated based on the z-score of the alpha value and the standard error of the difference in means.
 
@@ -80,7 +80,7 @@ As mentioned above, in an AB test what we want is to determine the minimum sampl
 Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and MDE of 0.02
 
 ![Min sample size](/assets/img/one-tail-min-sample-size.png)
-*Figure 3: Distribution of difference when by setting alpha=5%, beta=20%, and MDE of 0.02*
+*Figure 3: Distribution of meandifference when by setting alpha=5%, beta=20%, and MDE of 0.02*
 
 Here we observe the following:
 
