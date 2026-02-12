@@ -82,13 +82,13 @@ sig_correct = np.abs(results_correct / se_diff_correct) > z_alpha
 ![Simulation](/assets/img/non-compliance-ab-test-simulation.png)
 *Figure 2: Simulation of the observed effect when using wrong and correct sample size*
 
-We can see that in our underpowered test, our average significant result is 1.90, closer to our original MDE of 2\%. Whereas in the correct sample size test, our average significant result is 1.20, closer to our true ITT lift of 1.2\%. This is inline with our previous analysis where the significance threshold of the underpowered test is higher than the significane threshold of the correct sample size test.
+We can see that in our underpowered test, our average significant result is 1.90, closer to our original MDE of 2%. Whereas in the correct sample size test, our average significant result is 1.20, closer to our true ITT lift of 1.2%. This is inline with our previous analysis where the significance threshold of the underpowered test is higher than the significane threshold of the correct sample size test.
 
 # What if we don't know the compliance rate?
 
 In an ideal world, we know the compliance rate before doing an AB Test. But there could be a situation where we don't know the compliance rate before doing an AB test. In this case, I envision these two options:
 
-- Pilot phase: where we do small rollout in the beginning to 1\% of the population to estimate the compliance rate. Then we use the estimated compliance rate to calculate the required sample size for the full test. Note that here ideally we need to reset the experiment after the pilot phase. If we keep the 1\% running and just add the remaining 99\%, we are technically performing sequential testing. Standard t-tests does not work as doing this inflates the Type I error rate. 
+- Pilot phase: where we do small rollout in the beginning to 1% of the population to estimate the compliance rate. Then we use the estimated compliance rate to calculate the required sample size for the full test. Note that here ideally we need to reset the experiment after the pilot phase. If we keep the 1% running and just add the remaining 99%, we are technically performing sequential testing. Standard t-tests does not work as doing this inflates the Type I error rate. 
 - Historical proxy: If we are testing a new "Checkout" button, look at the last 30 days of data. What percentage of users who landed on the cart page actually clicked the current checkout button? Use that as the compliance rate.
 
 I think there might be other options but these are the two that I am familiar with.
