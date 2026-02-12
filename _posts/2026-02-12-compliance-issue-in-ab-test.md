@@ -16,9 +16,9 @@ We first looked at the average treatment effect between the treatment group and 
 smf.ols('conversion ~ treatment', data=df).fit().summary()
 ```
 
-and the test result turn out to be statistically significant. But, given not all of the units in the treatment group actually did the treatment, our test is actually underpowered. Now what does this mean?
+The test result turn out to be statistically significant. But, given not all of the units in the treatment group actually did the treatment, our test is actually underpowered. Now what does this mean?
 
-During the sample size calculation, when we set an initial Minimum Detectable Effect ($MDE$), we are defining the smallest "signal" we want to be able to see through the "noise" (variance) of your data. However, this rests under the assumption that all the treatment unit are actually the treated unit. In a non-compliance case, only a fraction of our treatment unit are actually the treated unit. Because of this non-compliers, the effect we actually observe in our dashboard is smaller than the true effect on the unit that actually did the treatment. The observed effect goes by the name of Intention-to-Treat (ITT) effect, while the true effect on the unit that actually did the treatment goes by the name of Local Average Treatment Effect (LATE).
+During the sample size calculation, when we set an initial Minimum Detectable Effect (MDE), we are defining the smallest "signal" we want to be able to see through the "noise" (variance) of your data. However, this rests under the assumption that all the treatment unit are actually the treated unit. In a non-compliance case, only a fraction of our treatment unit are actually the treated unit. Because of this non-compliers, the effect we actually observe in our dashboard is smaller than the true effect on the unit that actually did the treatment. The observed effect goes by the name of Intention-to-Treat (ITT) effect, while the true effect on the unit that actually did the treatment goes by the name of Local Average Treatment Effect (LATE).
 
 Hence for our MDE to be valid, we need to adjust it based on the compliance rate. Assume for this post, our compliance rate is 60%.
 
