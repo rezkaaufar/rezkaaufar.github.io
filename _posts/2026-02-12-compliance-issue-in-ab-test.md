@@ -3,7 +3,7 @@ layout: post
 title: Non-compliance issue in an AB test
 description: 
 date: '2026-02-12'
-tags: []
+tags: [stats,experimentation]
 ---
 
 In a recent AB test that I did, I did the usual calculation of sample size, power, alpha, and MDE. At the end of the test, the test result was statistically significant. However, I then realized that some units in the treatment group were not actually doing the treatment. They were given the treatment but not all of them actually did it. This is a compliance issue that we need to address. 
