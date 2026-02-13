@@ -12,6 +12,12 @@ I have known AB Testing and used it for a while in my work but sometimes I find 
 
 We start off by looking at the relationship between minimum detectable effect (MDE), power (1-beta), alpha, and sample size. In an AB test, we set MDE, power, and alpha to calculate the minimum sample size required to run the AB test.
 
+Here is an image showing the relationship between the 4 variables:
+
+![Statistical Power Analysis Triangle](/assets/img/ab-test-triangle.png)
+
+*Figure 1: Statistical power analysis triangle. A change in one variable requires fixing the other two*
+
 Before we go to the sample size calculation, we start off by varying sample size and see how it affects the distributions of the control and treatment groups. 
 
 We begin with two distributions of a conversion metrics, one for the control group and one for the treatment group. Here is the detail of our distributions:
@@ -27,7 +33,7 @@ Here we assume that our control group conversion is 10% and our target treatment
 
 ![Control vs treatment](/assets/img/control-v-treatment.png)
 
-*Figure 1: Control versus treatment distribution*
+*Figure 2: Control versus treatment distribution*
 
 We can see that as the sample size increases, the gap between the two distributions also increases. This is because the standard error decreases as the sample size increases. And this will affect our AB testing later.
 
@@ -57,7 +63,7 @@ which basically is equal to our MDE. In this phase where we haven't done any AB 
 Now we can plot the distribution of this mean difference by varying the sample size and observe how it affects our power and how does the shape of the distribution change as we adjust the sample size. 
 
 ![AB testing distributions](/assets/img/ab-testing-distributions.png)
-*Figure 2: Comparison of mean difference distributions with varying samples*
+*Figure 3: Comparison of mean difference distributions with varying samples*
 
 The solid black line (threshold) represents the critical value, which is the value that we use to determine if our result is statistically significant. This black line is calculated based on the z-score of the alpha value and the standard error of the difference in means.
 
@@ -80,7 +86,7 @@ As mentioned above, in an AB test what we want is to determine the minimum sampl
 Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and MDE of 0.02
 
 ![Min sample size](/assets/img/one-tail-min-sample-size.png)
-*Figure 3: Distribution of meandifference when by setting alpha=5%, beta=20%, and MDE of 0.02*
+*Figure 4: Distribution of meandifference when by setting alpha=5%, beta=20%, and MDE of 0.02*
 
 Here we observe the following:
 
@@ -113,7 +119,7 @@ The other case where we should not proceed with the treatment is when we do not 
 Lets say we have 90% control and 10% treatment.
 
 ![Imbalanced split](/assets/img/imbalanced-ab-test.png)
-*Figure 4: Distribution of difference when by setting alpha=5%, beta=20%, and MDE of 0.02 and unequal split between control and treatment*
+*Figure 5: Distribution of difference when by setting alpha=5%, beta=20%, and MDE of 0.02 and unequal split between control and treatment*
 
 In this case, the standard error of the distribution of the mean difference increases, which means that we need a larger sample size to achieve the same level of statistical significance. So an unequal split in an AB test requires higher samples.
 
