@@ -6,7 +6,7 @@ date: '2026-02-20'
 tags: [stats]
 ---
 
-# Background
+# Confidence intervals
 
 Confidence interval is a range of values that is likely to contain an unknown population parameter. If we were to repeat an experiment or a sampling process many times and calculate a confidence interval each time, 95% of those generated intervals would contain the true population parameter.
 
@@ -43,7 +43,9 @@ In the real world, we almost never have the luxury of repeating an experiment mu
 When doing linear regression, we also got confidence intervals and standard deviation for our estimated parameters. The standard deviation is calculated as such:
 
 $$\hat{\sigma}^2 = \frac{\sum (y_i - \hat{y}_i)^2}{n - k}$$
+
 $$\text{Var}(\hat{\beta}) = \hat{\sigma}^2 (X^T X)^{-1}$$
+
 $$SE(\hat{\beta}_j) = \sqrt{\text{Var}(\hat{\beta}_j)}$$
 
 where $\hat{\sigma}^2$ is the residual variance of the error term, $X$ is the independent variables, and $k$ is the number of parameters in the model. 
