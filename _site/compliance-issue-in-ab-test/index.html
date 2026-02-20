@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Non-compliance issue in an AB test</title>
+  <meta name="description" content="Rezka Leonandya's personal site and blog.">
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='central' font-size='52'%3E🧠%3C/text%3E%3C/svg%3E">
+  <style>body {
+    max-width: 80ch;
+    padding: 3em 1em;
+    margin: auto;
+    line-height: 1.6;
+    font-size: 1.08em;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+pre {
+    overflow: auto;
+    background: #f7f7f7;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background: #f7f7f7;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+
+blockquote {
+    border-left: 3px solid #ddd;
+    padding-left: 0.8rem;
+    color: #444;
+    margin: 1rem 0;
+}
+
+header.site-header {
+    margin-bottom: 1.5rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+nav a.active,
+nav a:hover {
+    border-color: #111;
+}
+
+section {
+    margin: 1.8rem 0;
+}
+
+.meta {
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.listing {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.listing td {
+    padding: 0.2rem 0.15rem;
+    vertical-align: baseline;
+}
+
+.listing tr+tr td {
+    border-top: 1px solid #eee;
+}
+
+.listing .date {
+    white-space: nowrap;
+    padding-right: 0.8rem;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.tag {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    margin-right: 0.35rem;
+    color: #444;
+}
+
+footer {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.tag-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.2rem;
+}
+
+.tag-btn {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    background: #fff;
+    color: #444;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.tag-btn:hover {
+    border-color: #999;
+}
+
+.tag-btn.active {
+    background: #24292e;
+    color: #fff;
+    border-color: #24292e;
+}
+
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    align-items: center;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.footer-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.footer-links a:hover {
+    border-color: #111;
+}
+
+.icon {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    margin-right: 0.25rem;
+}
+
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.social-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.social-links a:hover {
+    border-color: #111;
+}
+
+@media (max-width: 640px) {
+    body {
+        font-size: 1em;
+    }
+}
+
+/* Fix: reset code padding inside pre blocks to avoid first-line indent */
+pre code {
+    padding: 0;
+    background: none;
+    border-radius: 0;
+}
+
+/* Rouge syntax highlighting — GitHub-inspired theme */
+.highlight .c,
+.highlight .c1,
+.highlight .cm,
+.highlight .cs {
+    color: #6a737d;
+    font-style: italic;
+}
+
+/* comments */
+.highlight .k,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp,
+.highlight .kr,
+.highlight .kt,
+.highlight .kc {
+    color: #d73a49;
+}
+
+/* keywords */
+.highlight .n {
+    color: #24292e;
+}
+
+/* names */
+.highlight .nf,
+.highlight .nx {
+    color: #6f42c1;
+}
+
+/* function names */
+.highlight .nc {
+    color: #6f42c1;
+    font-weight: bold;
+}
+
+/* class names */
+.highlight .nb {
+    color: #005cc5;
+}
+
+/* builtins */
+.highlight .bp {
+    color: #005cc5;
+}
+
+/* builtin pseudo */
+.highlight .s,
+.highlight .s1,
+.highlight .s2,
+.highlight .sh,
+.highlight .sb,
+.highlight .sc,
+.highlight .sd,
+.highlight .se,
+.highlight .si,
+.highlight .sx {
+    color: #032f62;
+}
+
+/* strings */
+.highlight .sr {
+    color: #032f62;
+}
+
+/* regex */
+.highlight .ss {
+    color: #005cc5;
+}
+
+/* symbol */
+.highlight .mi,
+.highlight .mf,
+.highlight .mh,
+.highlight .mo,
+.highlight .mb,
+.highlight .il {
+    color: #005cc5;
+}
+
+/* numbers */
+.highlight .o,
+.highlight .ow {
+    color: #d73a49;
+}
+
+/* operators */
+.highlight .p {
+    color: #24292e;
+}
+
+/* punctuation */
+.highlight .na {
+    color: #005cc5;
+}
+
+/* attribute names */
+.highlight .nd {
+    color: #6f42c1;
+}
+
+/* decorators */
+.highlight .ni {
+    color: #24292e;
+    font-weight: bold;
+}
+
+/* entity */
+.highlight .ne {
+    color: #d73a49;
+    font-weight: bold;
+}
+
+/* exception */
+.highlight .nn {
+    color: #005cc5;
+}
+
+/* namespace */
+.highlight .no {
+    color: #005cc5;
+}
+
+/* constant */
+.highlight .nv,
+.highlight .vi,
+.highlight .vc,
+.highlight .vg,
+.highlight .vm {
+    color: #e36209;
+}
+
+/* variables */
+.highlight .ge {
+    font-style: italic;
+}
+
+/* emphasis */
+.highlight .gs {
+    font-weight: bold;
+}
+
+/* strong */
+.highlight .err {
+    color: #d73a49;
+    background: #ffeef0;
+}
+
+/* error */
+.highlight .gd {
+    color: #b31d28;
+    background: #ffeef0;
+}
+
+/* diff deleted */
+.highlight .gi {
+    color: #22863a;
+    background: #f0fff4;
+}
+
+/* diff inserted */</style>  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1K5SB4G23C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-1K5SB4G23C');
+  </script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+
+<body>
+  <main>
+    <a href="/blog/" aria-label="Blog">← Blog</a>
+<h1>Non-compliance issue in an AB test</h1>
+<p class="meta">
+  February 12, 2026
+  
+  
+   · 7 min read 
+    ·
+    <span class="tag">stats</span><span class="tag">experimentation</span>
+    
+</p>
+
+<p>In a recent AB test that I did, I did the usual calculation of sample size, power, alpha, and MDE. At the end of the test, the test result was statistically significant. However, I then realized that some units in the treatment group were not actually doing the treatment. They were given the treatment but not all of them actually did it. This is a compliance issue that we need to address.</p>
+
+<h1 id="non-compliance-issue-makes-your-test-underpowered">Non-compliance issue makes your test underpowered</h1>
+
+<p>We first looked at the average treatment effect between the treatment group and control group:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">smf</span><span class="p">.</span><span class="nf">ols</span><span class="p">(</span><span class="sh">'</span><span class="s">conversion ~ treatment</span><span class="sh">'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">).</span><span class="nf">fit</span><span class="p">().</span><span class="nf">summary</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>The test result turn out to be statistically significant. But, given not all of the units in the treatment group actually did the treatment, our test is actually underpowered. Now what does this mean?</p>
+
+<p>During the sample size calculation, when we set an initial Minimum Detectable Effect (MDE), we are defining the smallest “signal” we want to be able to see through the “noise” (variance) of your data. However, this rests under the assumption that all the treatment unit are actually the treated unit. In a non-compliance case, only a fraction of our treatment unit are actually the treated unit. Because of this non-compliers, the effect we actually observe in our dashboard is smaller than the true effect on the unit that actually did the treatment. The observed effect goes by the name of Intention-to-Treat (ITT) effect, while the true effect on the unit that actually did the treatment goes by the name of Local Average Treatment Effect (LATE).</p>
+
+<p>Hence for our MDE to be valid, we need to adjust it based on the compliance rate. Assume for this post, our compliance rate is 60%.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mde_target</span> <span class="o">=</span> <span class="mf">0.02</span>      <span class="c1"># The MDE that we set, targeted for compliers
+</span><span class="n">compliance</span> <span class="o">=</span> <span class="mf">0.6</span>       <span class="c1"># 60% compliance rate
+</span><span class="n">true_itt</span> <span class="o">=</span> <span class="n">mde_target</span> <span class="o">*</span> <span class="n">compliance</span>  <span class="c1"># actual effect size: 1.2% ITT lift
+</span></code></pre></div></div>
+
+<p>So in our case, when we set our MDE to 2%, this is an MDE for the compliers. For the whole treatment group (or the ITT), we are actually targeting for 1.2% ITT lift. Hence the sample size we calculated is supposed to be done using the 1.2% ITT lift, not the 2% MDE.</p>
+
+<p>Below is the thing we need to calculate for our sample size calculation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="c1"># Standard deviation of your metric
+</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">target_power</span> <span class="o">=</span> <span class="mf">0.8</span>
+
+<span class="c1"># Z-scores
+</span><span class="n">z_alpha</span> <span class="o">=</span> <span class="n">stats</span><span class="p">.</span><span class="n">norm</span><span class="p">.</span><span class="nf">ppf</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">z_beta</span> <span class="o">=</span> <span class="n">stats</span><span class="p">.</span><span class="n">norm</span><span class="p">.</span><span class="nf">ppf</span><span class="p">(</span><span class="n">target_power</span><span class="p">)</span>
+
+<span class="c1"># Sample Size Calculations
+</span><span class="n">n_wrong</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">z_alpha</span> <span class="o">+</span> <span class="n">z_beta</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">mde</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">n_correct</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="n">n_wrong</span> <span class="o">/</span> <span class="p">(</span><span class="n">compliance</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="n">se_diff_wrong</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">n_wrong</span><span class="p">)</span>
+<span class="n">se_diff_correct</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">n_correct</span><span class="p">)</span>
+
+<span class="n">threshold_wrong</span> <span class="o">=</span> <span class="n">z_alpha</span> <span class="o">*</span> <span class="n">se_diff_wrong</span>
+<span class="n">threshold_correct</span> <span class="o">=</span> <span class="n">z_alpha</span> <span class="o">*</span> <span class="n">se_diff_correct</span>
+</code></pre></div></div>
+
+<p>And here is how our distribution of mean difference looked like when we use the wrong sample size and the correct sample size:</p>
+
+<p><img src="/assets/img/non-compliance-ab-test.png" alt="Min sample size" />
+<em>Figure 1: Comparison of mean difference distribution when using wrong and correct sample size</em></p>
+
+<p>Notice that here we are not using the MDE as our H1 mean. Instead, we are using the true ITT lift as our H1 mean. This is because we are interested in the effect on the whole treatment group, not just the compliers.</p>
+
+<p>From the image above, we can see that if we use the wrong sample size, the distribution is much wider. The orange area is massive, and the significance threshold (threshold_wrong) is to the right of the H1 mean. This means that even if we observe the True ITT during our test, we would fail to reject the null hypothesis. In this situation, we are more likely to make a Type II error (false negative).</p>
+
+<p>Once we use the correct sample size by applying the $1/c^2$ correction (common correction on non-compliance issue), the distribution becomes narrower. The significance threshold shifts to the left (threshold_correct)  and we can see that we now have 80% power to detect the treatment effect.</p>
+
+<p>Now back to my original AB test, our test was underpowered but we still got a statistically significant result. Does this mean that we can conclude that the treatment is effective? Not at all. We just got lucky. If our “true” effect is actually 0.012, our data had to “get lucky” and swing into that thin green tail on the right side of the signicant threshold to be significant. This is the definition of Magnitude Error: our result is significant only because it is an outlier that is larger than the true average.</p>
+
+<p>We can also do some simulation to check the average of the significant results from both the wrong and correct sample size test.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Simulation
+</span><span class="n">n_sims</span> <span class="o">=</span> <span class="mi">50000</span>
+
+<span class="n">results_wrong</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">true_itt</span><span class="p">,</span> <span class="n">se_diff_wrong</span><span class="p">,</span> <span class="n">n_sims</span><span class="p">)</span>
+<span class="n">results_correct</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">true_itt</span><span class="p">,</span> <span class="n">se_diff_correct</span><span class="p">,</span> <span class="n">n_sims</span><span class="p">)</span>
+
+<span class="c1"># Determine significance (two-tailed)
+</span><span class="n">sig_wrong</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="n">results_wrong</span> <span class="o">/</span> <span class="n">se_diff_wrong</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">z_alpha</span>
+<span class="n">sig_correct</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="n">results_correct</span> <span class="o">/</span> <span class="n">se_diff_correct</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">z_alpha</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/non-compliance-ab-test-simulation.png" alt="Simulation" />
+<em>Figure 2: Simulation of the observed effect when using wrong and correct sample size</em></p>
+
+<p>We can see that in our underpowered test, our average significant result is 1.90, closer to our original MDE of 2%. Whereas in the correct sample size test, our average significant result is 1.20, closer to our true ITT lift of 1.2%. This is inline with our previous analysis where the significance threshold of the underpowered test is higher than the significane threshold of the correct sample size test.</p>
+
+<h1 id="what-if-we-dont-know-the-compliance-rate">What if we don’t know the compliance rate?</h1>
+
+<p>In an ideal world, we know the compliance rate before doing an AB Test. But there could be a situation where we don’t know the compliance rate before doing an AB test. In this case, I envision these two options:</p>
+
+<ul>
+  <li>Pilot phase: where we do small rollout in the beginning to 1% of the population to estimate the compliance rate. Then we use the estimated compliance rate to calculate the required sample size for the full test. Note that here ideally we need to reset the experiment after the pilot phase. If we keep the 1% running and just add the remaining 99%, we are technically performing sequential testing. Standard t-tests does not work as doing this inflates the Type I error rate.</li>
+  <li>Historical proxy: If we are testing a new “Checkout” button, look at the last 30 days of data. What percentage of users who landed on the cart page actually clicked the current checkout button? Use that as the compliance rate.</li>
+</ul>
+
+<p>I think there might be other options but these are the two that I am familiar with.</p>
+
+<h1 id="relation-to-instrumental-variable">Relation to instrumental variable</h1>
+
+<p>The $1/c^2$ correction actually comes from the instrumental variable (IV) framework. In the IV framework, we are interested in the effect of the treatment (T) on the outcome (Y). However, we only have access to the treatment (T) and the instrument (Z). So what we do is to estimate the effect of the instrument (Z) on the treatment (T) and use that to estimate the effect of the treatment (T) on the outcome (Y).</p>
+
+<p>In an AB test with non-compliance issue, we can use the randomization (Z) as the instrument. We can do this because in this case, randomization $\neq$ participation. Following the IV framework math, we will get the compliance rate that can be interpreted as the correlation between the instrument (randomization) and the treatment (T). This is usually known as the first stage in an IV framework. The second stage (reduced form) is when we divide the first stage by the compliance rate to get the ITT effect.</p>
+
+
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div>© <span id="copyright-year">2026</span> Rezka Leonandya.</div>
+      <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
+    </div>
+    <div class="meta"><span id="page-size"></span> · <span id="load-time"></span></div>
+  </footer>
+  <script>
+    (function () {
+      const sizeEl = document.getElementById('page-size');
+      const timeEl = document.getElementById('load-time');
+      const yearEl = document.getElementById('copyright-year');
+      const update = () => {
+        if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
+        if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      };
+      if (document.readyState === 'complete') {
+        update();
+      } else {
+        window.addEventListener('load', update, { once: true });
+      }
+    })();
+  </script>
+</body>
+
+</html>

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Sample Post with Code, Image, and Math
+description: Description of the post.
 date: '2025-01-01'
 tags: [demo]
 published: false

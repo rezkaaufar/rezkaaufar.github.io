@@ -1,8 +1,164 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4001/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4001/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-02-09T22:04:11+07:00</updated><id>http://localhost:4001/feed.xml</id><title type="html">Rezka Leonandya</title><subtitle>Rezka Leonandya&apos;s personal site and blog.</subtitle><author><name>Rezka Leonandya</name></author><entry><title type="html">Notes on doing AB test properly</title><link href="http://localhost:4001/ab-testing-notes/" rel="alternate" type="text/html" title="Notes on doing AB test properly" /><published>2026-02-07T00:00:00+07:00</published><updated>2026-02-07T00:00:00+07:00</updated><id>http://localhost:4001/ab-testing-notes</id><content type="html" xml:base="http://localhost:4001/ab-testing-notes/"><![CDATA[<p>I have known AB Testing and used it for a while in my work but sometimes I find myself remembering the equation too much and unsure about how things worked under the hood. In this post I try to go over the concept and visualize it to make it easier to remember.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-02-20T16:49:51+07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Rezka Leonandya</title><subtitle>Rezka Leonandya&apos;s personal site and blog.</subtitle><author><name>Rezka Leonandya</name></author><entry><title type="html">How to interpret confidence intervals (correctly)</title><link href="http://localhost:4000/confidence-intervals/" rel="alternate" type="text/html" title="How to interpret confidence intervals (correctly)" /><published>2026-02-20T00:00:00+07:00</published><updated>2026-02-20T00:00:00+07:00</updated><id>http://localhost:4000/confidence-intervals</id><content type="html" xml:base="http://localhost:4000/confidence-intervals/"><![CDATA[<h1 id="background">Background</h1>
+
+<p>Confidence interval is a range of values that is likely to contain an unknown population parameter. If we were to repeat an experiment or a sampling process many times and calculate a confidence interval each time, 95% of those generated intervals would contain the true population parameter.</p>
+
+<p>Here we visualize our confidence interval when we sample multiple times from a true population. The true population is a normal distribution with mean 100 and standard deviation of 15.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>  
+<span class="n">pop_mean</span> <span class="o">=</span> <span class="mi">100</span>      <span class="c1"># True population mean
+</span><span class="n">pop_std</span> <span class="o">=</span> <span class="mi">15</span>       <span class="c1"># True population standard deviation
+</span><span class="n">n_samples</span> <span class="o">=</span> <span class="mi">50</span>      <span class="c1"># Number of times we draw a sample
+</span><span class="n">confidence</span> <span class="o">=</span> <span class="mf">0.95</span>   <span class="c1"># 95% Confidence Level
+</span></code></pre></div></div>
+
+<p>Here is the result of our confidence interval visualization using 30 sample size:</p>
+
+<p><img src="/assets/img/small_sample_ci.png" alt="Small Sample CI" /></p>
+
+<p><em>Figure 1: Confidence Interval with small sample size</em></p>
+
+<p>We can see that of all the 50 sampling process, we have 3 confidence interval that does not contain the true population mean. This is in line with the 95% confidence level, where we expect 5% of the intervals to not contain the true population parameter.</p>
+
+<p>Here we look at the result of our confidence interval visualization using 100 sample size:</p>
+
+<p><img src="/assets/img/large_sample_ci.png" alt="Large Sample CI" /></p>
+
+<p><em>Figure 2: Confidence Interval with large sample size</em></p>
+
+<p>With larger sample size, we expect to have more confidence intervals that contain the true population parameter. This is because larger sample size provides more information about the population, leading to more accurate estimates of the population parameter.</p>
+
+<p>In the real world, we almost never have the luxury of repeating an experiment multiple times to see the distribution. We get one shot, one dataset, and one set of results. We can then turn to the Central Limit Theorem (CLT) to treat our single experiment as if it were part of that multiple sampling process. The Central Limit Theorem (CLT) states that the distribution of sample means will approach a normal distribution as the sample size increases, regardless of the shape of the population distribution. With the assumption that our single experiment is “typical” and not one of the rare outliers, we can use the CLT to construct a confidence interval for our population parameter and further do hypothesis testing from it.</p>
+
+<h1 id="confidence-intervals-in-linear-regression">Confidence intervals in linear regression</h1>
+
+<p>When doing linear regression, we also got confidence intervals and standard deviation for our estimated parameters. The standard deviation is calculated as such:</p>
+
+<p>\(\hat{\sigma}^2 = \frac{\sum (y_i - \hat{y}_i)^2}{n - k}\)
+\(\text{Var}(\hat{\beta}) = \hat{\sigma}^2 (X^T X)^{-1}\)
+\(SE(\hat{\beta}_j) = \sqrt{\text{Var}(\hat{\beta}_j)}\)</p>
+
+<p>where $\hat{\sigma}^2$ is the residual variance of the error term, $X$ is the independent variables, and $k$ is the number of parameters in the model.</p>
+
+<p>Now, how can we interpret confidence intervals and standard deviation in linear regression?</p>
+
+<p>For confidence intervals, this essentially means that if we were to fit a line many times, we can expect that 95% of the confidence interval contain the true parameter. For standard deviation, the theory behind it is also the same: if we took many different samples and fit a line to each, how much would the slope of that line vary?</p>
+
+<p>Imagine the “true” relationship between two variables is a fixed, invisible line: $y = 5x + 2$. In the real world, we never see this line; we only see noisy data points scattered around it.</p>
+
+<ul>
+  <li>Sample 1: We collect 100 data points and fit a line. The slope estimate is $5.2$, and the 95% CI is [4.8, 5.6]. (This interval contains the true value of 5). The standard deviation of the slope is $0.4$.</li>
+  <li>Sample 2: We collect another 100 points. The slope is $4.9$, and the CI is [4.5, 5.3]. (This interval also contains 5). The standard deviation of the slope is $0.3$.</li>
+  <li>Sample 100: We collect 100 more points. This time, by pure random chance, we got a “weird” sample. The slope is $6.1$ and the CI is [5.7, 6.5]. (This interval misses the true value of 5). The standard deviation of the slope is $0.5$.</li>
+</ul>
+
+<p>If we did this forever, 95% of those calculated brackets would successfully “capture” that true value of 5.</p>
+
+<p>Here is the visualization of the confidence interval for the slope of the line:</p>
+
+<p><img src="/assets/img/linear_regression_ci.png" alt="CI" /></p>
+
+<p><em>Figure 3: Confidence Interval for the slope of the line</em></p>
+
+<p>Another thing to point is that in linear regression, we can view the parameter as the mean change in $Y$ for a unit change in $X$. So the mean of the distribution is here is bidimensional whereas the mean of the distribution in the previous example is unidimensional.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="stats" /><summary type="html"><![CDATA[Notes on how to interpret confidence intervals.]]></summary></entry><entry><title type="html">Non-compliance issue in an AB test</title><link href="http://localhost:4000/compliance-issue-in-ab-test/" rel="alternate" type="text/html" title="Non-compliance issue in an AB test" /><published>2026-02-12T00:00:00+07:00</published><updated>2026-02-12T00:00:00+07:00</updated><id>http://localhost:4000/compliance-issue-in-ab-test</id><content type="html" xml:base="http://localhost:4000/compliance-issue-in-ab-test/"><![CDATA[<p>In a recent AB test that I did, I did the usual calculation of sample size, power, alpha, and MDE. At the end of the test, the test result was statistically significant. However, I then realized that some units in the treatment group were not actually doing the treatment. They were given the treatment but not all of them actually did it. This is a compliance issue that we need to address.</p>
+
+<h1 id="non-compliance-issue-makes-your-test-underpowered">Non-compliance issue makes your test underpowered</h1>
+
+<p>We first looked at the average treatment effect between the treatment group and control group:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">smf</span><span class="p">.</span><span class="nf">ols</span><span class="p">(</span><span class="sh">'</span><span class="s">conversion ~ treatment</span><span class="sh">'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">).</span><span class="nf">fit</span><span class="p">().</span><span class="nf">summary</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>The test result turn out to be statistically significant. But, given not all of the units in the treatment group actually did the treatment, our test is actually underpowered. Now what does this mean?</p>
+
+<p>During the sample size calculation, when we set an initial Minimum Detectable Effect (MDE), we are defining the smallest “signal” we want to be able to see through the “noise” (variance) of your data. However, this rests under the assumption that all the treatment unit are actually the treated unit. In a non-compliance case, only a fraction of our treatment unit are actually the treated unit. Because of this non-compliers, the effect we actually observe in our dashboard is smaller than the true effect on the unit that actually did the treatment. The observed effect goes by the name of Intention-to-Treat (ITT) effect, while the true effect on the unit that actually did the treatment goes by the name of Local Average Treatment Effect (LATE).</p>
+
+<p>Hence for our MDE to be valid, we need to adjust it based on the compliance rate. Assume for this post, our compliance rate is 60%.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mde_target</span> <span class="o">=</span> <span class="mf">0.02</span>      <span class="c1"># The MDE that we set, targeted for compliers
+</span><span class="n">compliance</span> <span class="o">=</span> <span class="mf">0.6</span>       <span class="c1"># 60% compliance rate
+</span><span class="n">true_itt</span> <span class="o">=</span> <span class="n">mde_target</span> <span class="o">*</span> <span class="n">compliance</span>  <span class="c1"># actual effect size: 1.2% ITT lift
+</span></code></pre></div></div>
+
+<p>So in our case, when we set our MDE to 2%, this is an MDE for the compliers. For the whole treatment group (or the ITT), we are actually targeting for 1.2% ITT lift. Hence the sample size we calculated is supposed to be done using the 1.2% ITT lift, not the 2% MDE.</p>
+
+<p>Below is the thing we need to calculate for our sample size calculation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="c1"># Standard deviation of your metric
+</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">target_power</span> <span class="o">=</span> <span class="mf">0.8</span>
+
+<span class="c1"># Z-scores
+</span><span class="n">z_alpha</span> <span class="o">=</span> <span class="n">stats</span><span class="p">.</span><span class="n">norm</span><span class="p">.</span><span class="nf">ppf</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">z_beta</span> <span class="o">=</span> <span class="n">stats</span><span class="p">.</span><span class="n">norm</span><span class="p">.</span><span class="nf">ppf</span><span class="p">(</span><span class="n">target_power</span><span class="p">)</span>
+
+<span class="c1"># Sample Size Calculations
+</span><span class="n">n_wrong</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">z_alpha</span> <span class="o">+</span> <span class="n">z_beta</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">mde</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">n_correct</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="n">n_wrong</span> <span class="o">/</span> <span class="p">(</span><span class="n">compliance</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="n">se_diff_wrong</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">n_wrong</span><span class="p">)</span>
+<span class="n">se_diff_correct</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">n_correct</span><span class="p">)</span>
+
+<span class="n">threshold_wrong</span> <span class="o">=</span> <span class="n">z_alpha</span> <span class="o">*</span> <span class="n">se_diff_wrong</span>
+<span class="n">threshold_correct</span> <span class="o">=</span> <span class="n">z_alpha</span> <span class="o">*</span> <span class="n">se_diff_correct</span>
+</code></pre></div></div>
+
+<p>And here is how our distribution of mean difference looked like when we use the wrong sample size and the correct sample size:</p>
+
+<p><img src="/assets/img/non-compliance-ab-test.png" alt="Min sample size" />
+<em>Figure 1: Comparison of mean difference distribution when using wrong and correct sample size</em></p>
+
+<p>Notice that here we are not using the MDE as our H1 mean. Instead, we are using the true ITT lift as our H1 mean. This is because we are interested in the effect on the whole treatment group, not just the compliers.</p>
+
+<p>From the image above, we can see that if we use the wrong sample size, the distribution is much wider. The orange area is massive, and the significance threshold (threshold_wrong) is to the right of the H1 mean. This means that even if we observe the True ITT during our test, we would fail to reject the null hypothesis. In this situation, we are more likely to make a Type II error (false negative).</p>
+
+<p>Once we use the correct sample size by applying the $1/c^2$ correction (common correction on non-compliance issue), the distribution becomes narrower. The significance threshold shifts to the left (threshold_correct)  and we can see that we now have 80% power to detect the treatment effect.</p>
+
+<p>Now back to my original AB test, our test was underpowered but we still got a statistically significant result. Does this mean that we can conclude that the treatment is effective? Not at all. We just got lucky. If our “true” effect is actually 0.012, our data had to “get lucky” and swing into that thin green tail on the right side of the signicant threshold to be significant. This is the definition of Magnitude Error: our result is significant only because it is an outlier that is larger than the true average.</p>
+
+<p>We can also do some simulation to check the average of the significant results from both the wrong and correct sample size test.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Simulation
+</span><span class="n">n_sims</span> <span class="o">=</span> <span class="mi">50000</span>
+
+<span class="n">results_wrong</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">true_itt</span><span class="p">,</span> <span class="n">se_diff_wrong</span><span class="p">,</span> <span class="n">n_sims</span><span class="p">)</span>
+<span class="n">results_correct</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">normal</span><span class="p">(</span><span class="n">true_itt</span><span class="p">,</span> <span class="n">se_diff_correct</span><span class="p">,</span> <span class="n">n_sims</span><span class="p">)</span>
+
+<span class="c1"># Determine significance (two-tailed)
+</span><span class="n">sig_wrong</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="n">results_wrong</span> <span class="o">/</span> <span class="n">se_diff_wrong</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">z_alpha</span>
+<span class="n">sig_correct</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="n">results_correct</span> <span class="o">/</span> <span class="n">se_diff_correct</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">z_alpha</span>
+</code></pre></div></div>
+
+<p><img src="/assets/img/non-compliance-ab-test-simulation.png" alt="Simulation" />
+<em>Figure 2: Simulation of the observed effect when using wrong and correct sample size</em></p>
+
+<p>We can see that in our underpowered test, our average significant result is 1.90, closer to our original MDE of 2%. Whereas in the correct sample size test, our average significant result is 1.20, closer to our true ITT lift of 1.2%. This is inline with our previous analysis where the significance threshold of the underpowered test is higher than the significane threshold of the correct sample size test.</p>
+
+<h1 id="what-if-we-dont-know-the-compliance-rate">What if we don’t know the compliance rate?</h1>
+
+<p>In an ideal world, we know the compliance rate before doing an AB Test. But there could be a situation where we don’t know the compliance rate before doing an AB test. In this case, I envision these two options:</p>
+
+<ul>
+  <li>Pilot phase: where we do small rollout in the beginning to 1% of the population to estimate the compliance rate. Then we use the estimated compliance rate to calculate the required sample size for the full test. Note that here ideally we need to reset the experiment after the pilot phase. If we keep the 1% running and just add the remaining 99%, we are technically performing sequential testing. Standard t-tests does not work as doing this inflates the Type I error rate.</li>
+  <li>Historical proxy: If we are testing a new “Checkout” button, look at the last 30 days of data. What percentage of users who landed on the cart page actually clicked the current checkout button? Use that as the compliance rate.</li>
+</ul>
+
+<p>I think there might be other options but these are the two that I am familiar with.</p>
+
+<h1 id="relation-to-instrumental-variable">Relation to instrumental variable</h1>
+
+<p>The $1/c^2$ correction actually comes from the instrumental variable (IV) framework. In the IV framework, we are interested in the effect of the treatment (T) on the outcome (Y). However, we only have access to the treatment (T) and the instrument (Z). So what we do is to estimate the effect of the instrument (Z) on the treatment (T) and use that to estimate the effect of the treatment (T) on the outcome (Y).</p>
+
+<p>In an AB test with non-compliance issue, we can use the randomization (Z) as the instrument. We can do this because in this case, randomization $\neq$ participation. Following the IV framework math, we will get the compliance rate that can be interpreted as the correlation between the instrument (randomization) and the treatment (T). This is usually known as the first stage in an IV framework. The second stage (reduced form) is when we divide the first stage by the compliance rate to get the ITT effect.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="stats" /><category term="experimentation" /><summary type="html"><![CDATA[In a recent AB test that I did, I did the usual calculation of sample size, power, alpha, and MDE. At the end of the test, the test result was statistically significant. However, I then realized that some units in the treatment group were not actually doing the treatment. They were given the treatment but not all of them actually did it. This is a compliance issue that we need to address.]]></summary></entry><entry><title type="html">Notes on doing AB test properly</title><link href="http://localhost:4000/ab-testing-notes/" rel="alternate" type="text/html" title="Notes on doing AB test properly" /><published>2026-02-07T00:00:00+07:00</published><updated>2026-02-07T00:00:00+07:00</updated><id>http://localhost:4000/ab-testing-notes</id><content type="html" xml:base="http://localhost:4000/ab-testing-notes/"><![CDATA[<p>I have known AB Testing and used it for a while in my work but sometimes I find myself remembering the equation too much and unsure about how things worked under the hood. In this post I try to go over the concept and visualize it to make it easier to remember.</p>
 
 <h1 id="mde-power-alpha-and-sample-size">MDE, power, alpha, and sample size</h1>
 
 <p>We start off by looking at the relationship between minimum detectable effect (MDE), power (1-beta), alpha, and sample size. In an AB test, we set MDE, power, and alpha to calculate the minimum sample size required to run the AB test.</p>
+
+<p>Here is an image showing the relationship between the 4 variables:</p>
+
+<p><img src="/assets/img/ab-test-triangle.png" alt="Statistical Power Analysis Triangle" /></p>
+
+<p><em>Figure 1: Statistical power analysis triangle. A change in one variable requires fixing the other two</em></p>
 
 <p>Before we go to the sample size calculation, we start off by varying sample size and see how it affects the distributions of the control and treatment groups.</p>
 
@@ -18,7 +174,7 @@
 
 <p><img src="/assets/img/control-v-treatment.png" alt="Control vs treatment" /></p>
 
-<p><em>Figure 1: Control versus treatment distribution</em></p>
+<p><em>Figure 2: Control versus treatment distribution</em></p>
 
 <p>We can see that as the sample size increases, the gap between the two distributions also increases. This is because the standard error decreases as the sample size increases. And this will affect our AB testing later.</p>
 
@@ -46,7 +202,7 @@
 <p>Now we can plot the distribution of this mean difference by varying the sample size and observe how it affects our power and how does the shape of the distribution change as we adjust the sample size.</p>
 
 <p><img src="/assets/img/ab-testing-distributions.png" alt="AB testing distributions" />
-<em>Figure 2: Comparison of difference distributions with expanded range</em></p>
+<em>Figure 3: Comparison of mean difference distributions with varying samples</em></p>
 
 <p>The solid black line (threshold) represents the critical value, which is the value that we use to determine if our result is statistically significant. This black line is calculated based on the z-score of the alpha value and the standard error of the difference in means.</p>
 
@@ -68,7 +224,7 @@
 <p>Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and MDE of 0.02</p>
 
 <p><img src="/assets/img/one-tail-min-sample-size.png" alt="Min sample size" />
-<em>Figure 3: Distribution of difference when by setting alpha=5%, beta=20%, and MDE of 0.02</em></p>
+<em>Figure 4: Distribution of meandifference when by setting alpha=5%, beta=20%, and MDE of 0.02</em></p>
 
 <p>Here we observe the following:</p>
 
@@ -86,6 +242,8 @@
 
 <p>If $Z$ &gt; $Z_{\alpha}$ (1.96 in $N(0,1)$), then we can reject the null hypothesis and conclude that the treatment is statistically significant.</p>
 
+<p>Another way to look at it is to look at our observed $\hat{p}_1$ and if it is above the black threshold ($x_{crit} = 0 + 1.96 \cdot SE_{diff}$) ($\approx 0.013$), then we can reject the null hypothesis and conclude that the treatment is statistically significant.</p>
+
 <h1 id="what-to-do-if-your-test-is-statsig-but-effect-size-is-below-your-mde">What to do if your test is statsig but effect size is below your MDE?</h1>
 
 <p>In this case, I believe we can reject the null hypothesis. If our result lands slightly to the left of the “True Effect” ($0.02$), as long as it stays to the right of the black threshold ($\approx 0.013$), we can still detect it as statistical significant. It is still good to proceed with the treatment if we observe an increase in our metrics.</p>
@@ -99,7 +257,7 @@
 <p>Lets say we have 90% control and 10% treatment.</p>
 
 <p><img src="/assets/img/imbalanced-ab-test.png" alt="Imbalanced split" />
-<em>Figure 4: Distribution of difference when by setting alpha=5%, beta=20%, and MDE of 0.02 and unequal split between control and treatment</em></p>
+<em>Figure 5: Distribution of difference when by setting alpha=5%, beta=20%, and MDE of 0.02 and unequal split between control and treatment</em></p>
 
 <p>In this case, the standard error of the distribution of the mean difference increases, which means that we need a larger sample size to achieve the same level of statistical significance. So an unequal split in an AB test requires higher samples.</p>
 
@@ -107,7 +265,7 @@
 
 <p>From the formula above, a tiny sample in either group will blow up the total error.</p>
 
-<p>Same case can also be said if we have 10% control and 90% treatment. Even though here we are aggresively rolling out to new users and impacting the main metrics already, the changes cannot be fully trusted until we have enough sample to reach statistical significance.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[AB testing is a common method used in tech companies to evaluate the effectiveness of different strategies. In this post I try to go over the concept and visualize it to make it easier to remember.]]></summary></entry><entry><title type="html">Target rate for class imbalance</title><link href="http://localhost:4001/target-rate/" rel="alternate" type="text/html" title="Target rate for class imbalance" /><published>2022-05-25T00:00:00+07:00</published><updated>2022-05-25T00:00:00+07:00</updated><id>http://localhost:4001/target-rate</id><content type="html" xml:base="http://localhost:4001/target-rate/"><![CDATA[<p>Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a <a href="https://www.youtube.com/watch?v=rHSpab1Wi9k" target="_blank" rel="noopener noreferrer">talk from stripe</a> where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>.</p>
+<p>Same case can also be said if we have 10% control and 90% treatment. Even though here we are aggresively rolling out to new users and impacting the main metrics already, the changes cannot be fully trusted until we have enough sample to reach statistical significance.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="stats" /><category term="experimentation" /><summary type="html"><![CDATA[AB testing is a common method used in tech companies to evaluate the effectiveness of different strategies. In this post I try to go over the concept and visualize it to make it easier to remember.]]></summary></entry><entry><title type="html">Target rate for class imbalance</title><link href="http://localhost:4000/target-rate/" rel="alternate" type="text/html" title="Target rate for class imbalance" /><published>2022-05-25T00:00:00+07:00</published><updated>2022-05-25T00:00:00+07:00</updated><id>http://localhost:4000/target-rate</id><content type="html" xml:base="http://localhost:4000/target-rate/"><![CDATA[<p>Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a <a href="https://www.youtube.com/watch?v=rHSpab1Wi9k" target="_blank" rel="noopener noreferrer">talk from stripe</a> where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>.</p>
 
 <h1 id="target-rate">Target rate</h1>
 <p>The objective is to create a model which can predict whether a transaction is fraudulent. The model is a binary classifier which produces a score in the 0-1 range, where 0 indicates no fraud and 1 indicates fraud. Based on what they’ve found, training on imbalance data and validating the metrics on imbalance data produces worse result compared to training and validating on a more balanced data. Why?</p>
@@ -131,7 +289,7 @@ Say we have initially a training + validation data with less than 1% fraudulent 
 
 <h1 id="closing">Closing</h1>
 
-<p>Thanks for reading! If you think I am missing something please comment below. For those interested you can check my code <a href="https://github.com/rezkaaufar/target-rate/blob/master/target-rate-imbalanced-dataset.ipynb" target="_blank" rel="noopener noreferrer">here</a>.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a talk from stripe where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a credit card fraud public dataset.]]></summary></entry><entry><title type="html">Search fundamentals (part 1)</title><link href="http://localhost:4001/search-fundamentals-pt1/" rel="alternate" type="text/html" title="Search fundamentals (part 1)" /><published>2022-04-29T00:00:00+07:00</published><updated>2022-04-29T00:00:00+07:00</updated><id>http://localhost:4001/search-fundamentals-pt1</id><content type="html" xml:base="http://localhost:4001/search-fundamentals-pt1/"><![CDATA[<p>Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.</p>
+<p>Thanks for reading! If you think I am missing something please comment below. For those interested you can check my code <a href="https://github.com/rezkaaufar/target-rate/blob/master/target-rate-imbalanced-dataset.ipynb" target="_blank" rel="noopener noreferrer">here</a>.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a talk from stripe where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a credit card fraud public dataset.]]></summary></entry><entry><title type="html">Search fundamentals (part 1)</title><link href="http://localhost:4000/search-fundamentals-pt1/" rel="alternate" type="text/html" title="Search fundamentals (part 1)" /><published>2022-04-29T00:00:00+07:00</published><updated>2022-04-29T00:00:00+07:00</updated><id>http://localhost:4000/search-fundamentals-pt1</id><content type="html" xml:base="http://localhost:4000/search-fundamentals-pt1/"><![CDATA[<p>Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.</p>
 
 <p>In this post, we are going to look at two components of a search engine. In a simplified view, search engine is composed of two main parts: retrieval and reranking.</p>
 
@@ -205,7 +363,7 @@ Say we have initially a training + validation data with less than 1% fraudulent 
 
 <p>In the next post we will see other techniques involving retrieval and reranking. Stay tuned and thanks for reading!</p>
 
-<p><a href="http://www.cbrinton.net/ECE20875-2020-Spring/W10/ngrams.pdf" target="_blank" rel="noopener noreferrer">Image source</a> for Figure 4,5 and 6.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.]]></summary></entry><entry><title type="html">Uncertainty in the parameters of linear regression</title><link href="http://localhost:4001/uncertainty-in-linear-regression/" rel="alternate" type="text/html" title="Uncertainty in the parameters of linear regression" /><published>2022-03-06T00:00:00+07:00</published><updated>2022-03-06T00:00:00+07:00</updated><id>http://localhost:4001/uncertainty-in-linear-regression</id><content type="html" xml:base="http://localhost:4001/uncertainty-in-linear-regression/"><![CDATA[<p>I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.</p>
+<p><a href="http://www.cbrinton.net/ECE20875-2020-Spring/W10/ngrams.pdf" target="_blank" rel="noopener noreferrer">Image source</a> for Figure 4,5 and 6.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.]]></summary></entry><entry><title type="html">Uncertainty in the parameters of linear regression</title><link href="http://localhost:4000/uncertainty-in-linear-regression/" rel="alternate" type="text/html" title="Uncertainty in the parameters of linear regression" /><published>2022-03-06T00:00:00+07:00</published><updated>2022-03-06T00:00:00+07:00</updated><id>http://localhost:4000/uncertainty-in-linear-regression</id><content type="html" xml:base="http://localhost:4000/uncertainty-in-linear-regression/"><![CDATA[<p>I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">statsmodels.api</span> <span class="k">as</span> <span class="n">sm</span>
 
@@ -295,7 +453,7 @@ The variance of $y$ can be calculated by taking the predicted value $\hat{Y} = X
 
 <h2 id="closing">Closing</h2>
 
-<p>There were more stuff going on under linear regression that I hadn’t realized before. I hope this post can help you in understanding where does the probabilistic metrics came from.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.]]></summary></entry><entry><title type="html">Hypothesis testing with binomial distribution in an AB test</title><link href="http://localhost:4001/ab-test-hypothesis-testing-binomial/" rel="alternate" type="text/html" title="Hypothesis testing with binomial distribution in an AB test" /><published>2021-12-28T00:00:00+07:00</published><updated>2021-12-28T00:00:00+07:00</updated><id>http://localhost:4001/ab-test-hypothesis-testing-binomial</id><content type="html" xml:base="http://localhost:4001/ab-test-hypothesis-testing-binomial/"><![CDATA[<p>In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!</p>
+<p>There were more stuff going on under linear regression that I hadn’t realized before. I hope this post can help you in understanding where does the probabilistic metrics came from.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.]]></summary></entry><entry><title type="html">Hypothesis testing with binomial distribution in an AB test</title><link href="http://localhost:4000/ab-test-hypothesis-testing-binomial/" rel="alternate" type="text/html" title="Hypothesis testing with binomial distribution in an AB test" /><published>2021-12-28T00:00:00+07:00</published><updated>2021-12-28T00:00:00+07:00</updated><id>http://localhost:4000/ab-test-hypothesis-testing-binomial</id><content type="html" xml:base="http://localhost:4000/ab-test-hypothesis-testing-binomial/"><![CDATA[<p>In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!</p>
 
 <h1 id="samples--parameter-inference">Samples &amp; Parameter Inference</h1>
 
@@ -349,7 +507,7 @@ The variance of $y$ can be calculated by taking the predicted value $\hat{Y} = X
 
 <h1 id="closing">Closing</h1>
 
-<p>Thanks for reading my blog post! Hit me on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a>.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!]]></summary></entry><entry><title type="html">Hypothesis testing with normal distribution in an AB test</title><link href="http://localhost:4001/ab-test-hypothesis-testing/" rel="alternate" type="text/html" title="Hypothesis testing with normal distribution in an AB test" /><published>2021-11-21T00:00:00+07:00</published><updated>2021-11-21T00:00:00+07:00</updated><id>http://localhost:4001/ab-test-hypothesis-testing</id><content type="html" xml:base="http://localhost:4001/ab-test-hypothesis-testing/"><![CDATA[<p>AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions.
+<p>Thanks for reading my blog post! Hit me on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a>.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!]]></summary></entry><entry><title type="html">Hypothesis testing with normal distribution in an AB test</title><link href="http://localhost:4000/ab-test-hypothesis-testing/" rel="alternate" type="text/html" title="Hypothesis testing with normal distribution in an AB test" /><published>2021-11-21T00:00:00+07:00</published><updated>2021-11-21T00:00:00+07:00</updated><id>http://localhost:4000/ab-test-hypothesis-testing</id><content type="html" xml:base="http://localhost:4000/ab-test-hypothesis-testing/"><![CDATA[<p>AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions.
 In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test.</p>
 
 <h1 id="before-hypothesis-testing">Before hypothesis testing</h1>
@@ -502,7 +660,7 @@ Figure 4: The z-score of our differences plotted over the null hypothesis.
 
 <p>Thanks for reading my blog post. In the next post, I will talk about frequentist hypothesis testing using a bernoulli distribution. Stay tuned!</p>
 
-<p>Contact me on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions. In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test.]]></summary></entry><entry><title type="html">Causal model with bayesian network</title><link href="http://localhost:4001/structural-causal-model/" rel="alternate" type="text/html" title="Causal model with bayesian network" /><published>2021-08-26T00:00:00+07:00</published><updated>2021-08-26T00:00:00+07:00</updated><id>http://localhost:4001/structural-causal-model</id><content type="html" xml:base="http://localhost:4001/structural-causal-model/"><![CDATA[<p>In this <a href="https://rezkaaufar.github.io/blog/2021/language-of-causal-model/">previous post</a>, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.</p>
+<p>Contact me on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions. In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test.]]></summary></entry><entry><title type="html">Causal model with bayesian network</title><link href="http://localhost:4000/structural-causal-model/" rel="alternate" type="text/html" title="Causal model with bayesian network" /><published>2021-08-26T00:00:00+07:00</published><updated>2021-08-26T00:00:00+07:00</updated><id>http://localhost:4000/structural-causal-model</id><content type="html" xml:base="http://localhost:4000/structural-causal-model/"><![CDATA[<p>In this <a href="https://rezkaaufar.github.io/blog/2021/language-of-causal-model/">previous post</a>, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.</p>
 
 <h1 id="simpsons-paradox-in-an-acyclic-directed-graph">Simpson’s paradox in an acyclic directed graph</h1>
 <p>I have mentioned about simpson’s paradox briefly in my previous blog post. Here I am going to illustrate another perspective on how simpson’s paradox can affect the result of classical machine learning. Consider a (true) causal graph below.</p>
@@ -624,7 +782,7 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
 <li>Condition and intervention as operations that we can apply in bayesian network.</li>
 </ul>
 
-<p>Thanks for reading this post! Contact me on twitter for feedback <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[In this previous post, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.]]></summary></entry><entry><title type="html">Understanding the language of causal model</title><link href="http://localhost:4001/language-of-causal-model/" rel="alternate" type="text/html" title="Understanding the language of causal model" /><published>2021-07-09T00:00:00+07:00</published><updated>2021-07-09T00:00:00+07:00</updated><id>http://localhost:4001/language-of-causal-model</id><content type="html" xml:base="http://localhost:4001/language-of-causal-model/"><![CDATA[<p>“Correlation does not imply causation”</p>
+<p>Thanks for reading this post! Contact me on twitter for feedback <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[In this previous post, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.]]></summary></entry><entry><title type="html">Understanding the language of causal model</title><link href="http://localhost:4000/language-of-causal-model/" rel="alternate" type="text/html" title="Understanding the language of causal model" /><published>2021-07-09T00:00:00+07:00</published><updated>2021-07-09T00:00:00+07:00</updated><id>http://localhost:4000/language-of-causal-model</id><content type="html" xml:base="http://localhost:4000/language-of-causal-model/"><![CDATA[<p>“Correlation does not imply causation”</p>
 
 <p>You might hear this jargon everywhere since it is quite pervasive if you work in data science/machine learning. Also, you might have seen this image about spurious correlation:</p>
 
@@ -868,197 +1026,4 @@ Here are some examples of causal inference that I know can be beneficial in indu
 <li>Structural causal model (Pearl): another causal language to describe and capture causal effect.</li>
 </ul>
 
-<p>Thanks for reading this post! I am a noob in causal inference so please do inform me if there is an error or mistake on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[“Correlation does not imply causation”]]></summary></entry><entry><title type="html">Tesla in CVPR 2021</title><link href="http://localhost:4001/cvpr-2021-tesla/" rel="alternate" type="text/html" title="Tesla in CVPR 2021" /><published>2021-07-06T00:00:00+07:00</published><updated>2021-07-06T00:00:00+07:00</updated><id>http://localhost:4001/cvpr-2021-tesla</id><content type="html" xml:base="http://localhost:4001/cvpr-2021-tesla/"><![CDATA[<p>Akhir juni 2021, Andrej Karpathy selaku director of AI nya tesla melakukan sebuah presentasi mengenai gimana cara self-driving cars bekerja di Tesla. Nah di post kali ini mau gue bahas kesimpulan gue abis nonton video tersebut. Postingan ini ditulis menggunakan Bahasa Indonesia + Bahasa Inggris yang tidak baku.</p>
-
-<hr />
-
-<h1 id="pake-kamera-doang">Pake kamera doang</h1>
-
-<p>Sebelumnya, self-driving car menggunakan LIDAR untuk pre-mapping situasi jalanan ke format point cloud yang diubah lagi ke HD maps. Konsekuensi menggunakan cara ini adalah mereka mesti rekam dulu situasi jalanan pake lidar terus disimpen. Jadinya manual harus ada orang yang nyetir mobil dengan LIDAR muter-muterin jalan untuk dapetin HD mapsnya. Nah nanti pas testing si self-driving car tinggal lokalisasi situasi jalanan dan navigasi dari HD map yang udah ada untuk melakukan prediksi dia mau ngapain. Nah sekarang, Tesla mau mulai untuk pakai vision-based sensor aja. Jadi mereka langsung bikin map dari kamera pada waktu itu juga. Artinya, si mobil ini ga perlu dikasih HD maps sebelum dia turun kejalan. Semua kondisi jalanan langsung diprediksi saat si mobil jalan sendiri. Menggunakan 8 kamera, si mobil on the spot memprediksi ini jalan nyambungnya kemana, dimana ada lampu merah, zebra cross, pejalan kaki, pesepeda, gedung, dll. Ini bagian menurut gue keren banget. Neural network memang super powerful untuk perception problem.</p>
-
-<p><img src="/assets/img/tesla-cars.png" alt="Image" />
-<em>Ilustrasi kamera+radar sensor+lidar yang digunakan oleh Tesla</em></p>
-
-<p>Sebelumnya juga Tesla menggunakan sensor radar untuk membantu prediksi navigasi self-driving car mereka. Fungsi sensor radar ini adalah memberikan mobil informasi mengenai informasi depth-velocity-acceleration. Depth adalah informasi mengenai seberapa jauh objek yang sekarang ada di sekitar mobil, velocity adalah kecepatan dari objek lain yang ada di sekitar mobil, sedangkan acceleration adalah informasi mengenai percepatan dari objek lain yang ada di sekitar mobil. Jadi ya informasi ini penting banget biar si mobil tau objek di sekeliling dia ada apa aja dan gimana cara navigasi yang aman.</p>
-
-<p>Berikut adalah beberapa masalah dari menggunakan radar:</p>
-
-<ul>
-<li>Secara acak (random) sensor radar memberikan angka yang gak akurat.</li>
-<li>Masalah saat perlambatan dadakan. Ada banyak kasus menggunakan sensor radar, mobil pas ngerem jadinya kasar tidak santai.</li>
-<li>Masalah sensor radar bingung gak tau mana stationary object yang benar. Tiba-tiba ngerem pas ada jembatan, tiba-tiba ngerem pas ada mobil parkir dipinggir jalan.</li>
-</ul>
-
-<p>Berdasarkan masalah diatas, mereka akhirnya fokus full invest di sensor kamera aja. Terus gimana dong dapetin informasi depth-velocity-acceleration diatas? Tesla pake neural network buat prediksi depth-velocity-acceleration. Jadi sensor radar diganti sama kamera yang dipersenjatai dengan neural network.</p>
-
-<h1 id="kualitas-data">Kualitas data</h1>
-
-<p>Kunci dari neural network yang bagus performanya? Ini kata mereka:</p>
-
-<p><img src="/assets/img/tesla-data.png" alt="Image" />
-<em>Kunci suksesnya neural network</em></p>
-
-<p>Untuk dapetin data yang bagus gimana caranya? Mereka pake iterative labelling buat dapetin dataset depth-velocity-acceleration yang bagus.</p>
-
-<ul>
-<li>Cara pertama mereka cara yang cuma ngerecord data aja yang banyak dalam bentuk video, jadi mereka bisa dapetin benefit of hindsight yang tidak bisa mereka dapatkan di prediction time. Contoh misal kalo lagi nyetir, didepan ada mobil terus ngeluarin debu-debu. Si neural network bisa jadi udah gak ngeliat mobil didepannya. Kalo kita tambahin data video yang dilabelin secara konsisten, si NN bisa tau oh ini mah debu doang tapi didepan gue masih ada mobil. Dengan kata lain: record -&gt; figure out what happened -&gt; label frame -&gt; use this for prediction.</li>
-<li>Untuk kasus edge cases mereka bikin triggers. Trigger adalah hand programmed rule yang nentuin oke case mana nih yang mesti gue benerin labelnya. Deploy seed neural network, deploy in shadow mode, make prediction, Terus bikin trigger untuk dapetin case2 yang ada inaccuracies buat nanti dibenerin scr otomatis maupun manual.
-Total data yang terkumpul ada 1.5 petabytes. seberapa besar itu neural networknya? :)</li>
-</ul>
-
-<p><img src="/assets/img/tesla-iterative.png" alt="Image" />
-<em>Iterative labeling nya Tesla</em></p>
-
-<h1 id="arsitektur-neural-network">Arsitektur neural network</h1>
-
-<p>Mereka pake backbone net kayak resnet abis itu ada beberapa head yang process informasi dari backbone untuk output kayak direction, kinematics, dll. Karena di self-driving cars banyak task yang diprediksi, sepertinya beberapa head itu digroup untuk task yang mirip: misal satu head buat prediksi pixel level classification kayak depth, satu head buat prediksi object level, satu head buat classification satu image, etc. Karpathy juga bilang banyak bagian branch dan head nya yang pake transformers, convolutions, dan juga recurrent neural network.</p>
-
-<p><img src="/assets/img/tesla-nn.png" alt="Image" />
-<em>Neural network nya Tesla</em></p>
-
-<h1 id="ml-ops">ML Ops</h1>
-
-<p>Mungkin ini bagian yang paling menarik. Dengan neural network yang super besar dan data yang banyak, gimana mereka handle tech stack nya mereka? Mereka pake in-house supercomputer dan semuanya mereka handle end-to-end. Ngerjain semua stack end-to-end ngasih mereka keuntungan dimana mereka bisa iterasi cepet. Jadi semuanya terintegrasi secara vertikal, dari mulai chip, gpu dan npu, filesystem sendiri, proses buat ngitung gradient secara terdistribusi, semua lah. Mereka investasi gila-gilaan di ML OPS. 5760 gpu nodes dan 1.6tbs filesystem. Ada npu (neural processing unit) jg dan processing chip bikin sendiri.</p>
-
-<p><img src="/assets/img/tesla-sc.png" alt="Image" />
-<em>Supercomputer nya Tesla</em></p>
-
-<p><img src="/assets/img/tesla-npu.png" alt="Image" />
-<em>Neural processing unit nya Tesla, lebih terspesialisasi untuk komputasi neural network</em></p>
-
-<hr />
-
-<p>Terima kasih sudah membaca!</p>
-
-<p>P.S. gambarnya gue crop dari youtube karena gue males jadi ya jelek lah gambarnya intinya gitu.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Akhir juni 2021, Andrej Karpathy selaku director of AI nya tesla melakukan sebuah presentasi mengenai gimana cara self-driving cars bekerja di Tesla. Nah di post kali ini mau gue bahas kesimpulan gue abis nonton video tersebut. Postingan ini ditulis menggunakan Bahasa Indonesia + Bahasa Inggris yang tidak baku.]]></summary></entry><entry><title type="html">A primer on decision tree</title><link href="http://localhost:4001/decision-tree-a-primer/" rel="alternate" type="text/html" title="A primer on decision tree" /><published>2021-06-18T00:00:00+07:00</published><updated>2021-06-18T00:00:00+07:00</updated><id>http://localhost:4001/decision-tree-a-primer</id><content type="html" xml:base="http://localhost:4001/decision-tree-a-primer/"><![CDATA[<p>Decision tree is the crux of many popular algorithms in data science: xgboost, lightgbm, catboost, etc. In this post I aim to explain how decision tree works in both classification and regression setting. This post is meant as a learning notes also for myself.</p>
-
-<hr />
-
-<h1 id="classification-decision-trees">Classification decision trees</h1>
-<p>Given series of features $X$ and a categorical label $Y$, decision tree works by finding which feature in our instances to split and further divide the instances so that we have a leaf that represent the final prediction. For classification trees, we usually do the split based on a technique called gini impurity (the most popular technique). In practice there are several ways to calculate the split for a leaf. Deciding a split based on gini impurity involves several steps:</p>
-
-<ul>
-<li>Calculate gini impurity for a leaf</li>
-<li>Calculate total gini impurity for a split</li>
-<li>Decide the split based on feature that has the lowest total gini impurity.</li>
-<li>Repeat step 1-3 until convergence / stopping criteria</li>
-</ul>
-
-<p><img src="/assets/img/classif-toy-dataset.png" alt="Image" />
-<em>Figure 1: A toy dataset that is used to illustrate the classification section.</em></p>
-
-<h2 id="gini-impurity-for-a-leaf">Gini impurity for a leaf</h2>
-
-<p>Gini impurity for a leaf is calculated as:</p>
-
-\[1 - (\sum_{c=1}^C p_{c}^2)\]
-
-<p>where $p_{c}$ is the class probability and $C$ is the total number of class. For binary classification, the equation would become:</p>
-
-\[1 - y_{1}^2 - y_{0}^2\]
-
-<p>where $y_1$ is the yes class probability and $y_0$ is the no class probability.</p>
-
-<p>For example, if we split the dataset on the “loves sugar” column, we would have:</p>
-
-<p><img src="/assets/img/loves-sugar.png" alt="Image" />
-<em>Figure 2: A split example on the “loves sugar” column.</em></p>
-
-<p>where the gini impurity for the left leaf is given by:</p>
-
-\[1 - (\frac{1}{1+3})^2 - (\frac{3}{1+3})^2 = 0.375\]
-
-<p>and the right gini impurity:</p>
-
-\[1 - (\frac{2}{2+1})^2 - (\frac{1}{2+1})^2 = 0.444\]
-
-<h2 id="total-gini-impurity-for-a-split">Total gini impurity for a split</h2>
-
-<p>Once we have the gini impurity for each leaf, we need to calculate the gini impurity for a split. Note that these two are different quantities. The gini impurity for a split is the quantity that we use to decide which feature we want to split our instance first. To assess the total gini impurity for a split, we do a weighted average of gini impurities for each leaves:</p>
-
-\[(\frac{4}{4+3}) 0.375 - (\frac{3}{4+3}) 0.444\]
-
-<p>The idea behind gini impurity is that the more homogeneous sample that we can divide based on a split, then the more pure the split is, hence the lower gini impurity score (0 being the most pure).</p>
-
-<h2 id="gini-impurity-for-multi-categorical-variable-and-numeric-continuous-variables">Gini impurity for multi categorical variable and numeric continuous variables</h2>
-<p>For categorical variable with category greater than 2, we calculate gini impurity for every possible split. For example, if we have a categorical variable with value 1,2, and 3, we split:</p>
-
-<ul>
-<li>based on 1 and not 1 (2 and 3)</li>
-<li>based on 2 and not 2 (1 and 3)</li>
-<li>based on 3 and not 3 (1 and 2)</li>
-</ul>
-
-<p>and then we follow the exact same steps as above. The idea is to binarize the split so that we can calculate the leaf gini impurity and split total gini impurity. The same thing also applies to continuous variable. Coming back to our example, “age” column is a numeric continuous variable. To make a split on that variable, we do something like this:</p>
-
-<p><img src="/assets/img/gini-impurity.png" alt="Image" />
-<em>Figure 3: Gini impurity for continuous variables.</em></p>
-
-<p>Note that we do this on a sorted column because we want the split to be on the sorted instances. The idea is that we decide a split criteria for the continuous variable and we do the exact same steps as the above: treating the split as a binary choice. In the above case, the split criteria is computed based on the mean of every adjacent instances. After we get the mean we then split the instances and calculate the gini impurity like in Figure 2. In practice, there are many ways to decide the split criteria.</p>
-
-<h2 id="choosing-the-split">Choosing the split</h2>
-<p>Based on the example above, we have multiple split criterias and their gini impurity scores. We choose the split that has the lowest gini impurity and made it our first split.</p>
-
-<h2 id="adding-branches">Adding branches</h2>
-<p>We do the same thing as above but now we only consider samples that are included in the node. As we split more, the instances that end up in the leaf will be smaller and smaller.</p>
-
-<h2 id="deciding-when-to-stop-adding-leaves">Deciding when to stop (adding leaves)</h2>
-<p>We stop when we consider a leaf contains only homogeneous instances. We do not need to split more if all instances on a leaf already belong to one label.  We can also stop based on some stopping criteria, for example, by maximum depth. Know when to stop is related to overfitting issue. Splitting perfectly on a training set lead to overfitting whereas splitting fewer lead to underfitting.
-If by stopping criteria we end up with impure leaf (3 yes label and 1 no label) then we take the majority as the decision.</p>
-
-<h2 id="do-classification-decision-trees-have-probabilities">Do classification decision trees have probabilities?</h2>
-<p>It is easy to fall into thinking that a classifier always have a probability interpretation. But decision tree is a non-parametric model. It does not have a probabilistic interpretation. One might get a pseudo-probability based on an <a href="https://rpmcruz.github.io/machine%20learning/2018/02/09/probabilities-trees.html" target="_blank" rel="noopener noreferrer">impure node</a>.</p>
-
-<hr />
-
-<h1 id="regression-decision-trees">Regression decision trees</h1>
-<p>For regression trees, the leaf produces a continuous value, which is usually an average $y$ over the splitted samples. Therefore, to evaluate the split, the sum of squared residuals (SSR) of every splitted samples are usually used. These are the steps:</p>
-
-<ul>
-<li>Calculate the average predicted value of a leaf</li>
-<li>Calculate sum of squared residuals (average predicted value - sample value) of every samples in both sides of the split</li>
-<li>Decide the split based on a feature that has the lowest sum of squared residuals</li>
-<li>Repeat step 1 -3 until convergence / stopping criteria</li>
-</ul>
-
-<p><img src="/assets/img/regression-toy-dataset.png" alt="Image" />
-<em>Figure 1: A toy dataset to illustrate this regression section.</em></p>
-
-<h2 id="deciding-the-values-to-split-our-featurecolumn">Deciding the values to split our feature/column</h2>
-<p>In regression trees, we do this by sorting the column of our features and then we take the average of the adjacent value. This average value will be our threshold to split our feature into two groups. After the split, we calculate the average predicted value of the leaf.</p>
-
-<h2 id="sum-of-squared-residuals">Sum of squared residuals</h2>
-<p>After we get the average predicted value of the leaf, we then calculate the sum of squared residuals, which is given by:</p>
-
-\[\sum_i (y - f(x_{i}))^2\]
-
-<p>where $y$ is our label and $f(x_{i})$ is our prediction value. Here the prediction depends on the average predicted value of the leaf/ where the sample ends up after being splitted.</p>
-
-<p>Refer to the two figures below for an example of how to do calculate sum of squared residuals for a split:</p>
-
-<p><img src="/assets/img/ssr-1.png" alt="Image" />
-<em>Figure 2a: Example of splitting at a threshold value.</em></p>
-
-<p>Figure 2a shows how we can calculate a sum of squared residuals for one threshold split, which is at 100 mg. We do this for all possible threshold value for this column:</p>
-
-<p><img src="/assets/img/ssr-2.png" alt="Image" />
-<em>Figure 2b: Another example of splitting at a threshold value.</em></p>
-
-<h2 id="choosing-the-root-for-both-single-variable-and-multiple-variables">Choosing the root for both single variable and multiple variables</h2>
-<p>If we have multiple variables, we do the same as above for every variable possible and we choose the split that has the lowest sum of squared residuals. If we have a binary column, we are just doing one split. Remember that the idea of a split is that we split the instances into two groups and then we move further from there.</p>
-
-<p><img src="/assets/img/ssr-all.png" alt="Image" />
-<em>Figure 3: Illustration to get the smallest SSR in multiple variables. The values are all made up.</em></p>
-
-<h2 id="adding-branches-1">Adding branches</h2>
-<p>We do the same thing as in the classification decision tree. Further split only consider samples that are included in the node. As we split more, the instances that end up in the leaf will be smaller and smaller.</p>
-
-<h2 id="deciding-when-to-stop-adding-leaves-1">Deciding when to stop (adding leaves)</h2>
-<p>There are multiple ways to do this. The most common one is that we stop when there are less than $k$ instances in the leaf. $k$ is usually set at 20. We can also stop based on some stopping criteria, for example, by maximum depth. Know when to stop is related to overfitting issue. Splitting perfectly on a training set lead to overfitting whereas splitting fewer lead to underfitting.
-With stopping criteria we then take the average $y$ values of every instances in the leaf and use that as our prediction.</p>
-
-<hr />
-
-<h1 id="closing">Closing</h1>
-
-<p>Decision tree is a non-parametric model that powers several most popular models in data science. In practice, there are many ways to decide which features to split. This post highlights one of the most popular technique for splitting: gini impurity for classification and sum of squared residuals for regression.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Decision tree is the crux of many popular algorithms in data science: xgboost, lightgbm, catboost, etc. In this post I aim to explain how decision tree works in both classification and regression setting. This post is meant as a learning notes also for myself.]]></summary></entry></feed>
+<p>Thanks for reading this post! I am a noob in causal inference so please do inform me if there is an error or mistake on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[“Correlation does not imply causation”]]></summary></entry></feed>

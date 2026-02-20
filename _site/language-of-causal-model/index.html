@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Understanding the language of causal model</title>
   <meta name="description" content="“Correlation does not imply causation”">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='central' font-size='52'%3E🧠%3C/text%3E%3C/svg%3E">
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='central' font-size='52'%3E🧠%3C/text%3E%3C/svg%3E">
   <style>body {
     max-width: 80ch;
     padding: 3em 1em;
@@ -73,17 +75,35 @@ nav a:hover {
     border-color: #111;
 }
 
-section { margin: 1.8rem 0; }
+section {
+    margin: 1.8rem 0;
+}
 
-.meta { color: #555; font-size: 0.95rem; }
+.meta {
+    color: #555;
+    font-size: 0.95rem;
+}
 
-.listing { width: 100%; border-collapse: collapse; }
+.listing {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-.listing td { padding: 0.2rem 0.15rem; vertical-align: baseline; }
+.listing td {
+    padding: 0.2rem 0.15rem;
+    vertical-align: baseline;
+}
 
-.listing tr + tr td { border-top: 1px solid #eee; }
+.listing tr+tr td {
+    border-top: 1px solid #eee;
+}
 
-.listing .date { white-space: nowrap; padding-right: 0.8rem; color: #666; font-size: 0.95rem; }
+.listing .date {
+    white-space: nowrap;
+    padding-right: 0.8rem;
+    color: #666;
+    font-size: 0.95rem;
+}
 
 .tag {
     display: inline-block;
@@ -95,7 +115,44 @@ section { margin: 1.8rem 0; }
     color: #444;
 }
 
-footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; color: #555; font-size: 0.95rem; }
+footer {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.tag-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.2rem;
+}
+
+.tag-btn {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    background: #fff;
+    color: #444;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.tag-btn:hover {
+    border-color: #999;
+}
+
+.tag-btn.active {
+    background: #24292e;
+    color: #fff;
+    border-color: #24292e;
+}
+
 
 .footer-links {
     display: flex;
@@ -117,7 +174,7 @@ footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; co
 }
 
 .icon {
-    font-family: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol",sans-serif;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
     margin-right: 0.25rem;
 }
 
@@ -140,14 +197,184 @@ footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; co
 }
 
 @media (max-width: 640px) {
-    body { font-size: 1em; }
+    body {
+        font-size: 1em;
+    }
 }
-</style>
-  <!-- Google tag (gtag.js) -->
+
+/* Fix: reset code padding inside pre blocks to avoid first-line indent */
+pre code {
+    padding: 0;
+    background: none;
+    border-radius: 0;
+}
+
+/* Rouge syntax highlighting — GitHub-inspired theme */
+.highlight .c,
+.highlight .c1,
+.highlight .cm,
+.highlight .cs {
+    color: #6a737d;
+    font-style: italic;
+}
+
+/* comments */
+.highlight .k,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp,
+.highlight .kr,
+.highlight .kt,
+.highlight .kc {
+    color: #d73a49;
+}
+
+/* keywords */
+.highlight .n {
+    color: #24292e;
+}
+
+/* names */
+.highlight .nf,
+.highlight .nx {
+    color: #6f42c1;
+}
+
+/* function names */
+.highlight .nc {
+    color: #6f42c1;
+    font-weight: bold;
+}
+
+/* class names */
+.highlight .nb {
+    color: #005cc5;
+}
+
+/* builtins */
+.highlight .bp {
+    color: #005cc5;
+}
+
+/* builtin pseudo */
+.highlight .s,
+.highlight .s1,
+.highlight .s2,
+.highlight .sh,
+.highlight .sb,
+.highlight .sc,
+.highlight .sd,
+.highlight .se,
+.highlight .si,
+.highlight .sx {
+    color: #032f62;
+}
+
+/* strings */
+.highlight .sr {
+    color: #032f62;
+}
+
+/* regex */
+.highlight .ss {
+    color: #005cc5;
+}
+
+/* symbol */
+.highlight .mi,
+.highlight .mf,
+.highlight .mh,
+.highlight .mo,
+.highlight .mb,
+.highlight .il {
+    color: #005cc5;
+}
+
+/* numbers */
+.highlight .o,
+.highlight .ow {
+    color: #d73a49;
+}
+
+/* operators */
+.highlight .p {
+    color: #24292e;
+}
+
+/* punctuation */
+.highlight .na {
+    color: #005cc5;
+}
+
+/* attribute names */
+.highlight .nd {
+    color: #6f42c1;
+}
+
+/* decorators */
+.highlight .ni {
+    color: #24292e;
+    font-weight: bold;
+}
+
+/* entity */
+.highlight .ne {
+    color: #d73a49;
+    font-weight: bold;
+}
+
+/* exception */
+.highlight .nn {
+    color: #005cc5;
+}
+
+/* namespace */
+.highlight .no {
+    color: #005cc5;
+}
+
+/* constant */
+.highlight .nv,
+.highlight .vi,
+.highlight .vc,
+.highlight .vg,
+.highlight .vm {
+    color: #e36209;
+}
+
+/* variables */
+.highlight .ge {
+    font-style: italic;
+}
+
+/* emphasis */
+.highlight .gs {
+    font-weight: bold;
+}
+
+/* strong */
+.highlight .err {
+    color: #d73a49;
+    background: #ffeef0;
+}
+
+/* error */
+.highlight .gd {
+    color: #b31d28;
+    background: #ffeef0;
+}
+
+/* diff deleted */
+.highlight .gi {
+    color: #22863a;
+    background: #f0fff4;
+}
+
+/* diff inserted */</style>  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-1K5SB4G23C"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-1K5SB4G23C');
   </script>
@@ -162,13 +389,16 @@ footer { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; co
   </script>
   <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
+
 <body>
   <main>
-    <a href="/" aria-label="Home">← Home</a>
+    <a href="/blog/" aria-label="Blog">← Blog</a>
 <h1>Understanding the language of causal model</h1>
 <p class="meta">
   July  9, 2021
   
+  
+   · 12 min read 
 </p>
 
 <p>“Correlation does not imply causation”</p>
@@ -418,7 +648,6 @@ Here are some examples of causal inference that I know can be beneficial in indu
 <p>Thanks for reading this post! I am a noob in causal inference so please do inform me if there is an error or mistake on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>
 
 
-
   </main>
 
   <footer>
@@ -429,7 +658,7 @@ Here are some examples of causal inference that I know can be beneficial in indu
     <div class="meta"><span id="page-size"></span> · <span id="load-time"></span></div>
   </footer>
   <script>
-    (function() {
+    (function () {
       const sizeEl = document.getElementById('page-size');
       const timeEl = document.getElementById('load-time');
       const yearEl = document.getElementById('copyright-year');
@@ -446,4 +675,5 @@ Here are some examples of causal inference that I know can be beneficial in indu
     })();
   </script>
 </body>
+
 </html>
