@@ -15,6 +15,8 @@
     line-height: 1.6;
     font-size: 1.08em;
     font-family: Helvetica, Arial, sans-serif;
+    background-color: #fff;
+    color: #111;
 }
 
 a {
@@ -391,14 +393,24 @@ pre code {
 </head>
 
 <body>
+  <header class="site-header">
+    <nav>
+      <ul>
+        <li><a href="/" >Home</a></li>
+        <li><a href="/blog/" >Blog</a></li>
+      </ul>
+    </nav>
+  </header>
   <main>
-    <a href="/blog/" aria-label="Blog">← Blog</a>
-<h1>Hypothesis testing with binomial distribution in an AB test</h1>
+    <h1>Hypothesis testing with binomial distribution in an AB test</h1>
 <p class="meta">
   December 28, 2021
   
   
    · 3 min read 
+    ·
+    <span class="tag">statistics</span><span class="tag">experimentation</span>
+    
 </p>
 
 <p>In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!</p>

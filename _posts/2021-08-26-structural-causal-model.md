@@ -9,7 +9,7 @@ description: 'In this previous post, I wrote about the language of causal infere
   do note that both counterfactuals and structural causal model are highly overlapped
   and they share the same underlying concepts.'
 date: '2021-08-26'
-tags: []
+tags: [statistics]
 ---
 
 In this <a href="https://rezkaaufar.github.io/blog/2021/language-of-causal-model/">previous post</a>, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.

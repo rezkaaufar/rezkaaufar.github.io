@@ -8,7 +8,7 @@ description: I have always envisioned myself to be a top researcher working on c
   I said to myself that I want to dedicate my professional life to push the boundary
   of AI research, especially in NLP.
 date: '2021-03-25'
-tags: []
+tags: [personal]
 ---
 
 <h1 id="prologue">Prologue</h1>

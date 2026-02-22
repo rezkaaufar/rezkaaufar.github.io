@@ -6,7 +6,7 @@ description: 'Decision tree is the crux of many popular algorithms in data scien
   works in both classification and regression setting. This post is meant as a learning
   notes also for myself.'
 date: '2021-06-18'
-tags: []
+tags: [machine learning]
 ---
 
 Decision tree is the crux of many popular algorithms in data science: xgboost, lightgbm, catboost, etc. In this post I aim to explain how decision tree works in both classification and regression setting. This post is meant as a learning notes also for myself.

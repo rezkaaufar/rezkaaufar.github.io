@@ -15,6 +15,8 @@
     line-height: 1.6;
     font-size: 1.08em;
     font-family: Helvetica, Arial, sans-serif;
+    background-color: #fff;
+    color: #111;
 }
 
 a {
@@ -391,91 +393,97 @@ pre code {
 </head>
 
 <body>
+  <header class="site-header">
+    <nav>
+      <ul>
+        <li><a href="/" >Home</a></li>
+        <li><a href="/blog/" class="active">Blog</a></li>
+      </ul>
+    </nav>
+  </header>
   <main>
-    <p><a href="/" aria-label="Home">← Home</a></p>
-
-<h1 id="blog">Blog</h1>
+    <h1 id="blog">Blog</h1>
 
 <div class="tag-filters">
-  <button class="tag-btn active" data-tag="all">All</button><button class="tag-btn" data-tag="experimentation">experimentation</button><button class="tag-btn" data-tag="stats">stats</button></div>
+  <button class="tag-btn active" data-tag="all">All</button><button class="tag-btn" data-tag="experimentation">experimentation</button><button class="tag-btn" data-tag="machine learning">machine learning</button><button class="tag-btn" data-tag="personal">personal</button><button class="tag-btn" data-tag="statistics">statistics</button><button class="tag-btn" data-tag="system design">system design</button></div>
 
 <table class="listing">
-  <tbody><tr data-tags="stats">
-      <td class="date">Feb 20, 2026</td>
-      <td>
-        <a href="/confidence-intervals/">How to interpret confidence intervals (correctly)</a>
-      </td>
-    </tr><tr data-tags="stats,experimentation">
+  <tbody><tr data-tags="statistics,experimentation">
       <td class="date">Feb 12, 2026</td>
       <td>
         <a href="/compliance-issue-in-ab-test/">Non-compliance issue in an AB test</a>
       </td>
-    </tr><tr data-tags="stats,experimentation">
+    </tr><tr data-tags="statistics,experimentation">
       <td class="date">Feb  7, 2026</td>
       <td>
         <a href="/ab-testing-notes/">Notes on doing AB test properly</a>
       </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="statistics">
+      <td class="date">Jan 18, 2026</td>
+      <td>
+        <a href="/confidence-intervals/">How to interpret confidence intervals (correctly)</a>
+      </td>
+    </tr><tr data-tags="machine learning,system design">
+      <td class="date">Apr 29, 2025</td>
+      <td>
+        <a href="/retrieval-tf-idf/">Lexical match in a search engine retrieval</a>
+      </td>
+    </tr><tr data-tags="machine learning">
       <td class="date">May 25, 2022</td>
       <td>
         <a href="/target-rate/">Target rate for class imbalance</a>
       </td>
-    </tr><tr data-tags="">
-      <td class="date">Apr 29, 2022</td>
-      <td>
-        <a href="/search-fundamentals-pt1/">Search fundamentals (part 1)</a>
-      </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="machine learning,statistics">
       <td class="date">Mar  6, 2022</td>
       <td>
         <a href="/uncertainty-in-linear-regression/">Uncertainty in the parameters of linear regression</a>
       </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="statistics,experimentation">
       <td class="date">Dec 28, 2021</td>
       <td>
         <a href="/ab-test-hypothesis-testing-binomial/">Hypothesis testing with binomial distribution in an AB test</a>
       </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="statistics,experimentation">
       <td class="date">Nov 21, 2021</td>
       <td>
         <a href="/ab-test-hypothesis-testing/">Hypothesis testing with normal distribution in an AB test</a>
       </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="statistics">
       <td class="date">Aug 26, 2021</td>
       <td>
         <a href="/structural-causal-model/">Causal model with bayesian network</a>
       </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="statistics">
       <td class="date">Jul  9, 2021</td>
       <td>
         <a href="/language-of-causal-model/">Understanding the language of causal model</a>
       </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="machine learning">
       <td class="date">Jul  6, 2021</td>
       <td>
         <a href="/cvpr-2021-tesla/">Tesla in CVPR 2021</a>
       </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="machine learning">
       <td class="date">Jun 18, 2021</td>
       <td>
         <a href="/decision-tree-a-primer/">A primer on decision tree</a>
       </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="machine learning,system design">
       <td class="date">May  8, 2021</td>
       <td>
         <a href="/recsys-core-components/">Core components of recommender systems</a>
       </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="machine learning">
       <td class="date">Apr 18, 2021</td>
       <td>
         <a href="/generative-model/">Some notes on generative model</a>
       </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="personal">
       <td class="date">Apr  8, 2021</td>
       <td>
         <a href="/a-year-on-leetcode/">A year on foundational programming (doing leetcode)</a>
       </td>
-    </tr><tr data-tags="">
+    </tr><tr data-tags="personal">
       <td class="date">Mar 25, 2021</td>
       <td>
         <a href="/leaving_phd/">Leaving my PhD</a>

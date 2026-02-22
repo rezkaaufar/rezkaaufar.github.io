@@ -11,7 +11,7 @@ description: 'I recently found out that linear regression assumed that the outpu
   For example, if we use python libraries such as statmodels, it is going to show
   these probabilistic metrics.'
 date: '2022-03-06'
-tags: []
+tags: [machine learning, statistics]
 ---
 
 I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.

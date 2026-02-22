@@ -11,7 +11,7 @@ description: The way that recsys is usually taught by starting from its taxonomy
   wonderful talk by James Kirk from Spotify so I highly recommend you to watch the
   video to gain further understanding.
 date: '2021-05-08'
-tags: []
+tags: [machine learning, system design]
 ---
 
 The way that recsys is usually taught by starting from its taxonomy (collaborative filtering, content based, hybrid based) is confusing to me at first. In this post I am going to take another path to explain recsys by discussing the core components first and then draw the connection to the recsys taxonomy. Essentially, the majority of recsys objective is to map items and users on the same vector space through a learning objectives so that we can determine items to give to users for a recommendation or which items to show in a similar items page. My post is mostly based on this wonderful talk by <a href="https://www.youtube.com/watch?v=xBMGr08fowA&amp;list=PLmBU_sNMJOn195aabwivQpeOP7IaFjm0o&amp;index=5&amp;t=2593s&amp;ab_channel=mitrecorp" target="_blank" rel="noopener noreferrer">James Kirk from Spotify</a> so I highly recommend you to watch the video to gain further understanding.

@@ -15,6 +15,8 @@
     line-height: 1.6;
     font-size: 1.08em;
     font-family: Helvetica, Arial, sans-serif;
+    background-color: #fff;
+    color: #111;
 }
 
 a {
@@ -391,14 +393,24 @@ pre code {
 </head>
 
 <body>
+  <header class="site-header">
+    <nav>
+      <ul>
+        <li><a href="/" >Home</a></li>
+        <li><a href="/blog/" >Blog</a></li>
+      </ul>
+    </nav>
+  </header>
   <main>
-    <a href="/blog/" aria-label="Blog">← Blog</a>
-<h1>Some notes on generative model</h1>
+    <h1>Some notes on generative model</h1>
 <p class="meta">
   April 18, 2021
   
   
    · 11 min read 
+    ·
+    <span class="tag">machine learning</span>
+    
 </p>
 
 <p>Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding.</p>

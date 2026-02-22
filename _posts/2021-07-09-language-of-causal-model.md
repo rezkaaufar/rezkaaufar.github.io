@@ -3,7 +3,7 @@ layout: post
 title: Understanding the language of causal model
 description: "\u201CCorrelation does not imply causation\u201D"
 date: '2021-07-09'
-tags: []
+tags: [statistics]
 ---
 
 “Correlation does not imply causation”
