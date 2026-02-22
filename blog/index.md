@@ -4,8 +4,6 @@ title: Blog
 description: Articles and notes by Rezka Leonandya.
 permalink: /blog/
 ---
-<a href="{{ '/' | relative_url }}" aria-label="Home">← Home</a>
-
 # Blog
 
 <div class="tag-filters">
