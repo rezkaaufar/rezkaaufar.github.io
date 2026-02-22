@@ -15,6 +15,8 @@
     line-height: 1.6;
     font-size: 1.08em;
     font-family: Helvetica, Arial, sans-serif;
+    background-color: #fff;
+    color: #111;
 }
 
 a {
@@ -391,14 +393,24 @@ pre code {
 </head>
 
 <body>
+  <header class="site-header">
+    <nav>
+      <ul>
+        <li><a href="/" >Home</a></li>
+        <li><a href="/blog/" >Blog</a></li>
+      </ul>
+    </nav>
+  </header>
   <main>
-    <a href="/blog/" aria-label="Blog">← Blog</a>
-<h1>Target rate for class imbalance</h1>
+    <h1>Target rate for class imbalance</h1>
 <p class="meta">
   May 25, 2022
   
   
    · 3 min read 
+    ·
+    <span class="tag">machine learning</span>
+    
 </p>
 
 <p>Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a <a href="https://www.youtube.com/watch?v=rHSpab1Wi9k" target="_blank" rel="noopener noreferrer">talk from stripe</a> where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>.</p>

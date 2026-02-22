@@ -7,7 +7,7 @@ description: Class imbalance is a common problem in machine learning, where the 
   in a credit card fraud detection system. I decided to create a summary here and
   try it out for myself on a credit card fraud public dataset.
 date: '2022-05-25'
-tags: []
+tags: [machine learning]
 ---
 
 Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a <a href="https://www.youtube.com/watch?v=rHSpab1Wi9k" target="_blank" rel="noopener noreferrer">talk from stripe</a> where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>.

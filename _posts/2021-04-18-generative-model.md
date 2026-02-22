@@ -10,7 +10,7 @@ description: "Google generative model, you\u2019ll find several first-page ML bl
   \ see that generative models are more of a spectrum than a single category. This\
   \ post is also aimed to help me strengthen my understanding."
 date: '2021-04-18'
-tags: []
+tags: [machine learning]
 ---
 
 Google generative model, you’ll find several first-page ML blog posts telling you that generative model is an unsupervised learning or uses unsupervised learning to learn the distribution of the data. This is not true. With the hype of VAE and GAN, it is easy to assume that generative models = unsupervised learning. There exist generative models that can also be trained using a supervised approach. In this post, I aim to show some examples of generative models. We are going to see that generative models are more of a spectrum than a single category. This post is also aimed to help me strengthen my understanding.

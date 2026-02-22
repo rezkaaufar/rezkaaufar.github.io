@@ -15,6 +15,8 @@
     line-height: 1.6;
     font-size: 1.08em;
     font-family: Helvetica, Arial, sans-serif;
+    background-color: #fff;
+    color: #111;
 }
 
 a {
@@ -391,20 +393,27 @@ pre code {
 </head>
 
 <body>
+  <header class="site-header">
+    <nav>
+      <ul>
+        <li><a href="/" >Home</a></li>
+        <li><a href="/blog/" >Blog</a></li>
+      </ul>
+    </nav>
+  </header>
   <main>
-    <a href="/blog/" aria-label="Blog">← Blog</a>
-<h1>How to interpret confidence intervals (correctly)</h1>
+    <h1>How to interpret confidence intervals (correctly)</h1>
 <p class="meta">
-  February 20, 2026
+  January 18, 2026
   
   
    · 3 min read 
     ·
-    <span class="tag">stats</span>
+    <span class="tag">statistics</span>
     
 </p>
 
-<h1 id="background">Background</h1>
+<h1 id="confidence-intervals">Confidence intervals</h1>
 
 <p>Confidence interval is a range of values that is likely to contain an unknown population parameter. If we were to repeat an experiment or a sampling process many times and calculate a confidence interval each time, 95% of those generated intervals would contain the true population parameter.</p>
 
@@ -439,9 +448,11 @@ pre code {
 
 <p>When doing linear regression, we also got confidence intervals and standard deviation for our estimated parameters. The standard deviation is calculated as such:</p>
 
-<p>\(\hat{\sigma}^2 = \frac{\sum (y_i - \hat{y}_i)^2}{n - k}\)
-\(\text{Var}(\hat{\beta}) = \hat{\sigma}^2 (X^T X)^{-1}\)
-\(SE(\hat{\beta}_j) = \sqrt{\text{Var}(\hat{\beta}_j)}\)</p>
+\[\hat{\sigma}^2 = \frac{\sum (y_i - \hat{y}_i)^2}{n - k}\]
+
+\[\text{Var}(\hat{\beta}) = \hat{\sigma}^2 (X^T X)^{-1}\]
+
+\[SE(\hat{\beta}_j) = \sqrt{\text{Var}(\hat{\beta}_j)}\]
 
 <p>where $\hat{\sigma}^2$ is the residual variance of the error term, $X$ is the independent variables, and $k$ is the number of parameters in the model.</p>
 

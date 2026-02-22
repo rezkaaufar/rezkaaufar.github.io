@@ -1,65 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-02-20T16:49:51+07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Rezka Leonandya</title><subtitle>Rezka Leonandya&apos;s personal site and blog.</subtitle><author><name>Rezka Leonandya</name></author><entry><title type="html">How to interpret confidence intervals (correctly)</title><link href="http://localhost:4000/confidence-intervals/" rel="alternate" type="text/html" title="How to interpret confidence intervals (correctly)" /><published>2026-02-20T00:00:00+07:00</published><updated>2026-02-20T00:00:00+07:00</updated><id>http://localhost:4000/confidence-intervals</id><content type="html" xml:base="http://localhost:4000/confidence-intervals/"><![CDATA[<h1 id="background">Background</h1>
-
-<p>Confidence interval is a range of values that is likely to contain an unknown population parameter. If we were to repeat an experiment or a sampling process many times and calculate a confidence interval each time, 95% of those generated intervals would contain the true population parameter.</p>
-
-<p>Here we visualize our confidence interval when we sample multiple times from a true population. The true population is a normal distribution with mean 100 and standard deviation of 15.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>  
-<span class="n">pop_mean</span> <span class="o">=</span> <span class="mi">100</span>      <span class="c1"># True population mean
-</span><span class="n">pop_std</span> <span class="o">=</span> <span class="mi">15</span>       <span class="c1"># True population standard deviation
-</span><span class="n">n_samples</span> <span class="o">=</span> <span class="mi">50</span>      <span class="c1"># Number of times we draw a sample
-</span><span class="n">confidence</span> <span class="o">=</span> <span class="mf">0.95</span>   <span class="c1"># 95% Confidence Level
-</span></code></pre></div></div>
-
-<p>Here is the result of our confidence interval visualization using 30 sample size:</p>
-
-<p><img src="/assets/img/small_sample_ci.png" alt="Small Sample CI" /></p>
-
-<p><em>Figure 1: Confidence Interval with small sample size</em></p>
-
-<p>We can see that of all the 50 sampling process, we have 3 confidence interval that does not contain the true population mean. This is in line with the 95% confidence level, where we expect 5% of the intervals to not contain the true population parameter.</p>
-
-<p>Here we look at the result of our confidence interval visualization using 100 sample size:</p>
-
-<p><img src="/assets/img/large_sample_ci.png" alt="Large Sample CI" /></p>
-
-<p><em>Figure 2: Confidence Interval with large sample size</em></p>
-
-<p>With larger sample size, we expect to have more confidence intervals that contain the true population parameter. This is because larger sample size provides more information about the population, leading to more accurate estimates of the population parameter.</p>
-
-<p>In the real world, we almost never have the luxury of repeating an experiment multiple times to see the distribution. We get one shot, one dataset, and one set of results. We can then turn to the Central Limit Theorem (CLT) to treat our single experiment as if it were part of that multiple sampling process. The Central Limit Theorem (CLT) states that the distribution of sample means will approach a normal distribution as the sample size increases, regardless of the shape of the population distribution. With the assumption that our single experiment is “typical” and not one of the rare outliers, we can use the CLT to construct a confidence interval for our population parameter and further do hypothesis testing from it.</p>
-
-<h1 id="confidence-intervals-in-linear-regression">Confidence intervals in linear regression</h1>
-
-<p>When doing linear regression, we also got confidence intervals and standard deviation for our estimated parameters. The standard deviation is calculated as such:</p>
-
-<p>\(\hat{\sigma}^2 = \frac{\sum (y_i - \hat{y}_i)^2}{n - k}\)
-\(\text{Var}(\hat{\beta}) = \hat{\sigma}^2 (X^T X)^{-1}\)
-\(SE(\hat{\beta}_j) = \sqrt{\text{Var}(\hat{\beta}_j)}\)</p>
-
-<p>where $\hat{\sigma}^2$ is the residual variance of the error term, $X$ is the independent variables, and $k$ is the number of parameters in the model.</p>
-
-<p>Now, how can we interpret confidence intervals and standard deviation in linear regression?</p>
-
-<p>For confidence intervals, this essentially means that if we were to fit a line many times, we can expect that 95% of the confidence interval contain the true parameter. For standard deviation, the theory behind it is also the same: if we took many different samples and fit a line to each, how much would the slope of that line vary?</p>
-
-<p>Imagine the “true” relationship between two variables is a fixed, invisible line: $y = 5x + 2$. In the real world, we never see this line; we only see noisy data points scattered around it.</p>
-
-<ul>
-  <li>Sample 1: We collect 100 data points and fit a line. The slope estimate is $5.2$, and the 95% CI is [4.8, 5.6]. (This interval contains the true value of 5). The standard deviation of the slope is $0.4$.</li>
-  <li>Sample 2: We collect another 100 points. The slope is $4.9$, and the CI is [4.5, 5.3]. (This interval also contains 5). The standard deviation of the slope is $0.3$.</li>
-  <li>Sample 100: We collect 100 more points. This time, by pure random chance, we got a “weird” sample. The slope is $6.1$ and the CI is [5.7, 6.5]. (This interval misses the true value of 5). The standard deviation of the slope is $0.5$.</li>
-</ul>
-
-<p>If we did this forever, 95% of those calculated brackets would successfully “capture” that true value of 5.</p>
-
-<p>Here is the visualization of the confidence interval for the slope of the line:</p>
-
-<p><img src="/assets/img/linear_regression_ci.png" alt="CI" /></p>
-
-<p><em>Figure 3: Confidence Interval for the slope of the line</em></p>
-
-<p>Another thing to point is that in linear regression, we can view the parameter as the mean change in $Y$ for a unit change in $X$. So the mean of the distribution is here is bidimensional whereas the mean of the distribution in the previous example is unidimensional.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="stats" /><summary type="html"><![CDATA[Notes on how to interpret confidence intervals.]]></summary></entry><entry><title type="html">Non-compliance issue in an AB test</title><link href="http://localhost:4000/compliance-issue-in-ab-test/" rel="alternate" type="text/html" title="Non-compliance issue in an AB test" /><published>2026-02-12T00:00:00+07:00</published><updated>2026-02-12T00:00:00+07:00</updated><id>http://localhost:4000/compliance-issue-in-ab-test</id><content type="html" xml:base="http://localhost:4000/compliance-issue-in-ab-test/"><![CDATA[<p>In a recent AB test that I did, I did the usual calculation of sample size, power, alpha, and MDE. At the end of the test, the test result was statistically significant. However, I then realized that some units in the treatment group were not actually doing the treatment. They were given the treatment but not all of them actually did it. This is a compliance issue that we need to address.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-02-22T23:00:40+07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Rezka Leonandya</title><subtitle>Rezka Leonandya&apos;s personal site and blog.</subtitle><author><name>Rezka Leonandya</name></author><entry><title type="html">Non-compliance issue in an AB test</title><link href="http://localhost:4000/compliance-issue-in-ab-test/" rel="alternate" type="text/html" title="Non-compliance issue in an AB test" /><published>2026-02-12T00:00:00+07:00</published><updated>2026-02-12T00:00:00+07:00</updated><id>http://localhost:4000/compliance-issue-in-ab-test</id><content type="html" xml:base="http://localhost:4000/compliance-issue-in-ab-test/"><![CDATA[<p>In a recent AB test that I did, I did the usual calculation of sample size, power, alpha, and MDE. At the end of the test, the test result was statistically significant. However, I then realized that some units in the treatment group were not actually doing the treatment. They were given the treatment but not all of them actually did it. This is a compliance issue that we need to address.</p>
 
 <h1 id="non-compliance-issue-makes-your-test-underpowered">Non-compliance issue makes your test underpowered</h1>
 
@@ -148,7 +87,7 @@
 
 <p>The $1/c^2$ correction actually comes from the instrumental variable (IV) framework. In the IV framework, we are interested in the effect of the treatment (T) on the outcome (Y). However, we only have access to the treatment (T) and the instrument (Z). So what we do is to estimate the effect of the instrument (Z) on the treatment (T) and use that to estimate the effect of the treatment (T) on the outcome (Y).</p>
 
-<p>In an AB test with non-compliance issue, we can use the randomization (Z) as the instrument. We can do this because in this case, randomization $\neq$ participation. Following the IV framework math, we will get the compliance rate that can be interpreted as the correlation between the instrument (randomization) and the treatment (T). This is usually known as the first stage in an IV framework. The second stage (reduced form) is when we divide the first stage by the compliance rate to get the ITT effect.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="stats" /><category term="experimentation" /><summary type="html"><![CDATA[In a recent AB test that I did, I did the usual calculation of sample size, power, alpha, and MDE. At the end of the test, the test result was statistically significant. However, I then realized that some units in the treatment group were not actually doing the treatment. They were given the treatment but not all of them actually did it. This is a compliance issue that we need to address.]]></summary></entry><entry><title type="html">Notes on doing AB test properly</title><link href="http://localhost:4000/ab-testing-notes/" rel="alternate" type="text/html" title="Notes on doing AB test properly" /><published>2026-02-07T00:00:00+07:00</published><updated>2026-02-07T00:00:00+07:00</updated><id>http://localhost:4000/ab-testing-notes</id><content type="html" xml:base="http://localhost:4000/ab-testing-notes/"><![CDATA[<p>I have known AB Testing and used it for a while in my work but sometimes I find myself remembering the equation too much and unsure about how things worked under the hood. In this post I try to go over the concept and visualize it to make it easier to remember.</p>
+<p>In an AB test with non-compliance issue, we can use the randomization (Z) as the instrument. We can do this because in this case, randomization $\neq$ participation. Following the IV framework math, we will get the compliance rate that can be interpreted as the correlation between the instrument (randomization) and the treatment (T). This is usually known as the first stage in an IV framework. The second stage (reduced form) is when we divide the first stage by the compliance rate to get the ITT effect.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><category term="experimentation" /><summary type="html"><![CDATA[In a recent AB test that I did, I did the usual calculation of sample size, power, alpha, and MDE. At the end of the test, the test result was statistically significant. However, I then realized that some units in the treatment group were not actually doing the treatment. They were given the treatment but not all of them actually did it. This is a compliance issue that we need to address.]]></summary></entry><entry><title type="html">Notes on doing AB test properly</title><link href="http://localhost:4000/ab-testing-notes/" rel="alternate" type="text/html" title="Notes on doing AB test properly" /><published>2026-02-07T00:00:00+07:00</published><updated>2026-02-07T00:00:00+07:00</updated><id>http://localhost:4000/ab-testing-notes</id><content type="html" xml:base="http://localhost:4000/ab-testing-notes/"><![CDATA[<p>I have known AB Testing and used it for a while in my work but sometimes I find myself remembering the equation too much and unsure about how things worked under the hood. In this post I try to go over the concept and visualize it to make it easier to remember.</p>
 
 <h1 id="mde-power-alpha-and-sample-size">MDE, power, alpha, and sample size</h1>
 
@@ -265,7 +204,172 @@
 
 <p>From the formula above, a tiny sample in either group will blow up the total error.</p>
 
-<p>Same case can also be said if we have 10% control and 90% treatment. Even though here we are aggresively rolling out to new users and impacting the main metrics already, the changes cannot be fully trusted until we have enough sample to reach statistical significance.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="stats" /><category term="experimentation" /><summary type="html"><![CDATA[AB testing is a common method used in tech companies to evaluate the effectiveness of different strategies. In this post I try to go over the concept and visualize it to make it easier to remember.]]></summary></entry><entry><title type="html">Target rate for class imbalance</title><link href="http://localhost:4000/target-rate/" rel="alternate" type="text/html" title="Target rate for class imbalance" /><published>2022-05-25T00:00:00+07:00</published><updated>2022-05-25T00:00:00+07:00</updated><id>http://localhost:4000/target-rate</id><content type="html" xml:base="http://localhost:4000/target-rate/"><![CDATA[<p>Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a <a href="https://www.youtube.com/watch?v=rHSpab1Wi9k" target="_blank" rel="noopener noreferrer">talk from stripe</a> where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>.</p>
+<p>Same case can also be said if we have 10% control and 90% treatment. Even though here we are aggresively rolling out to new users and impacting the main metrics already, the changes cannot be fully trusted until we have enough sample to reach statistical significance.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><category term="experimentation" /><summary type="html"><![CDATA[AB testing is a common method used in tech companies to evaluate the effectiveness of different strategies. In this post I try to go over the concept and visualize it to make it easier to remember.]]></summary></entry><entry><title type="html">How to interpret confidence intervals (correctly)</title><link href="http://localhost:4000/confidence-intervals/" rel="alternate" type="text/html" title="How to interpret confidence intervals (correctly)" /><published>2026-01-18T00:00:00+07:00</published><updated>2026-01-18T00:00:00+07:00</updated><id>http://localhost:4000/confidence-intervals</id><content type="html" xml:base="http://localhost:4000/confidence-intervals/"><![CDATA[<h1 id="confidence-intervals">Confidence intervals</h1>
+
+<p>Confidence interval is a range of values that is likely to contain an unknown population parameter. If we were to repeat an experiment or a sampling process many times and calculate a confidence interval each time, 95% of those generated intervals would contain the true population parameter.</p>
+
+<p>Here we visualize our confidence interval when we sample multiple times from a true population. The true population is a normal distribution with mean 100 and standard deviation of 15.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>  
+<span class="n">pop_mean</span> <span class="o">=</span> <span class="mi">100</span>      <span class="c1"># True population mean
+</span><span class="n">pop_std</span> <span class="o">=</span> <span class="mi">15</span>       <span class="c1"># True population standard deviation
+</span><span class="n">n_samples</span> <span class="o">=</span> <span class="mi">50</span>      <span class="c1"># Number of times we draw a sample
+</span><span class="n">confidence</span> <span class="o">=</span> <span class="mf">0.95</span>   <span class="c1"># 95% Confidence Level
+</span></code></pre></div></div>
+
+<p>Here is the result of our confidence interval visualization using 30 sample size:</p>
+
+<p><img src="/assets/img/small_sample_ci.png" alt="Small Sample CI" /></p>
+
+<p><em>Figure 1: Confidence Interval with small sample size</em></p>
+
+<p>We can see that of all the 50 sampling process, we have 3 confidence interval that does not contain the true population mean. This is in line with the 95% confidence level, where we expect 5% of the intervals to not contain the true population parameter.</p>
+
+<p>Here we look at the result of our confidence interval visualization using 100 sample size:</p>
+
+<p><img src="/assets/img/large_sample_ci.png" alt="Large Sample CI" /></p>
+
+<p><em>Figure 2: Confidence Interval with large sample size</em></p>
+
+<p>With larger sample size, we expect to have more confidence intervals that contain the true population parameter. This is because larger sample size provides more information about the population, leading to more accurate estimates of the population parameter.</p>
+
+<p>In the real world, we almost never have the luxury of repeating an experiment multiple times to see the distribution. We get one shot, one dataset, and one set of results. We can then turn to the Central Limit Theorem (CLT) to treat our single experiment as if it were part of that multiple sampling process. The Central Limit Theorem (CLT) states that the distribution of sample means will approach a normal distribution as the sample size increases, regardless of the shape of the population distribution. With the assumption that our single experiment is “typical” and not one of the rare outliers, we can use the CLT to construct a confidence interval for our population parameter and further do hypothesis testing from it.</p>
+
+<h1 id="confidence-intervals-in-linear-regression">Confidence intervals in linear regression</h1>
+
+<p>When doing linear regression, we also got confidence intervals and standard deviation for our estimated parameters. The standard deviation is calculated as such:</p>
+
+\[\hat{\sigma}^2 = \frac{\sum (y_i - \hat{y}_i)^2}{n - k}\]
+
+\[\text{Var}(\hat{\beta}) = \hat{\sigma}^2 (X^T X)^{-1}\]
+
+\[SE(\hat{\beta}_j) = \sqrt{\text{Var}(\hat{\beta}_j)}\]
+
+<p>where $\hat{\sigma}^2$ is the residual variance of the error term, $X$ is the independent variables, and $k$ is the number of parameters in the model.</p>
+
+<p>Now, how can we interpret confidence intervals and standard deviation in linear regression?</p>
+
+<p>For confidence intervals, this essentially means that if we were to fit a line many times, we can expect that 95% of the confidence interval contain the true parameter. For standard deviation, the theory behind it is also the same: if we took many different samples and fit a line to each, how much would the slope of that line vary?</p>
+
+<p>Imagine the “true” relationship between two variables is a fixed, invisible line: $y = 5x + 2$. In the real world, we never see this line; we only see noisy data points scattered around it.</p>
+
+<ul>
+  <li>Sample 1: We collect 100 data points and fit a line. The slope estimate is $5.2$, and the 95% CI is [4.8, 5.6]. (This interval contains the true value of 5). The standard deviation of the slope is $0.4$.</li>
+  <li>Sample 2: We collect another 100 points. The slope is $4.9$, and the CI is [4.5, 5.3]. (This interval also contains 5). The standard deviation of the slope is $0.3$.</li>
+  <li>Sample 100: We collect 100 more points. This time, by pure random chance, we got a “weird” sample. The slope is $6.1$ and the CI is [5.7, 6.5]. (This interval misses the true value of 5). The standard deviation of the slope is $0.5$.</li>
+</ul>
+
+<p>If we did this forever, 95% of those calculated brackets would successfully “capture” that true value of 5.</p>
+
+<p>Here is the visualization of the confidence interval for the slope of the line:</p>
+
+<p><img src="/assets/img/linear_regression_ci.png" alt="CI" /></p>
+
+<p><em>Figure 3: Confidence Interval for the slope of the line</em></p>
+
+<p>Another thing to point is that in linear regression, we can view the parameter as the mean change in $Y$ for a unit change in $X$. So the mean of the distribution is here is bidimensional whereas the mean of the distribution in the previous example is unidimensional.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><summary type="html"><![CDATA[Notes on how to interpret confidence intervals.]]></summary></entry><entry><title type="html">Lexical match in a search engine retrieval</title><link href="http://localhost:4000/retrieval-tf-idf/" rel="alternate" type="text/html" title="Lexical match in a search engine retrieval" /><published>2025-04-29T00:00:00+07:00</published><updated>2025-04-29T00:00:00+07:00</updated><id>http://localhost:4000/retrieval-tf-idf</id><content type="html" xml:base="http://localhost:4000/retrieval-tf-idf/"><![CDATA[<p>Have you ever wondered how search engine works? How can it match a query with millions of documents super fast and return them to the users?</p>
+
+<p>In this post, we are going to look at one of the most fundamental technique in search retrieval: lexical match.</p>
+
+<p><img src="/assets/resized/search-query-document-1400x459.png" alt="Figure 1: Query and document." /></p>
+
+<p><em>Figure 1: Query and document..</em></p>
+
+<hr />
+
+<h1 id="retrieval">Retrieval</h1>
+<p>In retrieval, we want to return a smaller pool of documents from the huge pools given a query. Imagine that in a system where we have millions of documents and we want to retrieve a subset of documents that are relevant to a given query. The subset essentially is a smaller pool of documents that we want to do further processing on. The goal of the system is to reduce the number of document candidates that can potentially be of interest according to a given query.</p>
+
+<p>There are many techniques to do retrieval, and one of the oldest and battle-tested technique is to use lexical match. The key point is retrieval needs to be fast. In Big-O notation, we want the retrieval to have a time complexity in $\mathcal{O}(1)$ or at most in $\mathcal{O}(\log N)$. Higher time complexity yields to slow and unpleasant experience for users.</p>
+
+<h2 id="retrieval-with-inverted-index">Retrieval with inverted index</h2>
+
+<p>For the sake of simplicity, let’s assume that the query and documents that we have are of string types. To do retrieval fast, we create an inverted index which stores every unique token (vocabulary) that can be found in the document pool and points to document subset containing this token.</p>
+
+<p><img src="/assets/resized/search-inverted-index-1400x631.png" alt="Figure 2: Inverted index." /></p>
+
+<p><em>Figure 2: Inverted index.</em></p>
+
+<p>So instead of doing a string match for every query term to the document term, we can directly access the index to return the list of documents of matched query in $\mathcal{O}(1)$ time complexity.</p>
+
+<p>In popular search libraries such as Elasticsearch, we can make further adjustments on the query and documents preprocessing and on how to define a match between a query and a document. These two techniques is going to affect how the inverted index is built and how the documents are retrieved.</p>
+
+<p>We can preprocess both the query and the documents using variety of techniques. For example, we can stem words to only include base word, tokenize word using different delimiters (not only using the space as the delimiter), remove stop words, and many more.</p>
+
+<p>For a match between a query and a document, we can determine whether we want full match of all query term, partial match only, or any other heuristics. Full match means that all query terms must be present in the document. Partial match means that at least one query term must be present in the document. These heuristics give you some control on which criteria you want the documents to be returned.</p>
+
+<p><img src="/assets/resized/search-match-1400x689.png" alt="Figure 3: Inverted index match case." /></p>
+
+<p><em>Figure 3: Inverted index match case.</em></p>
+
+<hr />
+
+<h1 id="retrieval_score">Assigning score to the retrieved documents</h1>
+
+<p>We need to assign a score to each of the retrieved documents so that we can get the rank from the most relevant items the least relevant items with respect to the query term. There are many ways to assign score to each retrieved documents, from the older approach like tf-idf and bm25 to the more neural network approach. In this post, we’ll take a look at tf-idf.</p>
+
+<h2 id="tf-idf-scoring">TF-IDF scoring</h2>
+
+<p>For the following illustration, we have 4 documents in total with vocabulary size of 8: “blue, bright, can, see, shining, sky, sun, today”.</p>
+
+<p>As the name suggest, there are two components in tf-idf: term frequency - inverse document frequency.</p>
+
+<p>Given a word $t$ and document $d$, term frequency $f_{t,d}$ is simply the number of times each word $t$ appeared in document $d$. We can also calculate $tf(t,d)$ which is the normalized term frequency by dividing the term frequency by the total number of words in the document.</p>
+
+<p><img src="/assets/resized/search-tf-1400x444.png" alt="Figure 4: Term frequency." /></p>
+
+<p><em>Figure 4: Term frequency.</em></p>
+
+<p>Inverse document frequency measures how rare $t$ is across the corpus $D$. Given $N = D$ as the total number of documents in the corpus and $n_t$ as the number of documents having $t$, the $idf(t,D)$ can be calculated as:</p>
+
+<p><img src="/assets/resized/search-idf-1400x444.png" alt="Figure 5: Inverse document frequency." /></p>
+
+<p><em>Figure 5: Inverse document frequency.</em></p>
+
+<p>Given the tf and idf, we can multiply them together to get the tf-idf score.</p>
+
+<p><img src="/assets/resized/search-tf-idf-1400x631.png" alt="Figure 6: tf-idf final score." /></p>
+
+<p><em>Figure 6: tf-idf final score.</em></p>
+
+<h2 id="calculate-tf-idf-score-for-new-query">Calculate tf-idf score for new query</h2>
+
+<p>Say that your system is running in production, how does it work when you have new query coming in? For term frequency (tf) we need to calculate it real-time. For idf, we can just use the precomputed idf that we store somewhere in the system. See the illustration below:</p>
+
+<p><img src="/assets/resized/search-rerank-1400x510.png" alt="Figure 7: Reranked list with tf-idf score." /></p>
+
+<p><em>Figure 7: Reranked list with tf-idf score.</em></p>
+
+<p>Once we have the tf-idf vector, we still need to calculate the similarity between the query and the matched product tf-idf vectors. The tf-idf vector of the matched product is precomputed, so we do not have to recompute this. For the similarity metric, most library uses cosine similarity. This step is $\mathcal{O}(m \cdot k)$ where $m$ is the number of matched products and $k$ is the dimension of the tf-idf vector.</p>
+
+<p>In reality though, most of the values are zero because a single document or query only uses a tiny fraction of the total vocabulary. So although the textbook definition of a tf-idf vector is a vector of size $k$ vocabulary, in practice it is stored as a sparse vector. Instead of a fixed-size array of $k$ vocabulary size, we store a Dictionary/Map of only the non-zero indices.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Query: {term_id_42: 0.5, term_id_889: 0.8}
+Document: {term_id_12: 0.1, term_id_42: 0.4}
+</code></pre></div></div>
+
+<p>So when calculating the cosine similarity, we only need to iterate through the non-zero indices of the query vector. In this case, we only need to iterate through the term_id_42 and term_id_889. We don’t need to iterate through the term_id_12 because it is not present in the query vector.</p>
+
+<p>Example Walkthrough:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Query: {42: 0.5, 889: 0.8}
+Document: {12: 0.1, 42: 0.4}
+
+1. Look at Query Key 42: It exists in the Document. 42 has a value of 0.5 in the query and 0.4 in the document.
+    0.5 * 0.4 = 0.2 
+    score = 0.2
+
+2. Look at Query Key 889: It does not exist in the Document.
+    skip
+
+Final Score: 0.2
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="appendix">Appendix</h1>
+
+<p><a href="http://www.cbrinton.net/ECE20875-2020-Spring/W10/ngrams.pdf" target="_blank" rel="noopener noreferrer">Image source</a> for Figure 4,5 and 6.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="machine learning" /><category term="system design" /><summary type="html"><![CDATA[Have you ever wondered how search engine works? How can it match a query with millions of documents super fast and return them to the users?]]></summary></entry><entry><title type="html">Target rate for class imbalance</title><link href="http://localhost:4000/target-rate/" rel="alternate" type="text/html" title="Target rate for class imbalance" /><published>2022-05-25T00:00:00+07:00</published><updated>2022-05-25T00:00:00+07:00</updated><id>http://localhost:4000/target-rate</id><content type="html" xml:base="http://localhost:4000/target-rate/"><![CDATA[<p>Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a <a href="https://www.youtube.com/watch?v=rHSpab1Wi9k" target="_blank" rel="noopener noreferrer">talk from stripe</a> where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a <a href="https://www.kaggle.com/janiobachmann/credit-fraud-dealing-with-imbalanced-datasets" target="_blank" rel="noopener noreferrer">credit card fraud public dataset</a>.</p>
 
 <h1 id="target-rate">Target rate</h1>
 <p>The objective is to create a model which can predict whether a transaction is fraudulent. The model is a binary classifier which produces a score in the 0-1 range, where 0 indicates no fraud and 1 indicates fraud. Based on what they’ve found, training on imbalance data and validating the metrics on imbalance data produces worse result compared to training and validating on a more balanced data. Why?</p>
@@ -289,81 +393,7 @@ Say we have initially a training + validation data with less than 1% fraudulent 
 
 <h1 id="closing">Closing</h1>
 
-<p>Thanks for reading! If you think I am missing something please comment below. For those interested you can check my code <a href="https://github.com/rezkaaufar/target-rate/blob/master/target-rate-imbalanced-dataset.ipynb" target="_blank" rel="noopener noreferrer">here</a>.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a talk from stripe where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a credit card fraud public dataset.]]></summary></entry><entry><title type="html">Search fundamentals (part 1)</title><link href="http://localhost:4000/search-fundamentals-pt1/" rel="alternate" type="text/html" title="Search fundamentals (part 1)" /><published>2022-04-29T00:00:00+07:00</published><updated>2022-04-29T00:00:00+07:00</updated><id>http://localhost:4000/search-fundamentals-pt1</id><content type="html" xml:base="http://localhost:4000/search-fundamentals-pt1/"><![CDATA[<p>Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.</p>
-
-<p>In this post, we are going to look at two components of a search engine. In a simplified view, search engine is composed of two main parts: retrieval and reranking.</p>
-
-<p><img src="/assets/resized/search-query-document-1400x459.png" alt="Figure 1: Query and document." /></p>
-
-<p><em>Figure 1: Query and document..</em></p>
-
-<hr />
-
-<h1 id="retrieval">Retrieval</h1>
-<p>In retrieval, we want to return a smaller pool of documents from the huge pools given a query. We essentially want to reduce the number of document candidates that can potentially be of interest according to a given query.</p>
-
-<p>There are many techniques to do retrieval, but the key point is retrieval needs to be fast. In Big-O notation, we want the retrieval to have a time complexity in $\mathcal{O}(1)$ or at most in $\mathcal{O}(\log N)$. Higher time complexity yields to slow and unpleasant experience for users.</p>
-
-<h2 id="retrieval-with-inverted-index">Retrieval with inverted index</h2>
-
-<p>For the sake of simplicity, let’s assume that the query and documents that we have are of string types. To do retrieval fast, we create an inverted index which stores every unique token (vocabulary) that can be found in the document pool and points to document subset containing this token.</p>
-
-<p><img src="/assets/resized/search-inverted-index-1400x631.png" alt="Figure 2: Inverted index." /></p>
-
-<p><em>Figure 2: Inverted index..</em></p>
-
-<p>So instead of doing a string match of each query term to the document term, we can directly access the index to return the list of documents of matched query in $\mathcal{O}(1)$ time complexity.</p>
-
-<p>In popular search libraries such as elastic search, we can adjust further on preprocessing (e.g., tokenizing) and on how to define the match. For preprocessing, we can stem words to only include base word, tokenize word using different delimiters, and many more. For match definition, we can determine whether we want full match of all query term, partial match only, or any other heuristics. These heuristics give you some control on which criteria you want the documents to be returned.</p>
-
-<p><img src="/assets/resized/search-match-1400x689.png" alt="Figure 3: Inverted index match case." /></p>
-
-<p><em>Figure 3: Inverted index match case..</em></p>
-
-<hr />
-
-<h1 id="reranking">Reranking</h1>
-
-<p>We need to assign a score to each of the retrieved documents so that we can get the rank from the most relevant items the least relevant items with respect to the query term. There are many ways to assign score to each retrieved documents, from the older approach like tf-idf and bm25 to the more neural network approach. In this post, we’ll take a look at tf-idf.</p>
-
-<h2 id="tf-idf-scoring">TF-IDF scoring</h2>
-<p>As the name suggest, there are two components in tf-idf: term frequency - inverse document frequency.</p>
-
-<p>Given a word $t$ and document $d$, term frequency $f_{t,d}$ is simply the number of times each word $t$ appeared in document $d$. The term frequency $f_{t,d}$ is given as:</p>
-
-<p><img src="/assets/resized/search-tf-1400x444.png" alt="Figure 4: Term frequency." /></p>
-
-<p><em>Figure 4: Term frequency..</em></p>
-
-<p>Inverse document frequency measures how rare $t$ is across the corpus $D$. Given $N = D$ as the total number of documents in the corpus and $n_t$ as the number of documents having $t$, the $idf(t,D)$ can be calculated as:</p>
-
-<p><img src="/assets/resized/search-idf-1400x444.png" alt="Figure 5: Inverse document frequency." /></p>
-
-<p><em>Figure 5: Inverse document frequency..</em></p>
-
-<p>Then we multiply them together to get the tf-idf score:</p>
-
-<p><img src="/assets/resized/search-tf-idf-1400x631.png" alt="Figure 6: tf-idf final score." /></p>
-
-<p><em>Figure 6: tf-idf final score..</em></p>
-
-<h2 id="calculate-tf-idf-score-for-new-query">Calculate tf-idf score for new query</h2>
-
-<p>Say that your system is running in production, how does it work when you have new query coming in? For term frequency (tf) we need to calculate it real-time. For idf, we can just use the precomputed idf. See the illustration below:</p>
-
-<p><img src="/assets/resized/search-rerank-1400x510.png" alt="Figure 7: Reranked list with tf-idf score." /></p>
-
-<p><em>Figure 7: Reranked list with tf-idf score..</em></p>
-
-<p>Once we have the tf-idf vector, we still need to calculate the similarity between the query and the matched product tf-idf vectors. This step is $\mathcal{O}(m \cdot k)$ where $m$ is the number of matched products and $k$ is the cost of the similarity metric (cosine, euclidean, etc.). To speed this up, approximate nearest neighbor (ANN) reduces it to $\mathcal{O}(\log m \cdot k)$. The details of ANN are out of the scope of this post.</p>
-
-<hr />
-
-<h1 id="closing">Closing</h1>
-
-<p>In the next post we will see other techniques involving retrieval and reranking. Stay tuned and thanks for reading!</p>
-
-<p><a href="http://www.cbrinton.net/ECE20875-2020-Spring/W10/ngrams.pdf" target="_blank" rel="noopener noreferrer">Image source</a> for Figure 4,5 and 6.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[Have you ever wondered how search engine works? How can they match a query with millions of documents super fast and return them in a personalized way for each users? There are a lot of engineering techniques that power a search engine.]]></summary></entry><entry><title type="html">Uncertainty in the parameters of linear regression</title><link href="http://localhost:4000/uncertainty-in-linear-regression/" rel="alternate" type="text/html" title="Uncertainty in the parameters of linear regression" /><published>2022-03-06T00:00:00+07:00</published><updated>2022-03-06T00:00:00+07:00</updated><id>http://localhost:4000/uncertainty-in-linear-regression</id><content type="html" xml:base="http://localhost:4000/uncertainty-in-linear-regression/"><![CDATA[<p>I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.</p>
+<p>Thanks for reading! If you think I am missing something please comment below. For those interested you can check my code <a href="https://github.com/rezkaaufar/target-rate/blob/master/target-rate-imbalanced-dataset.ipynb" target="_blank" rel="noopener noreferrer">here</a>.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="machine learning" /><summary type="html"><![CDATA[Class imbalance is a common problem in machine learning, where the negative class greatly outnumbers the positive class (or vice versa). I recently watch a talk from stripe where they share their techniques in addressing class imbalance in a credit card fraud detection system. I decided to create a summary here and try it out for myself on a credit card fraud public dataset.]]></summary></entry><entry><title type="html">Uncertainty in the parameters of linear regression</title><link href="http://localhost:4000/uncertainty-in-linear-regression/" rel="alternate" type="text/html" title="Uncertainty in the parameters of linear regression" /><published>2022-03-06T00:00:00+07:00</published><updated>2022-03-06T00:00:00+07:00</updated><id>http://localhost:4000/uncertainty-in-linear-regression</id><content type="html" xml:base="http://localhost:4000/uncertainty-in-linear-regression/"><![CDATA[<p>I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">statsmodels.api</span> <span class="k">as</span> <span class="n">sm</span>
 
@@ -453,7 +483,7 @@ The variance of $y$ can be calculated by taking the predicted value $\hat{Y} = X
 
 <h2 id="closing">Closing</h2>
 
-<p>There were more stuff going on under linear regression that I hadn’t realized before. I hope this post can help you in understanding where does the probabilistic metrics came from.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.]]></summary></entry><entry><title type="html">Hypothesis testing with binomial distribution in an AB test</title><link href="http://localhost:4000/ab-test-hypothesis-testing-binomial/" rel="alternate" type="text/html" title="Hypothesis testing with binomial distribution in an AB test" /><published>2021-12-28T00:00:00+07:00</published><updated>2021-12-28T00:00:00+07:00</updated><id>http://localhost:4000/ab-test-hypothesis-testing-binomial</id><content type="html" xml:base="http://localhost:4000/ab-test-hypothesis-testing-binomial/"><![CDATA[<p>In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!</p>
+<p>There were more stuff going on under linear regression that I hadn’t realized before. I hope this post can help you in understanding where does the probabilistic metrics came from.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="machine learning" /><category term="statistics" /><summary type="html"><![CDATA[I recently found out that linear regression assumed that the output variable comes from normal distribution, which consequently turns the coefficient to have probabilistic interpretation. I was confused at first because I was taught linear regression from a machine learning model perspective: input some features and linear regression will fit a line that minimizes a certain cost function such as root mean squared error (RMSE) and then we use that for prediction. I went blank when I realized that there are probabilistic metrics associated with each coefficient. For example, if we use python libraries such as statmodels, it is going to show these probabilistic metrics.]]></summary></entry><entry><title type="html">Hypothesis testing with binomial distribution in an AB test</title><link href="http://localhost:4000/ab-test-hypothesis-testing-binomial/" rel="alternate" type="text/html" title="Hypothesis testing with binomial distribution in an AB test" /><published>2021-12-28T00:00:00+07:00</published><updated>2021-12-28T00:00:00+07:00</updated><id>http://localhost:4000/ab-test-hypothesis-testing-binomial</id><content type="html" xml:base="http://localhost:4000/ab-test-hypothesis-testing-binomial/"><![CDATA[<p>In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!</p>
 
 <h1 id="samples--parameter-inference">Samples &amp; Parameter Inference</h1>
 
@@ -507,7 +537,7 @@ The variance of $y$ can be calculated by taking the predicted value $\hat{Y} = X
 
 <h1 id="closing">Closing</h1>
 
-<p>Thanks for reading my blog post! Hit me on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a>.</p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!]]></summary></entry><entry><title type="html">Hypothesis testing with normal distribution in an AB test</title><link href="http://localhost:4000/ab-test-hypothesis-testing/" rel="alternate" type="text/html" title="Hypothesis testing with normal distribution in an AB test" /><published>2021-11-21T00:00:00+07:00</published><updated>2021-11-21T00:00:00+07:00</updated><id>http://localhost:4000/ab-test-hypothesis-testing</id><content type="html" xml:base="http://localhost:4000/ab-test-hypothesis-testing/"><![CDATA[<p>AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions.
+<p>Thanks for reading my blog post! Hit me on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a>.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><category term="experimentation" /><summary type="html"><![CDATA[In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!]]></summary></entry><entry><title type="html">Hypothesis testing with normal distribution in an AB test</title><link href="http://localhost:4000/ab-test-hypothesis-testing/" rel="alternate" type="text/html" title="Hypothesis testing with normal distribution in an AB test" /><published>2021-11-21T00:00:00+07:00</published><updated>2021-11-21T00:00:00+07:00</updated><id>http://localhost:4000/ab-test-hypothesis-testing</id><content type="html" xml:base="http://localhost:4000/ab-test-hypothesis-testing/"><![CDATA[<p>AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions.
 In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test.</p>
 
 <h1 id="before-hypothesis-testing">Before hypothesis testing</h1>
@@ -660,7 +690,7 @@ Figure 4: The z-score of our differences plotted over the null hypothesis.
 
 <p>Thanks for reading my blog post. In the next post, I will talk about frequentist hypothesis testing using a bernoulli distribution. Stay tuned!</p>
 
-<p>Contact me on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions. In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test.]]></summary></entry><entry><title type="html">Causal model with bayesian network</title><link href="http://localhost:4000/structural-causal-model/" rel="alternate" type="text/html" title="Causal model with bayesian network" /><published>2021-08-26T00:00:00+07:00</published><updated>2021-08-26T00:00:00+07:00</updated><id>http://localhost:4000/structural-causal-model</id><content type="html" xml:base="http://localhost:4000/structural-causal-model/"><![CDATA[<p>In this <a href="https://rezkaaufar.github.io/blog/2021/language-of-causal-model/">previous post</a>, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.</p>
+<p>Contact me on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><category term="experimentation" /><summary type="html"><![CDATA[AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions. In this post we are going to see an overview on how we can derive conclusion of an experiment based on the frequentist school of statistic. We will use normal distribution as a distribution to work with as it is one of the most common distribution that we might encounter in a real life AB test.]]></summary></entry><entry><title type="html">Causal model with bayesian network</title><link href="http://localhost:4000/structural-causal-model/" rel="alternate" type="text/html" title="Causal model with bayesian network" /><published>2021-08-26T00:00:00+07:00</published><updated>2021-08-26T00:00:00+07:00</updated><id>http://localhost:4000/structural-causal-model</id><content type="html" xml:base="http://localhost:4000/structural-causal-model/"><![CDATA[<p>In this <a href="https://rezkaaufar.github.io/blog/2021/language-of-causal-model/">previous post</a>, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.</p>
 
 <h1 id="simpsons-paradox-in-an-acyclic-directed-graph">Simpson’s paradox in an acyclic directed graph</h1>
 <p>I have mentioned about simpson’s paradox briefly in my previous blog post. Here I am going to illustrate another perspective on how simpson’s paradox can affect the result of classical machine learning. Consider a (true) causal graph below.</p>
@@ -782,7 +812,7 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
 <li>Condition and intervention as operations that we can apply in bayesian network.</li>
 </ul>
 
-<p>Thanks for reading this post! Contact me on twitter for feedback <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[In this previous post, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.]]></summary></entry><entry><title type="html">Understanding the language of causal model</title><link href="http://localhost:4000/language-of-causal-model/" rel="alternate" type="text/html" title="Understanding the language of causal model" /><published>2021-07-09T00:00:00+07:00</published><updated>2021-07-09T00:00:00+07:00</updated><id>http://localhost:4000/language-of-causal-model</id><content type="html" xml:base="http://localhost:4000/language-of-causal-model/"><![CDATA[<p>“Correlation does not imply causation”</p>
+<p>Thanks for reading this post! Contact me on twitter for feedback <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><summary type="html"><![CDATA[In this previous post, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.]]></summary></entry><entry><title type="html">Understanding the language of causal model</title><link href="http://localhost:4000/language-of-causal-model/" rel="alternate" type="text/html" title="Understanding the language of causal model" /><published>2021-07-09T00:00:00+07:00</published><updated>2021-07-09T00:00:00+07:00</updated><id>http://localhost:4000/language-of-causal-model</id><content type="html" xml:base="http://localhost:4000/language-of-causal-model/"><![CDATA[<p>“Correlation does not imply causation”</p>
 
 <p>You might hear this jargon everywhere since it is quite pervasive if you work in data science/machine learning. Also, you might have seen this image about spurious correlation:</p>
 
@@ -1026,4 +1056,4 @@ Here are some examples of causal inference that I know can be beneficial in indu
 <li>Structural causal model (Pearl): another causal language to describe and capture causal effect.</li>
 </ul>
 
-<p>Thanks for reading this post! I am a noob in causal inference so please do inform me if there is an error or mistake on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><summary type="html"><![CDATA[“Correlation does not imply causation”]]></summary></entry></feed>
+<p>Thanks for reading this post! I am a noob in causal inference so please do inform me if there is an error or mistake on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><summary type="html"><![CDATA[“Correlation does not imply causation”]]></summary></entry></feed>

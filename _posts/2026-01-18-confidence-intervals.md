@@ -3,7 +3,7 @@ layout: post
 title: How to interpret confidence intervals (correctly) 
 description: Notes on how to interpret confidence intervals.
 date: '2026-01-18'
-tags: [stats]
+tags: [statistics]
 ---
 
 # Confidence intervals

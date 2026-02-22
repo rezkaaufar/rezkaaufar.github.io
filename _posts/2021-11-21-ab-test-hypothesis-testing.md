@@ -14,7 +14,7 @@ description: "AB test is one of the integral parts that a data scientist need to
   \ to work with as it is one of the most common distribution that we might encounter\
   \ in a real life AB test."
 date: '2021-11-21'
-tags: []
+tags: [statistics, experimentation]
 ---
 
 AB test is one of the integral parts that a data scientist need to master. One of the goals of doing AB test is to better inform the team to help them make decision. How can we do that? In a hypothetical scenario, let’s say that we have done an AB test and we have gathered two experiment data: one for variant A (baseline) and one for variant B. One of the things that we had to consider is how to analyze the data after the test had run? How do we decide which variant is better? Deciding which variants are better is crucial because ultimately this information is going to influence the team decisions.

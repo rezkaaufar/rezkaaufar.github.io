@@ -6,7 +6,7 @@ description: "In the previous post we talked about how does frequentist hypothes
   \ to look at the hypothesis testing if your variable of interest is binary using\
   \ a binomial distribution. Let\u2019s get started!"
 date: '2021-12-28'
-tags: []
+tags: [statistics, experimentation]
 ---
 
 In the previous post we talked about how does frequentist hypothesis testing work in an AB test using a normal distribution. In this post we are going to look at the hypothesis testing if your variable of interest is binary using a binomial distribution. Let’s get started!

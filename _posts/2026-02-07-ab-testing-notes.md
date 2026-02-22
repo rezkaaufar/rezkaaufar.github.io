@@ -3,7 +3,7 @@ layout: post
 title: Notes on doing AB test properly
 description: AB testing is a common method used in tech companies to evaluate the effectiveness of different strategies. In this post I try to go over the concept and visualize it to make it easier to remember.
 date: '2026-02-07'
-tags: [stats,experimentation]
+tags: [statistics, experimentation]
 ---
 
 I have known AB Testing and used it for a while in my work but sometimes I find myself remembering the equation too much and unsure about how things worked under the hood. In this post I try to go over the concept and visualize it to make it easier to remember. 

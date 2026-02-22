@@ -3,7 +3,7 @@ layout: post
 title: A year on foundational programming (doing leetcode)
 description: One year of leetcode submission. Check out my leetcode page
 date: '2021-04-08'
-tags: []
+tags: [personal]
 ---
 
 
