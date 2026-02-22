@@ -1,6 +1,6 @@
 ---
 layout: post
-title: How lexical match in a retrieval works
+title: Lexical match in a search engine retrieval
 description: Have you ever wondered how search engine works? How can it match a query with millions of documents super fast and return them to the users?
 date: '2025-04-29'
 tags: []
