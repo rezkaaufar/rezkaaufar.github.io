@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Non-compliance issue in an AB test
-description: 
+description: Non compliance issue can make your test underpowered. Here is how to address it.
 date: '2026-02-12'
 tags: [statistics, experimentation]
 ---
