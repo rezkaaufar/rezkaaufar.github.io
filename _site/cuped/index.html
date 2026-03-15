@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Things to look out for when running CUPED</title>
+  <meta name="description" content="CUPED is a great method to reduce variance in an AB test. However, there are some things to look out for when running CUPED.">
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='central' font-size='52'%3E🧠%3C/text%3E%3C/svg%3E">
+  <style>body {
+    max-width: 80ch;
+    padding: 3em 1em;
+    margin: auto;
+    line-height: 1.6;
+    font-size: 1.08em;
+    font-family: Helvetica, Arial, sans-serif;
+    background-color: #fff;
+    color: #111;
+}
+
+a {
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+pre {
+    overflow: auto;
+    background: #f7f7f7;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background: #f7f7f7;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+
+blockquote {
+    border-left: 3px solid #ddd;
+    padding-left: 0.8rem;
+    color: #444;
+    margin: 1rem 0;
+}
+
+header.site-header {
+    margin-bottom: 1.5rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+nav a.active,
+nav a:hover {
+    border-color: #111;
+}
+
+section {
+    margin: 1.8rem 0;
+}
+
+.meta {
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.listing {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.listing td {
+    padding: 0.2rem 0.15rem;
+    vertical-align: baseline;
+}
+
+.listing tr+tr td {
+    border-top: 1px solid #eee;
+}
+
+.listing .date {
+    white-space: nowrap;
+    padding-right: 0.8rem;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.tag {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    margin-right: 0.35rem;
+    color: #444;
+}
+
+footer {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.tag-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.2rem;
+}
+
+.tag-btn {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    background: #fff;
+    color: #444;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.tag-btn:hover {
+    border-color: #999;
+}
+
+.tag-btn.active {
+    background: #24292e;
+    color: #fff;
+    border-color: #24292e;
+}
+
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    align-items: center;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.footer-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.footer-links a:hover {
+    border-color: #111;
+}
+
+.icon {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    margin-right: 0.25rem;
+}
+
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+
+.social-links a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.social-links a:hover {
+    border-color: #111;
+}
+
+@media (max-width: 640px) {
+    body {
+        font-size: 1em;
+    }
+}
+
+/* Fix: reset code padding inside pre blocks to avoid first-line indent */
+pre code {
+    padding: 0;
+    background: none;
+    border-radius: 0;
+}
+
+/* Rouge syntax highlighting — GitHub-inspired theme */
+.highlight .c,
+.highlight .c1,
+.highlight .cm,
+.highlight .cs {
+    color: #6a737d;
+    font-style: italic;
+}
+
+/* comments */
+.highlight .k,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp,
+.highlight .kr,
+.highlight .kt,
+.highlight .kc {
+    color: #d73a49;
+}
+
+/* keywords */
+.highlight .n {
+    color: #24292e;
+}
+
+/* names */
+.highlight .nf,
+.highlight .nx {
+    color: #6f42c1;
+}
+
+/* function names */
+.highlight .nc {
+    color: #6f42c1;
+    font-weight: bold;
+}
+
+/* class names */
+.highlight .nb {
+    color: #005cc5;
+}
+
+/* builtins */
+.highlight .bp {
+    color: #005cc5;
+}
+
+/* builtin pseudo */
+.highlight .s,
+.highlight .s1,
+.highlight .s2,
+.highlight .sh,
+.highlight .sb,
+.highlight .sc,
+.highlight .sd,
+.highlight .se,
+.highlight .si,
+.highlight .sx {
+    color: #032f62;
+}
+
+/* strings */
+.highlight .sr {
+    color: #032f62;
+}
+
+/* regex */
+.highlight .ss {
+    color: #005cc5;
+}
+
+/* symbol */
+.highlight .mi,
+.highlight .mf,
+.highlight .mh,
+.highlight .mo,
+.highlight .mb,
+.highlight .il {
+    color: #005cc5;
+}
+
+/* numbers */
+.highlight .o,
+.highlight .ow {
+    color: #d73a49;
+}
+
+/* operators */
+.highlight .p {
+    color: #24292e;
+}
+
+/* punctuation */
+.highlight .na {
+    color: #005cc5;
+}
+
+/* attribute names */
+.highlight .nd {
+    color: #6f42c1;
+}
+
+/* decorators */
+.highlight .ni {
+    color: #24292e;
+    font-weight: bold;
+}
+
+/* entity */
+.highlight .ne {
+    color: #d73a49;
+    font-weight: bold;
+}
+
+/* exception */
+.highlight .nn {
+    color: #005cc5;
+}
+
+/* namespace */
+.highlight .no {
+    color: #005cc5;
+}
+
+/* constant */
+.highlight .nv,
+.highlight .vi,
+.highlight .vc,
+.highlight .vg,
+.highlight .vm {
+    color: #e36209;
+}
+
+/* variables */
+.highlight .ge {
+    font-style: italic;
+}
+
+/* emphasis */
+.highlight .gs {
+    font-weight: bold;
+}
+
+/* strong */
+.highlight .err {
+    color: #d73a49;
+    background: #ffeef0;
+}
+
+/* error */
+.highlight .gd {
+    color: #b31d28;
+    background: #ffeef0;
+}
+
+/* diff deleted */
+.highlight .gi {
+    color: #22863a;
+    background: #f0fff4;
+}
+
+/* diff inserted */</style>  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1K5SB4G23C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-1K5SB4G23C');
+  </script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <nav>
+      <ul>
+        <li><a href="/" >Home</a></li>
+        <li><a href="/blog/" >Blog</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Things to look out for when running CUPED</h1>
+<p class="meta">
+  March 15, 2026
+  
+  
+   · 9 min read 
+    ·
+    <span class="tag">statistics</span><span class="tag">experimentation</span>
+    
+</p>
+
+<p>We have a new feature that we want to test. We calculate sample sizes required and the stakeholders are not happy with the duration it took to run the test. They said we need to go faster with the decision and we can’t afford to run an AB test for this long. We go back to the drawing board and try to find a way to reduce the sample size. Can we reduce the sample size required but still maintain the same power?</p>
+
+<p>One of the most common method to reduce variance in an AB test is by using CUPED (Controlled-experiment Using CUPED). CUPED is a variance reduction technique that can be used to reduce the variance of an estimator by using a control variate.</p>
+
+<p>In this post, we are not going to go through the math behind CUPED. Instead, we are going to go through the things to look out for when running CUPED. We’ll start with a brief introduction on what CUPED is and how it works. And then we go into the considerations that we need to take into account when running CUPED.</p>
+
+<p>Please note that the approach that is described in this post is based on my interpretation of the original CUPED paper. It is possible that there are other ways to implement CUPED and it is possible that my interpretation is incorrect. Please refer to the original paper for more details.</p>
+
+<h1 id="cuped-background">CUPED background</h1>
+
+<p>The idea of CUPED is that we can use historical data to neutralize pre-existing noise. Let’s say we have a metric that we measure $Y_1$ that we observe after we start the experiment. The goal is to find a historical pre-experiment data $Y_0$ that has a strong correlation with $Y_1$ to adjust the observed $Y_1$. In practice, $Y_0$ needs to be:</p>
+
+<ul>
+  <li>as correlated as possible with $Y_1$ to maximize the variance reduction</li>
+  <li>independent of the treatment assignment.</li>
+</ul>
+
+<p>In the original CUPED <a href="https://dl.acm.org/doi/abs/10.1145/2433396.2433413">paper</a>, the authors suggest to use the pre-treatment outcome $Y_0$. In other words, the unit of $Y_0$ has to be the same as $Y_1$.</p>
+
+<p>To illustrate, lets say our analysis unit is a user. We want to measure the users’ conversions $Y_1$ by giving a discount voucher $T$ as our treatment. We can use the users’ conversions $Y_0$ before the experiment starts as our control variate.</p>
+
+<p>What we do is:</p>
+<ul>
+  <li>Regress $Y_1$ on $Y_0$ and estimate the coefficient $\hat{\theta}$.</li>
+  <li>Compute $Y_{1}^{cuped} = Y_1 - \hat{\theta} Y_0$ for each unit.</li>
+  <li>Compute the difference of $Y_{1}^{cuped}$ between treatment and control group.</li>
+</ul>
+
+<p>Here is how it looks in python code:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">theta</span> <span class="o">=</span> <span class="n">smf</span><span class="p">.</span><span class="nf">ols</span><span class="p">(</span><span class="sh">'</span><span class="s">conversion_post ~ conversion_pre</span><span class="sh">'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">).</span><span class="nf">fit</span><span class="p">().</span><span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">conversion_cuped</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">conversion_post</span><span class="sh">'</span><span class="p">]</span> <span class="o">-</span> <span class="n">theta</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">conversion_pre</span><span class="sh">'</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="p">.</span><span class="nf">mean</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">conversion_pre</span><span class="sh">'</span><span class="p">]))</span>
+
+<span class="n">smf</span><span class="p">.</span><span class="nf">ols</span><span class="p">(</span><span class="sh">'</span><span class="s">conversion_cuped ~ discount_voucher</span><span class="sh">'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">).</span><span class="nf">fit</span><span class="p">().</span><span class="nf">summary</span><span class="p">().</span><span class="n">tables</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>What we will observe is that the output of the second regression will have a much smaller standard error compared to the first regression. This is because CUPED has reduced the variance of the estimator. For more illustrative example, you can refer to <a href="https://github.com/matteocourthoud/Blog-Posts/blob/main/notebooks/cuped.ipynb">this notebook</a>.</p>
+
+<h1 id="do-we-even-observe-y_1-before-the-experiment-starts">Do we even observe $Y_1$ before the experiment starts?</h1>
+
+<p>Remember that when calculating sample size, we are using the variance of the estimator. With CUPED, we want to reduce the variance of the estimator before the experiment starts. The first thing that you might be wondering is that do we even observe $Y_1$ before the experiment starts to calculate CUPED? In reality, we only observe $Y_1$ after the experiment starts. So then how do we do the regression to get $\hat{\theta}$ before the experiment to further calculate $Y_1^{cuped}$?</p>
+
+<p>One approach that we can do is to split our historical data into two parts as if we are running an experiment. Let’s say we take the last 4 weeks of historical data, we can use the first 2 weeks as our pre-experiment data (i.e., $Y_0$) and our second 2 weeks as our experiment period (i.e., $Y_1$). We can then calculate $\hat{\theta}_{hist}$ using the pre-experiment data by running the first regression:</p>
+
+\[Y_1 \sim Y_0\]
+
+<p>where $Y_0$ is the pre-experiment data and $Y_1$ is the experiment data. We can then use the $\hat{\theta}_{hist}$ to adjust our required sample sizes:</p>
+
+\[N_{new} = N_{old} \times (1 - \hat{\theta}_{hist})^2\]
+
+<p>where $N_{old}$ is the original sample size calculated using the usual power analysis formula and $N_{new}$ is the new sample size required to achieve the same power with CUPED.</p>
+
+<p>The risk of this approach is that the historical correlation coefficient $\hat{\theta}_{hist}$ is not guaranteed to be perfectly correct for the live experiment. It is strictly a proxy used to guess the required sample size. This approach relies on the assumption that the analysis unit behavior is consistent over time. If the analysis unit behavior changes between the historical period and the live experiment, then the estimated $\hat{\theta}_{hist}$ could be incorrect. Therefore, the required sample size calculated using $\hat{\theta}_{hist}$ could be incorrect as well. For example, lets say our sample size calculation using $\hat{\theta}_{hist}$ is 2 weeks but it actually needs 4 weeks because the real variance reduction was weaker than expected.</p>
+
+<p>To improve the accuracy of the required sample size calculation, we can instead run CUPED calculation frequently after we start the experiment using the actual $Y_1$. Once we begin to get the actual $Y_1$, we stop using the historical estimate and recalculate the sample size required using the actual $\hat{\theta}_{actual}$.</p>
+
+<p>Let’s say we need 4 weeks of data to run the experiment ($N_{original} = 4$). With the historical correlation coefficient, we calculated the required sample size to be 2 weeks ($N_{historical} = 2$). Every day after the experiment starts, we can calculate the actual $\hat{\theta}_{actual}$ and observe the variance reduction. The variance reduction is going to fluctuate in the short term but it will eventually converge to the true variance reduction. This is illustrated in this image below:</p>
+
+<p><img src="/assets/img/cuped-reduction-rate.png" alt="image" />
+<em>Figure 1: Variance reduction over time from <a href="https://dl.acm.org/doi/10.1145/2433396.2433413">Deng et al (2013)</a></em></p>
+
+<p>Once it reaches a stable point, we can recalculate the required sample. In the example above, we can see that  the variance reduction has stabilized over the last 5 days at day 15. Hence, at day 15, we can then re-calculate the required sample size. Let’s say, at day 15, the variance reduction applied to the original sample size ($N_{original} = 4$) is to be 3 weeks ($N_{new} = 3$). Then we can run let the experiment run until the 21st day and stop there instead of waiting until the 28th day according to the original sample size calculation.</p>
+
+<p>To recap our illustration:</p>
+
+<ul>
+  <li>Original sample size calculation without CUPED: 28 days, 4 weeks</li>
+  <li>Required sample size calculation with CUPED historical: 14 days, 2 weeks - overestimated variance reduction</li>
+  <li>Required sample size calculation with CUPED actual at day 15 once it stabilized: 21 days, 3 weeks</li>
+  <li>Stop experiment at day 21 instead of day 28</li>
+</ul>
+
+<p>The main takeaway from me is that it is better to just run CUPED frequently with the actual $Y_1$ instead of using the historical estimate as it is more accurate. Once we observe our variance reduction to be stable, we can then re-calculate the required sample size and stop the experiment at the right time.</p>
+
+<p>The only caveat here is that we cannot run CUPED before the experiment starts, whereas with the historical estimate, we can run CUPED before the experiment starts. Here, we have to wait until the experiment starts to get the actual $Y_1$. So we let the experiment runs first with the original sample size calculation and then we run CUPED with the actual $Y_1$ to shorten the duration of the experiment.</p>
+
+<h1 id="my-analysis-unit-does-not-have-consistent-pre-experiment-identity">My analysis unit does not have consistent pre-experiment identity</h1>
+
+<p>Another thing to note with CUPED is that it requires the analysis unit to have a consistent pre-experiment identity. For example: in an online retail platform, if the analysis unit is at order level, then it is not possible to have a consistent pre-experiment identity. An order can be created in the pre-experiment period and the same order is not going to be available in the experiment period. An order is a transient unit, not a persistent unit.</p>
+
+<p>One possible solution for this is to map the transient analysis unit to a persistent unit. The original paper by Deng et al (2013) discussed this under the Handling Non-User Metrics section, where they talk about the challenges when our analysis unit is different than our randomization unit. In their case, the randomization unit is at user level, but the analysis unit is at page level. They proposed delta method to produce correct estimate of variance that takes into account the correlation of pages from the same users. For interested readers, you can refer to their paper for more details. My interpretation is that with this approach, the goal is to link the transient unit (order) to a persistent entity (user, merchant, or cookie) and use that entity’s history as the covariate for the order.</p>
+
+<p>Another possible solution is to use <a href="https://www.researchgate.net/profile/Yixin-Tang-5/publication/345698207_Control_Using_Predictions_as_Covariates_in_Switchback_Experiments/links/5fab109b458515078107aa8b/Control-Using-Predictions-as-Covariates-in-Switchback-Experiments.pdf">CUPAC</a>, which stands for Control Using Predictions as Covariates. With CUPAC, we can build a machine learning model that takes in multiple input features to create a predicted $Y_{pre}$ that can be utilized as a covariate for CUPED calculation for the analysis unit after the experiment starts.</p>
+
+<p>Here is my interpretation of the approach:</p>
+<ul>
+  <li>Assume pre-experiment we have user 1 with order 1, 2, 3, 4 and during the experiment we have user 2 with order 5, 6, 7, 8.</li>
+  <li>In this scenario, there is no way we can find a covariate ($Y_{pre}$) on the order 5, 6, 7, 8 as order is a transient unit.</li>
+  <li>With CUPAC, we can train CUPAC model using order 1, 2, 3, 4 to predict $Y_{pre}$ with input features. After the experiment start, we can use our trained CUPAC model to predict $\hat{Y}_{pre}$ for order 5, 6, 7, 8 given the input features.</li>
+  <li>Now for order 5, 6, 7, 8, we can use $\hat{Y}_{pre}$ as the covariate to adjust the observed $Y_1$ that can be used for CUPED calculation.</li>
+  <li>Here, our CUPAC model will be on order level, which is the analysis unit level, but the input features we use for CUPAC model can come from different granularity. Using ML model essentially transforms the input features into something that can be matched between pre-experiment and post-experiment.</li>
+</ul>
+
+<p>The only thing to note with CUPAC is that the input features used to train the ML model needs to be invariant to the experiment. The attributes that the treatment cannot change.</p>
+
+<p>Also note that even with CUPAC, we are still faced with the same issue above, where we need to wait until the experiment starts to get the actual $Y_1$ to be able to calculate our variance reduction.</p>
+
+
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div>© <span id="copyright-year">2026</span> Rezka Leonandya.</div>
+      <div class="meta">Built with Jekyll + Featherweight-inspired minimal styling.</div>
+    </div>
+    <div class="meta"><span id="page-size"></span> · <span id="load-time"></span></div>
+  </footer>
+  <script>
+    (function () {
+      const sizeEl = document.getElementById('page-size');
+      const timeEl = document.getElementById('load-time');
+      const yearEl = document.getElementById('copyright-year');
+      const update = () => {
+        if (sizeEl) sizeEl.textContent = `Size: ${document.documentElement.outerHTML.length} bytes`;
+        if (timeEl) timeEl.textContent = `Load time: ${Math.round(performance.now())} ms`;
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      };
+      if (document.readyState === 'complete') {
+        update();
+      } else {
+        window.addEventListener('load', update, { once: true });
+      }
+    })();
+  </script>
+</body>
+
+</html>

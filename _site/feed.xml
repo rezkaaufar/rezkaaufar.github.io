@@ -1,4 +1,100 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-02-22T23:00:40+07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Rezka Leonandya</title><subtitle>Rezka Leonandya&apos;s personal site and blog.</subtitle><author><name>Rezka Leonandya</name></author><entry><title type="html">Non-compliance issue in an AB test</title><link href="http://localhost:4000/compliance-issue-in-ab-test/" rel="alternate" type="text/html" title="Non-compliance issue in an AB test" /><published>2026-02-12T00:00:00+07:00</published><updated>2026-02-12T00:00:00+07:00</updated><id>http://localhost:4000/compliance-issue-in-ab-test</id><content type="html" xml:base="http://localhost:4000/compliance-issue-in-ab-test/"><![CDATA[<p>In a recent AB test that I did, I did the usual calculation of sample size, power, alpha, and MDE. At the end of the test, the test result was statistically significant. However, I then realized that some units in the treatment group were not actually doing the treatment. They were given the treatment but not all of them actually did it. This is a compliance issue that we need to address.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-03-15T17:57:21+07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Rezka Leonandya</title><subtitle>Rezka Leonandya&apos;s personal site and blog.</subtitle><author><name>Rezka Leonandya</name></author><entry><title type="html">Things to look out for when running CUPED</title><link href="http://localhost:4000/cuped/" rel="alternate" type="text/html" title="Things to look out for when running CUPED" /><published>2026-03-15T00:00:00+07:00</published><updated>2026-03-15T00:00:00+07:00</updated><id>http://localhost:4000/cuped</id><content type="html" xml:base="http://localhost:4000/cuped/"><![CDATA[<p>We have a new feature that we want to test. We calculate sample sizes required and the stakeholders are not happy with the duration it took to run the test. They said we need to go faster with the decision and we can’t afford to run an AB test for this long. We go back to the drawing board and try to find a way to reduce the sample size. Can we reduce the sample size required but still maintain the same power?</p>
+
+<p>One of the most common method to reduce variance in an AB test is by using CUPED (Controlled-experiment Using CUPED). CUPED is a variance reduction technique that can be used to reduce the variance of an estimator by using a control variate.</p>
+
+<p>In this post, we are not going to go through the math behind CUPED. Instead, we are going to go through the things to look out for when running CUPED. We’ll start with a brief introduction on what CUPED is and how it works. And then we go into the considerations that we need to take into account when running CUPED.</p>
+
+<p>Please note that the approach that is described in this post is based on my interpretation of the original CUPED paper. It is possible that there are other ways to implement CUPED and it is possible that my interpretation is incorrect. Please refer to the original paper for more details.</p>
+
+<h1 id="cuped-background">CUPED background</h1>
+
+<p>The idea of CUPED is that we can use historical data to neutralize pre-existing noise. Let’s say we have a metric that we measure $Y_1$ that we observe after we start the experiment. The goal is to find a historical pre-experiment data $Y_0$ that has a strong correlation with $Y_1$ to adjust the observed $Y_1$. In practice, $Y_0$ needs to be:</p>
+
+<ul>
+  <li>as correlated as possible with $Y_1$ to maximize the variance reduction</li>
+  <li>independent of the treatment assignment.</li>
+</ul>
+
+<p>In the original CUPED <a href="https://dl.acm.org/doi/abs/10.1145/2433396.2433413">paper</a>, the authors suggest to use the pre-treatment outcome $Y_0$. In other words, the unit of $Y_0$ has to be the same as $Y_1$.</p>
+
+<p>To illustrate, lets say our analysis unit is a user. We want to measure the users’ conversions $Y_1$ by giving a discount voucher $T$ as our treatment. We can use the users’ conversions $Y_0$ before the experiment starts as our control variate.</p>
+
+<p>What we do is:</p>
+<ul>
+  <li>Regress $Y_1$ on $Y_0$ and estimate the coefficient $\hat{\theta}$.</li>
+  <li>Compute $Y_{1}^{cuped} = Y_1 - \hat{\theta} Y_0$ for each unit.</li>
+  <li>Compute the difference of $Y_{1}^{cuped}$ between treatment and control group.</li>
+</ul>
+
+<p>Here is how it looks in python code:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">theta</span> <span class="o">=</span> <span class="n">smf</span><span class="p">.</span><span class="nf">ols</span><span class="p">(</span><span class="sh">'</span><span class="s">conversion_post ~ conversion_pre</span><span class="sh">'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">).</span><span class="nf">fit</span><span class="p">().</span><span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">conversion_cuped</span><span class="sh">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">conversion_post</span><span class="sh">'</span><span class="p">]</span> <span class="o">-</span> <span class="n">theta</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">conversion_pre</span><span class="sh">'</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="p">.</span><span class="nf">mean</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="sh">'</span><span class="s">conversion_pre</span><span class="sh">'</span><span class="p">]))</span>
+
+<span class="n">smf</span><span class="p">.</span><span class="nf">ols</span><span class="p">(</span><span class="sh">'</span><span class="s">conversion_cuped ~ discount_voucher</span><span class="sh">'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">).</span><span class="nf">fit</span><span class="p">().</span><span class="nf">summary</span><span class="p">().</span><span class="n">tables</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>What we will observe is that the output of the second regression will have a much smaller standard error compared to the first regression. This is because CUPED has reduced the variance of the estimator. For more illustrative example, you can refer to <a href="https://github.com/matteocourthoud/Blog-Posts/blob/main/notebooks/cuped.ipynb">this notebook</a>.</p>
+
+<h1 id="do-we-even-observe-y_1-before-the-experiment-starts">Do we even observe $Y_1$ before the experiment starts?</h1>
+
+<p>Remember that when calculating sample size, we are using the variance of the estimator. With CUPED, we want to reduce the variance of the estimator before the experiment starts. The first thing that you might be wondering is that do we even observe $Y_1$ before the experiment starts to calculate CUPED? In reality, we only observe $Y_1$ after the experiment starts. So then how do we do the regression to get $\hat{\theta}$ before the experiment to further calculate $Y_1^{cuped}$?</p>
+
+<p>One approach that we can do is to split our historical data into two parts as if we are running an experiment. Let’s say we take the last 4 weeks of historical data, we can use the first 2 weeks as our pre-experiment data (i.e., $Y_0$) and our second 2 weeks as our experiment period (i.e., $Y_1$). We can then calculate $\hat{\theta}_{hist}$ using the pre-experiment data by running the first regression:</p>
+
+\[Y_1 \sim Y_0\]
+
+<p>where $Y_0$ is the pre-experiment data and $Y_1$ is the experiment data. We can then use the $\hat{\theta}_{hist}$ to adjust our required sample sizes:</p>
+
+\[N_{new} = N_{old} \times (1 - \hat{\theta}_{hist})^2\]
+
+<p>where $N_{old}$ is the original sample size calculated using the usual power analysis formula and $N_{new}$ is the new sample size required to achieve the same power with CUPED.</p>
+
+<p>The risk of this approach is that the historical correlation coefficient $\hat{\theta}_{hist}$ is not guaranteed to be perfectly correct for the live experiment. It is strictly a proxy used to guess the required sample size. This approach relies on the assumption that the analysis unit behavior is consistent over time. If the analysis unit behavior changes between the historical period and the live experiment, then the estimated $\hat{\theta}_{hist}$ could be incorrect. Therefore, the required sample size calculated using $\hat{\theta}_{hist}$ could be incorrect as well. For example, lets say our sample size calculation using $\hat{\theta}_{hist}$ is 2 weeks but it actually needs 4 weeks because the real variance reduction was weaker than expected.</p>
+
+<p>To improve the accuracy of the required sample size calculation, we can instead run CUPED calculation frequently after we start the experiment using the actual $Y_1$. Once we begin to get the actual $Y_1$, we stop using the historical estimate and recalculate the sample size required using the actual $\hat{\theta}_{actual}$.</p>
+
+<p>Let’s say we need 4 weeks of data to run the experiment ($N_{original} = 4$). With the historical correlation coefficient, we calculated the required sample size to be 2 weeks ($N_{historical} = 2$). Every day after the experiment starts, we can calculate the actual $\hat{\theta}_{actual}$ and observe the variance reduction. The variance reduction is going to fluctuate in the short term but it will eventually converge to the true variance reduction. This is illustrated in this image below:</p>
+
+<p><img src="/assets/img/cuped-reduction-rate.png" alt="image" />
+<em>Figure 1: Variance reduction over time from <a href="https://dl.acm.org/doi/10.1145/2433396.2433413">Deng et al (2013)</a></em></p>
+
+<p>Once it reaches a stable point, we can recalculate the required sample. In the example above, we can see that  the variance reduction has stabilized over the last 5 days at day 15. Hence, at day 15, we can then re-calculate the required sample size. Let’s say, at day 15, the variance reduction applied to the original sample size ($N_{original} = 4$) is to be 3 weeks ($N_{new} = 3$). Then we can run let the experiment run until the 21st day and stop there instead of waiting until the 28th day according to the original sample size calculation.</p>
+
+<p>To recap our illustration:</p>
+
+<ul>
+  <li>Original sample size calculation without CUPED: 28 days, 4 weeks</li>
+  <li>Required sample size calculation with CUPED historical: 14 days, 2 weeks - overestimated variance reduction</li>
+  <li>Required sample size calculation with CUPED actual at day 15 once it stabilized: 21 days, 3 weeks</li>
+  <li>Stop experiment at day 21 instead of day 28</li>
+</ul>
+
+<p>The main takeaway from me is that it is better to just run CUPED frequently with the actual $Y_1$ instead of using the historical estimate as it is more accurate. Once we observe our variance reduction to be stable, we can then re-calculate the required sample size and stop the experiment at the right time.</p>
+
+<p>The only caveat here is that we cannot run CUPED before the experiment starts, whereas with the historical estimate, we can run CUPED before the experiment starts. Here, we have to wait until the experiment starts to get the actual $Y_1$. So we let the experiment runs first with the original sample size calculation and then we run CUPED with the actual $Y_1$ to shorten the duration of the experiment.</p>
+
+<h1 id="my-analysis-unit-does-not-have-consistent-pre-experiment-identity">My analysis unit does not have consistent pre-experiment identity</h1>
+
+<p>Another thing to note with CUPED is that it requires the analysis unit to have a consistent pre-experiment identity. For example: in an online retail platform, if the analysis unit is at order level, then it is not possible to have a consistent pre-experiment identity. An order can be created in the pre-experiment period and the same order is not going to be available in the experiment period. An order is a transient unit, not a persistent unit.</p>
+
+<p>One possible solution for this is to map the transient analysis unit to a persistent unit. The original paper by Deng et al (2013) discussed this under the Handling Non-User Metrics section, where they talk about the challenges when our analysis unit is different than our randomization unit. In their case, the randomization unit is at user level, but the analysis unit is at page level. They proposed delta method to produce correct estimate of variance that takes into account the correlation of pages from the same users. For interested readers, you can refer to their paper for more details. My interpretation is that with this approach, the goal is to link the transient unit (order) to a persistent entity (user, merchant, or cookie) and use that entity’s history as the covariate for the order.</p>
+
+<p>Another possible solution is to use <a href="https://www.researchgate.net/profile/Yixin-Tang-5/publication/345698207_Control_Using_Predictions_as_Covariates_in_Switchback_Experiments/links/5fab109b458515078107aa8b/Control-Using-Predictions-as-Covariates-in-Switchback-Experiments.pdf">CUPAC</a>, which stands for Control Using Predictions as Covariates. With CUPAC, we can build a machine learning model that takes in multiple input features to create a predicted $Y_{pre}$ that can be utilized as a covariate for CUPED calculation for the analysis unit after the experiment starts.</p>
+
+<p>Here is my interpretation of the approach:</p>
+<ul>
+  <li>Assume pre-experiment we have user 1 with order 1, 2, 3, 4 and during the experiment we have user 2 with order 5, 6, 7, 8.</li>
+  <li>In this scenario, there is no way we can find a covariate ($Y_{pre}$) on the order 5, 6, 7, 8 as order is a transient unit.</li>
+  <li>With CUPAC, we can train CUPAC model using order 1, 2, 3, 4 to predict $Y_{pre}$ with input features. After the experiment start, we can use our trained CUPAC model to predict $\hat{Y}_{pre}$ for order 5, 6, 7, 8 given the input features.</li>
+  <li>Now for order 5, 6, 7, 8, we can use $\hat{Y}_{pre}$ as the covariate to adjust the observed $Y_1$ that can be used for CUPED calculation.</li>
+  <li>Here, our CUPAC model will be on order level, which is the analysis unit level, but the input features we use for CUPAC model can come from different granularity. Using ML model essentially transforms the input features into something that can be matched between pre-experiment and post-experiment.</li>
+</ul>
+
+<p>The only thing to note with CUPAC is that the input features used to train the ML model needs to be invariant to the experiment. The attributes that the treatment cannot change.</p>
+
+<p>Also note that even with CUPAC, we are still faced with the same issue above, where we need to wait until the experiment starts to get the actual $Y_1$ to be able to calculate our variance reduction.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><category term="experimentation" /><summary type="html"><![CDATA[CUPED is a great method to reduce variance in an AB test. However, there are some things to look out for when running CUPED.]]></summary></entry><entry><title type="html">Non-compliance issue in an AB test</title><link href="http://localhost:4000/compliance-issue-in-ab-test/" rel="alternate" type="text/html" title="Non-compliance issue in an AB test" /><published>2026-02-12T00:00:00+07:00</published><updated>2026-02-12T00:00:00+07:00</updated><id>http://localhost:4000/compliance-issue-in-ab-test</id><content type="html" xml:base="http://localhost:4000/compliance-issue-in-ab-test/"><![CDATA[<p>In a recent AB test that I did, I did the usual calculation of sample size, power, alpha, and MDE. At the end of the test, the test result was statistically significant. However, I then realized that some units in the treatment group were not actually doing the treatment. They were given the treatment but not all of them actually did it. This is a compliance issue that we need to address.</p>
 
 <h1 id="non-compliance-issue-makes-your-test-underpowered">Non-compliance issue makes your test underpowered</h1>
 
@@ -87,7 +183,7 @@
 
 <p>The $1/c^2$ correction actually comes from the instrumental variable (IV) framework. In the IV framework, we are interested in the effect of the treatment (T) on the outcome (Y). However, we only have access to the treatment (T) and the instrument (Z). So what we do is to estimate the effect of the instrument (Z) on the treatment (T) and use that to estimate the effect of the treatment (T) on the outcome (Y).</p>
 
-<p>In an AB test with non-compliance issue, we can use the randomization (Z) as the instrument. We can do this because in this case, randomization $\neq$ participation. Following the IV framework math, we will get the compliance rate that can be interpreted as the correlation between the instrument (randomization) and the treatment (T). This is usually known as the first stage in an IV framework. The second stage (reduced form) is when we divide the first stage by the compliance rate to get the ITT effect.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><category term="experimentation" /><summary type="html"><![CDATA[In a recent AB test that I did, I did the usual calculation of sample size, power, alpha, and MDE. At the end of the test, the test result was statistically significant. However, I then realized that some units in the treatment group were not actually doing the treatment. They were given the treatment but not all of them actually did it. This is a compliance issue that we need to address.]]></summary></entry><entry><title type="html">Notes on doing AB test properly</title><link href="http://localhost:4000/ab-testing-notes/" rel="alternate" type="text/html" title="Notes on doing AB test properly" /><published>2026-02-07T00:00:00+07:00</published><updated>2026-02-07T00:00:00+07:00</updated><id>http://localhost:4000/ab-testing-notes</id><content type="html" xml:base="http://localhost:4000/ab-testing-notes/"><![CDATA[<p>I have known AB Testing and used it for a while in my work but sometimes I find myself remembering the equation too much and unsure about how things worked under the hood. In this post I try to go over the concept and visualize it to make it easier to remember.</p>
+<p>In an AB test with non-compliance issue, we can use the randomization (Z) as the instrument. We can do this because in this case, randomization $\neq$ participation. Following the IV framework math, we will get the compliance rate that can be interpreted as the correlation between the instrument (randomization) and the treatment (T). This is usually known as the first stage in an IV framework. The second stage (reduced form) is when we divide the first stage by the compliance rate to get the ITT effect.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><category term="experimentation" /><summary type="html"><![CDATA[Non compliance issue can make your test underpowered. Here is how to address it.]]></summary></entry><entry><title type="html">Notes on doing AB test properly</title><link href="http://localhost:4000/ab-testing-notes/" rel="alternate" type="text/html" title="Notes on doing AB test properly" /><published>2026-02-07T00:00:00+07:00</published><updated>2026-02-07T00:00:00+07:00</updated><id>http://localhost:4000/ab-testing-notes</id><content type="html" xml:base="http://localhost:4000/ab-testing-notes/"><![CDATA[<p>I have known AB Testing and used it for a while in my work but sometimes I find myself remembering the equation too much and unsure about how things worked under the hood. In this post I try to go over the concept and visualize it to make it easier to remember.</p>
 
 <h1 id="mde-power-alpha-and-sample-size">MDE, power, alpha, and sample size</h1>
 
@@ -163,7 +259,7 @@
 <p>Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and MDE of 0.02</p>
 
 <p><img src="/assets/img/one-tail-min-sample-size.png" alt="Min sample size" />
-<em>Figure 4: Distribution of meandifference when by setting alpha=5%, beta=20%, and MDE of 0.02</em></p>
+<em>Figure 4: Distribution of mean difference when by setting alpha=5%, beta=20%, and MDE of 0.02</em></p>
 
 <p>Here we observe the following:</p>
 
@@ -812,248 +908,4 @@ Figure 8 and 9 below shows how we can do an intervention to simulate the target 
 <li>Condition and intervention as operations that we can apply in bayesian network.</li>
 </ul>
 
-<p>Thanks for reading this post! Contact me on twitter for feedback <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><summary type="html"><![CDATA[In this previous post, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.]]></summary></entry><entry><title type="html">Understanding the language of causal model</title><link href="http://localhost:4000/language-of-causal-model/" rel="alternate" type="text/html" title="Understanding the language of causal model" /><published>2021-07-09T00:00:00+07:00</published><updated>2021-07-09T00:00:00+07:00</updated><id>http://localhost:4000/language-of-causal-model</id><content type="html" xml:base="http://localhost:4000/language-of-causal-model/"><![CDATA[<p>“Correlation does not imply causation”</p>
-
-<p>You might hear this jargon everywhere since it is quite pervasive if you work in data science/machine learning. Also, you might have seen this image about spurious correlation:</p>
-
-<p><img src="/assets/img/corr-col.png" alt="Figure 1: spurious correlation (&lt;a href=&quot;https://www.kaggle.com/general/187094&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;credits&lt;/a&gt;)" /></p>
-
-<p><em>Figure 1: spurious correlation (<a href="https://www.kaggle.com/general/187094" target="_blank" rel="noopener noreferrer">credits</a>).</em></p>
-
-<p>But what does it mean, really? What does “correlation does not imply causation” really mean? Given a data $X$ and a target variable $Y$, can we estimate direct causal effect? If so, how can we know that we have modeled causation in a correct way? Is there a formal way to capture this English statement? Yes!</p>
-
-<p>In causal inference, there are at least two formal ways to discuss causation: one is based on counterfactuals (or potential outcomes) and the other one is based on causal directed acyclic graph (or structural causal model). The latter involves Judea Pearl’s do-calculus. For the rest of this post I am going to use the former, which is the language of counterfactuals to draw the intuition.
-Okay, enough intro. The best way to start understanding why correlation $\neq$ causation is to understand the simpson’s paradox.</p>
-
-<hr />
-
-<h1 id="simpsons-paradox">Simpson’s paradox</h1>
-
-<p>Imagine we are developing a treatment for both men and women. We want to know the causal effect of the treatment. Specifically, we want to draw a conclusion from the treatment with the following possibility:</p>
-
-<ul>
-<li>Treatment is good for men (S1)</li>
-<li>Treatment is good for women (S2)</li>
-<li>Treatment is bad overall (S3)</li>
-</ul>
-
-<p>Now, simpson’s paradox occurs when people equate probabilistic statements with the statements (S1), (S2), and (S3) above. How does the probabilistic statements look like? Consider the data below</p>
-
-<p><img src="/assets/img/table-causal.png" alt="Table 1: illustrative data" /></p>
-
-<p><em>Table 1: illustrative data.</em></p>
-
-<p>From the table, we have treatment $T$ that is binary (given and not given), feature (or covariate) $X$ that is also binary (men and women) and the outcome $Y$ that is also binary (working and not working). The numbers in the column is the sum of treatment that is working ($Y=1$). Consequently, we have the probabilistic interpretation as follows:</p>
-
-<ul>
-<li>
-$$P(Y=1 | T=1, X=1) = 0.15$$ 
-(Group 1)
-
-
-</li>
-<li>
-$$P(Y=1 | T=0, X=1) = 0.10$$
-(Group 2)
-
-
-</li>
-<li>
-$$P(Y=1 | T=1, X=0) = 0.30$$
-(Group 3)
-
-
-</li>
-<li>
-$$P(Y=1 | T=0, X=0) = 0.20$$
-(Group 4)
-
-
-</li>
-<li>
-$$P(Y=1 | T=1) = 0.16$$
-(Group 5)
-
-
-</li>
-<li>
-$$P(Y=1 | T=0) = 0.19$$
-(Group 6)
-
-
-</li>
-</ul>
-
-<p>From the probabilistic interpretation above, we can derive three key probabilistic statements:</p>
-
-<ul>
-<li>
-$$P(Y=1 | T=1, X=1) - P(Y=1 | T=0, X=1) &gt; 0$$
-(P1)
-
-
-</li>
-<li>
-$$P(Y=1 | T=1, X=0) - P(Y=1 | T=0, X=0) &gt; 0$$
-(P2)
-
-
-</li>
-<li>
-$$P(Y=1 | T=1) - P(Y=1 | T=0) &lt; 0$$
-(P3)
-
-
-</li>
-</ul>
-
-<p>Remember: simpson’s paradox occur when people equate probabilistic statements (P1-P3) with the English statements (S1-S3). We see from the example above, all (P1), (P2), and (P3) are true. But in causal inference, it is NOT possible for (S1), (S2), and (S3) to all be true. If the treatment is good for both men and women (S1-S2), then it should not be possible that the overall treatment is bad (S3). But why does our observation says otherwise? Again, the error is in equating (P1-P3) with (S1-S3).</p>
-
-<p>How does this happen then? Is it because of the sample size that is not comparable between groups? Well we can still have more or less the same sample size and still fall to simpson’s paradox (<a href="https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s897-machine-learning-for-healthcare-spring-2019/lecture-notes/MIT6_S897S19_lec14note.pdf" target="_blank" rel="noopener noreferrer">example</a>). To understand why this is happening, we need to understand the effect of confounding variable.</p>
-
-<h1 id="confounding-variable">Confounding variable</h1>
-<p>Let’s take a closer look at Table 1. Do you notice a pattern in the treatment assignment? You can see that the there are more treated men than those who doesn’t receive treatment. On the other hand, there are less treated women than those who doesn’t receive treatment. We might wonder: gender probably affects the treatment assignment, therefore there are more men who received treatment than women, which led to non-comparable groups formed between men and woman. In this case, gender is a confounding variable. Confounding variable is a common cause that is both affecting the treatment and the treatment outcome. Usually confounding variable is unobserved.</p>
-
-<p><img src="/assets/img/confound-graph.png" alt="Figure 2: directed acyclic graph illustrating confounding variable (&lt;a href=&quot;https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;credits&lt;/a&gt;)" /></p>
-
-<p><em>Figure 2: directed acyclic graph illustrating confounding variable (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf" target="_blank" rel="noopener noreferrer">credits</a>).</em></p>
-
-<p>There is an information flow between the treatment to the outcome via the confounding variable, resulting in (P1-P3) to all be true. In this case, $X$ is the confounding variable: the gender.</p>
-
-<h1 id="correlation-does-not-imply-causation-in-a-formal-way">Correlation does not imply causation (in a formal way)</h1>
-<p>To capture the English statements (S1-S3) above, we use counterfactuals. We start by introducing $(Y1, Y0)$ where $Y1$ is the outcome if one is treated and $Y0$ is the outcome if one is not treated. We observe:</p>
-
-\[Y = T Y1 + (1 - T) Y0\]
-
-<p>To put it simply, $Y1$ denotes the outcome I WOULD observe if I WERE to take the treatment, $Y0$ denotes the outcome I WOULD observe if I WERE to not take the treatment, whereas $Y$ denotes the outcome that I do observe just in the observational data. In reality, we never observe $Y1$ and $Y0$ in the observational data on any person, that is why when we derive conclusion DIRECTLY from Y, we observe the simpson’s paradox. We’ll see more details regarding counterfactuals in the next section.</p>
-
-<p>The correct translation of (S1-S3) is:</p>
-
-<ul>
-<li>
-$$P(Y1=1 | X=1) - P(Y0=1 |X=1) &gt; 0$$ 
-(C1)
-
-
-</li>
-<li>
-$$P(Y1=1 | X=0) - P(Y0=1 |X=0) &gt; 0$$ 
-(C2)
-
-
-</li>
-<li>
-$P(Y1=1) - P(Y0=1) &lt; 0$ 
-(C3)
-
-
-</li>
-</ul>
-
-<p>These three statements cannot be all true. If the first two statements hold, then:</p>
-
-\[P(Y1=1) - P(Y0=1) = \sum_{x=0}^1 [P(Y1=1 | X=x) - P(Y0=1 | X=x)] P(x)\]
-
-<p>This is why if the treatment is good for both men and women (S1-S2) , then it is not possible that the overall treatment is bad (S3).
-In summary:</p>
-
-<ul>
-- (C1) = (E1) $\neq$ (P1)
-- (C2) = (E2) $\neq$ (P2)
-- (C3) = (E3) $\neq$ (P3)
-</ul>
-
-<p>and (E3) cannot be true if (E1) and/or (E2) hold.
-In general, we have:</p>
-
-\[P(Y=1 | T=1, X=1) - P(Y=1 | T=0, X=1) \neq P(Y1=1 | X=1) - P(Y0=1 |X=1)\]
-
-\[P(Y=1 | T=1, X=0) - P(Y=1 | T=0, X=0) \neq P(Y1=1 | X=0) - P(Y0=1 |X=0)\]
-
-\[P(Y=1 | T=1) - P(Y=1 | T=0) \neq P(Y1=1) - P(Y0=1)\]
-
-<p>In other words, correlation (left hand side) does not imply causation (right hand side). The left hand side can also be called the probabilistic quantity and the right hand side can be called causal quantity.</p>
-
-<h1 id="counterfactuals">Counterfactuals</h1>
-<p>I mentioned above that in order to capture the causal statements, we can use counterfactuals (or potential outcome). But what does it mean? In our binary treatment example, counterfactuals are the outcomes that we could have observed if we can give treatment and not give treatment to a person simultaneously. Ideally, to measure the true causal effect, we would want to put everyone in the population in both the treatment group and control group(s). Consider the men group in Table 1: the true causal effect is the difference between all 1450 people for the treatment group and all 1450 people for the control group. In other words, we want both the outcome for treatment and no treatment to be available for everyone. But in this case (and almost always) the counterfactuals cannot be observed, hence we take the naive difference between n=1400 and n=50.</p>
-
-<p>So how do we derive the correct causal effect then? How can we get $Y1$ and $Y0$ so that we can reliably say that my treatment has an effect? Do we have to fill in all the counterfactuals so that we have the same number of instances between groups? As far as I understand, there are two ways we can derive causal effect reliably:</p>
-
-<ul>
-<li>Randomized controlled trial (or AB Test).</li>
-<li>Conditioning on all possible confounding variables.</li>
-</ul>
-
-<p>The former usually does not involve in filling all the counterfactuals (which we’ll see more below). The latter approach is used in a situation where it is almost impossible to do randomized controlled trials (e.g. telling non-smoker to smoke to determine the causal effect of smoking to impotence). The latter is also mostly used on observational data. Furthermore, in the latter case we can take it further by filling the counterfactuals to get the best causal effect estimate.</p>
-
-<h1 id="randomized-controlled-trials">Randomized controlled trials</h1>
-<p>RCT/AB test removes the effects of confounding to the treatment. Directed edge from $X-&gt;T$ is removed.</p>
-
-<p><img src="/assets/img/rct-causal.png" alt="Figure 3: effects of RCT on the edge between confounding to treatment (&lt;a href=&quot;https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;credits&lt;/a&gt;)" /></p>
-
-<p><em>Figure 3: effects of RCT on the edge between confounding to treatment (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf" target="_blank" rel="noopener noreferrer">credits</a>).</em></p>
-
-<p>This means that the treatment assignments are now purely random. Consequently, this makes $T$ independent of $(Y1, Y0)$, or in other words, the treatment does not affect the potential outcome anymore. Note the difference: treatment $T$ still affect the actual outcome $Y$ but the treatment DOES NOT affect the potential outcome $Y1$, $Y0$. For more intuition regarding this I highly recommend checking out <a href="https://www.bradyneal.com/causal-inference-course" target="_blank" rel="noopener noreferrer">Brady Neal’s causal inference course</a>.
-With the independence, we have</p>
-
-\[P(Y=1 | T=1, X=x) = P(Y1 = 1 | X=x)\]
-
-<p>hence we can assume that the probabilistic quantity (P1-P1) is now the same as the causal quantity (C1-C3). Therefore, we can derive the causal effect directly from the probabilistic quantity and do your statistical test to determine whether it is significant (the usual AB Test). In RCT, afaik, we can sort of trust the outcome because of the randomized treatment assignment without having to approximate the counterfactuals.</p>
-
-<h1 id="observational-data">Observational data</h1>
-<p>In the case of most observational data, where the treatment assignment is not random, we can only recover the causal effect by CONDITIONING on all possible confounding variables.</p>
-
-<p><img src="/assets/img/conditioning-causal.png" alt="Figure 4: effects of conditioning on confounding variable, blocking the path (&lt;a href=&quot;https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;credits&lt;/a&gt;)" /></p>
-
-<p><em>Figure 4: effects of conditioning on confounding variable, blocking the path (<a href="https://www.bradyneal.com/slides/2%20-%20Potential%20Outcomes.pdf" target="_blank" rel="noopener noreferrer">credits</a>).</em></p>
-
-<p>Essentially, we want the independence between $T$ and $(Y1, Y0)$ to happen here but we do this via conditioning on the confounding variables. We have:</p>
-
-\[(Y0,Y1) \perp T | X\]
-
-<p>This condition reduces the causal effect into a probabilisitic quantity. In the above example, if we assume that gender is our confounding variable, conditioning on it would yield:</p>
-
-<p>\(P(Y1 = 1) = \sum_x P(Y = 1 | T = 1, X=x) P(X=x)\)
-, where there is only one $x$, namely gender</p>
-
-<p>Now, to further calculate the causal effect in a non-randomized observational data, it is common to approximate the unobserved counterfactuals with a prediction. In the men group above, we can train a model to predict the unobserved counterfactuals to fill the missing data points (so we have treated men n=1450, not treated men n=1450) and then predict the average treatment effect between the two groups. There are many ways to create this approximate causal model and they usually involve a lot of assumption. For more details I highly recommend to also check <a href="https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s897-machine-learning-for-healthcare-spring-2019/lecture-notes/MIT6_S897S19_lec14note.pdf" target="_blank" rel="noopener noreferrer">this MIT lecture notes</a>. The most important assumption is of no unmeasured confounders, which only holds when we observe all possible variables that influence both treatment decisions and potential outcomes. In reality, one has to consult with a domain expert to make sure that all variables that influence treatments and potential outcomes are observed.</p>
-
-<h1 id="application-in-industry">Application in industry</h1>
-<p>This is something that I am curious about, but unfortunately I haven’t found the opportunity that allowed me to implement causal inference in a work setting. So I can’t speak from experience. 
-Here are some examples of causal inference that I know can be beneficial in industry:</p>
-
-<h4 id="uplift-modeling">Uplift modeling</h4>
-<p>It is aimed at quantifying the treatment effect and identifying the characteristics of individuals most likely to benefit from the benefit. With this information, one thing we can do is to better choose individuals for the next cycle. The characteristics identification is essentially a prediction of counterfactuals for a customer in an experiment setting. Afaik, uplift can also be used to generate demand by giving user more targeted coupons or voucher. Uplift modeling can be used together with AB Test (offline) or multi armed bandit (online).</p>
-
-<h4 id="causal-dags-for-forecasting">Causal DAGs for forecasting</h4>
-<p>I do not know much about this since this is probably still a new field. One example that I know of is from Lyft (check this <a href="https://www.youtube.com/watch?v=5wbLy4SDuo4&amp;ab_channel=TheTWIMLAIPodcastwithSamCharrington" target="_blank" rel="noopener noreferrer">talk</a> from Sean Taylor). At Lyft, they create a causal DAGs with prior experimental evidence to model the causal effect of things. In the causal DAGs, there are:</p>
-
-<ul>
-<li>pure parent nodes that they control (price level, how much we spend on driver incentives)</li>
-<li>outcome nodes that they monitor (marketplace outcome, things that happen)</li>
-<li>pure parent nodes that they do not control (how many people request driver organically)</li>
-</ul>
-
-<p>They seem to have another model (like policy variables) that produces plan. This plan is then inserted into the structural causal model to sort of simulate what would happen in the outcome nodes.</p>
-
-<p>Sean mentioned that in the business context, they need to estimate the effects of choices they make, and making those choices are causes in both the causality and causal inference senses. The estimates produced by their causal models are inputs to decision problems. Ultimately, they still need to do some decision-making (either by humans or algorithmically) that is informed by their models. I think that they cover more complex interventions involving multiple treatments and outcomes.</p>
-
-<p>If you know any other implementation of causal inference in industry, please do let me know!</p>
-
-<h1 id="recap-and-closing">Recap and closing</h1>
-<p>What this post covered:</p>
-
-<ul>
-<li>Correlation vs causation in a formal way.</li>
-- Counterfactuals as a causal language to capture causal effect correctly. By introducing potential outcomes $(Y1, Y0)$ we see where the failure is.
-<li>RCT and conditioning on confounding variables as a way to reliably calculate causal effect in an experiment.</li>
-</ul>
-
-<p>What this post doesn’t cover:</p>
-
-<ul>
-<li>List of assumptions that need to hold for the counterfactuals to work.</li>
-<li>Structural causal model (Pearl): another causal language to describe and capture causal effect.</li>
-</ul>
-
-<p>Thanks for reading this post! I am a noob in causal inference so please do inform me if there is an error or mistake on twitter <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><summary type="html"><![CDATA[“Correlation does not imply causation”]]></summary></entry></feed>
+<p>Thanks for reading this post! Contact me on twitter for feedback <a href="https://twitter.com/rezkaaufar" target="_blank" rel="noopener noreferrer">@rezkaaufar</a></p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><summary type="html"><![CDATA[In this previous post, I wrote about the language of causal inference via counterfactuals. I briefly mentioned that there are at least two ways to capture the causal effect: counterfactuals and structural causal model. In this post, we are going to look at structural causal model and how we can use it to simulate what would happen if we do an intervention to a particular variable of interest. Please do note that both counterfactuals and structural causal model are highly overlapped and they share the same underlying concepts.]]></summary></entry></feed>
