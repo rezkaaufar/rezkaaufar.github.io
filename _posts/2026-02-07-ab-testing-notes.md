@@ -86,7 +86,7 @@ As mentioned above, in an AB test what we want is to determine the minimum sampl
 Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and MDE of 0.02
 
 ![Min sample size](/assets/img/one-tail-min-sample-size.png)
-*Figure 4: Distribution of meandifference when by setting alpha=5%, beta=20%, and MDE of 0.02*
+*Figure 4: Distribution of mean difference when by setting alpha=5%, beta=20%, and MDE of 0.02*
 
 Here we observe the following:
 
