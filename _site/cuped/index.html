@@ -415,7 +415,7 @@ pre code {
 
 <p>We have a new feature that we want to test. We calculate sample sizes required and the stakeholders are not happy with the duration it took to run the test. They said we need to go faster with the decision and we can’t afford to run an AB test for this long. We go back to the drawing board and try to find a way to reduce the sample size. Can we reduce the sample size required but still maintain the same power?</p>
 
-<p>One of the most common method to reduce variance in an AB test is by using CUPED (Controlled-experiment Using CUPED). CUPED is a variance reduction technique that can be used to reduce the variance of an estimator by using a control variate.</p>
+<p>One of the most common method to reduce variance in an AB test is by using CUPED (Controlled-experiment Using Pre-Experiment Data). CUPED is a variance reduction technique that can be used to reduce the variance of an estimator by using a control variate.</p>
 
 <p>In this post, we are not going to go through the math behind CUPED. Instead, we are going to go through the things to look out for when running CUPED. We’ll start with a brief introduction on what CUPED is and how it works. And then we go into the considerations that we need to take into account when running CUPED.</p>
 
@@ -472,8 +472,9 @@ pre code {
 
 <p>Let’s say we need 4 weeks of data to run the experiment ($N_{original} = 4$). With the historical correlation coefficient, we calculated the required sample size to be 2 weeks ($N_{historical} = 2$). Every day after the experiment starts, we can calculate the actual $\hat{\theta}_{actual}$ and observe the variance reduction. The variance reduction is going to fluctuate in the short term but it will eventually converge to the true variance reduction. This is illustrated in this image below:</p>
 
-<p><img src="/assets/img/cuped-reduction-rate.png" alt="image" />
-<em>Figure 1: Variance reduction over time from <a href="https://dl.acm.org/doi/10.1145/2433396.2433413">Deng et al (2013)</a></em></p>
+<p><img src="/assets/img/cuped-reduction-rate.png" alt="image" /></p>
+
+<p><em>Figure 1: Variance reduction over time from <a href="https://dl.acm.org/doi/10.1145/2433396.2433413">Deng et al (2013)</a></em></p>
 
 <p>Once it reaches a stable point, we can recalculate the required sample. In the example above, we can see that  the variance reduction has stabilized over the last 5 days at day 15. Hence, at day 15, we can then re-calculate the required sample size. Let’s say, at day 15, the variance reduction applied to the original sample size ($N_{original} = 4$) is to be 3 weeks ($N_{new} = 3$). Then we can run let the experiment run until the 21st day and stop there instead of waiting until the 28th day according to the original sample size calculation.</p>
 

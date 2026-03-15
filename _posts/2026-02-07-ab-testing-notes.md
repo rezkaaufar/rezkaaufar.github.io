@@ -20,7 +20,7 @@ Here is an image showing the relationship between the 4 variables:
 
 Before we go to the sample size calculation, we start off by varying sample size and see how it affects the distributions of the control and treatment groups. 
 
-We begin with two distributions of a conversion metrics, one for the control group and one for the treatment group. Here is the detail of our distributions:
+We begin with two distributions of a conversion metrics, one for the control group and one for the treatment group. We can do the same with continuous metrics as well, but in continuous metrics, the standard error between the control and treatment group are typically the same. In conversion metrics, it is given by the formula below:
 
 ```python
 p_base = 0.1
@@ -83,7 +83,20 @@ Now we can see that there is indeed a relationship between the MDE, alpha, beta 
 
 As mentioned above, in an AB test what we want is to determine the minimum sample size to be able to conclude an experiment given the experiment config. Hence, what we usually do is that we set alpha, beta (power), and our MDE to calculate how many samples do we need to run the AB test.
 
-Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and MDE of 0.02
+Below is the formula to calculate sample size of proportion metrics:
+
+$$n = \frac{(Z_{\alpha / 2} + Z_{\beta})^2 \cdot (p_1(1-p_1) + p_2(1-p_2))}{MDE^2}$$
+
+Where:
+
+- $n$ is the sample size
+- $Z_{\alpha / 2}$ is the z-score for the desired alpha level
+- $Z_{\beta}$ is the z-score for the desired beta level
+- $p_1$ is the baseline conversion rate
+- $p_2$ is the target conversion rate
+- $MDE$ is the minimum detectable effect, given by $p_2 - p_1$
+
+In this case, we set alpha = 5%, beta = 20%, and MDE = 0.02. We can calculate the sample size using the formula above. Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and MDE of 0.02
 
 ![Min sample size](/assets/img/one-tail-min-sample-size.png)
 *Figure 4: Distribution of mean difference when by setting alpha=5%, beta=20%, and MDE of 0.02*
@@ -93,6 +106,23 @@ Here we observe the following:
 At $n=3,024$, the significant threshold is positioned perfectly so that 5% of the Blue Curve is to its right (our $\alpha$ or False Positive risk) and 20% of the Green Curve is to its left (our $\beta$ or False Negative risk)
 
 We can also observe that he curves are just "skinny" enough that the Green Shaded Area (Power) covers exactly 80% of the Treatment distribution. This means if the 2% lift is  real, we will correctly identify it 4 out of 5 times.
+
+For calculating sample size with continuous metrics, we use the formula below:
+
+$$n = \frac{(Z_{\alpha / 2} + Z_{\beta})^2 \cdot (\sigma_1^2 + \sigma_2^2)}{MDE^2}$$
+
+Where:
+
+- $n$ is the sample size
+- $Z_{\alpha / 2}$ is the z-score for the desired alpha level
+- $Z_{\beta}$ is the z-score for the desired beta level
+- $\sigma_1$ is the standard deviation of the baseline group
+- $\sigma_2$ is the standard deviation of the treatment group
+- $MDE$ is the minimum detectable effect, given by $\mu_2 - \mu_1$
+
+Typically we can assume that $\sigma_1 = \sigma_2 = \sigma$, so the formula can be simplified to:
+
+$$n = \frac{2 \cdot (Z_{\alpha / 2} + Z_{\beta})^2 \cdot \sigma^2}{MDE^2}$$
 
 # Concluding the experiment
 
@@ -129,5 +159,36 @@ From the formula above, a tiny sample in either group will blow up the total err
 
 Same case can also be said if we have 10% control and 90% treatment. Even though here we are aggresively rolling out to new users and impacting the main metrics already, the changes cannot be fully trusted until we have enough sample to reach statistical significance.
 
+For the sample size calculation, in case where we will have unequal split between control and treatment, we need to adjust our sample size calculation. For proportion metrics, it is given by:
 
+$$n_0 = \frac{(Z_{\alpha/2} + Z_{\beta})^2 \cdot \left( p_1(1-p_1) + \frac{p_2(1-p_2)}{k} \right)}{MDE^2}$$
 
+$$n_1 = n_0 \cdot k$$
+
+Where:
+
+- $n_0$ is the sample size for control group
+- $n_1$ is the sample size for treatment group
+- $Z_{\alpha/2}$ is the z-score for the desired alpha level
+- $Z_{\beta}$ is the z-score for the desired beta level
+- $p_1$ is the baseline conversion rate
+- $p_2$ is the target conversion rate
+- $k$ is the ratio of treatment group to control group
+- $MDE$ is the minimum detectable effect, given by $p_2 - p_1$
+
+We can also do the same for continuous metrics:
+
+$$n_0 = \frac{(Z_{\alpha/2} + Z_{\beta})^2 \cdot \left( \sigma^2_1 + \frac{\sigma^2_2}{k} \right)}{MDE^2}$$
+
+$$n_1 = n_0 \cdot k$$
+
+Where:
+
+- $n_0$ is the sample size for control group
+- $n_1$ is the sample size for treatment group
+- $Z_{\alpha/2}$ is the z-score for the desired alpha level
+- $Z_{\beta}$ is the z-score for the desired beta level
+- $\sigma^2_1$ is the variance of the control group
+- $\sigma^2_2$ is the variance of the treatment group
+- $k$ is the ratio of treatment group to control group
+- $MDE$ is the minimum detectable effect, given by $\mu_2 - \mu_1$

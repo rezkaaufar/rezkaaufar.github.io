@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-03-15T17:57:21+07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Rezka Leonandya</title><subtitle>Rezka Leonandya&apos;s personal site and blog.</subtitle><author><name>Rezka Leonandya</name></author><entry><title type="html">Things to look out for when running CUPED</title><link href="http://localhost:4000/cuped/" rel="alternate" type="text/html" title="Things to look out for when running CUPED" /><published>2026-03-15T00:00:00+07:00</published><updated>2026-03-15T00:00:00+07:00</updated><id>http://localhost:4000/cuped</id><content type="html" xml:base="http://localhost:4000/cuped/"><![CDATA[<p>We have a new feature that we want to test. We calculate sample sizes required and the stakeholders are not happy with the duration it took to run the test. They said we need to go faster with the decision and we can’t afford to run an AB test for this long. We go back to the drawing board and try to find a way to reduce the sample size. Can we reduce the sample size required but still maintain the same power?</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-03-15T19:52:56+07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Rezka Leonandya</title><subtitle>Rezka Leonandya&apos;s personal site and blog.</subtitle><author><name>Rezka Leonandya</name></author><entry><title type="html">Things to look out for when running CUPED</title><link href="http://localhost:4000/cuped/" rel="alternate" type="text/html" title="Things to look out for when running CUPED" /><published>2026-03-15T00:00:00+07:00</published><updated>2026-03-15T00:00:00+07:00</updated><id>http://localhost:4000/cuped</id><content type="html" xml:base="http://localhost:4000/cuped/"><![CDATA[<p>We have a new feature that we want to test. We calculate sample sizes required and the stakeholders are not happy with the duration it took to run the test. They said we need to go faster with the decision and we can’t afford to run an AB test for this long. We go back to the drawing board and try to find a way to reduce the sample size. Can we reduce the sample size required but still maintain the same power?</p>
 
-<p>One of the most common method to reduce variance in an AB test is by using CUPED (Controlled-experiment Using CUPED). CUPED is a variance reduction technique that can be used to reduce the variance of an estimator by using a control variate.</p>
+<p>One of the most common method to reduce variance in an AB test is by using CUPED (Controlled-experiment Using Pre-Experiment Data). CUPED is a variance reduction technique that can be used to reduce the variance of an estimator by using a control variate.</p>
 
 <p>In this post, we are not going to go through the math behind CUPED. Instead, we are going to go through the things to look out for when running CUPED. We’ll start with a brief introduction on what CUPED is and how it works. And then we go into the considerations that we need to take into account when running CUPED.</p>
 
@@ -57,8 +57,9 @@
 
 <p>Let’s say we need 4 weeks of data to run the experiment ($N_{original} = 4$). With the historical correlation coefficient, we calculated the required sample size to be 2 weeks ($N_{historical} = 2$). Every day after the experiment starts, we can calculate the actual $\hat{\theta}_{actual}$ and observe the variance reduction. The variance reduction is going to fluctuate in the short term but it will eventually converge to the true variance reduction. This is illustrated in this image below:</p>
 
-<p><img src="/assets/img/cuped-reduction-rate.png" alt="image" />
-<em>Figure 1: Variance reduction over time from <a href="https://dl.acm.org/doi/10.1145/2433396.2433413">Deng et al (2013)</a></em></p>
+<p><img src="/assets/img/cuped-reduction-rate.png" alt="image" /></p>
+
+<p><em>Figure 1: Variance reduction over time from <a href="https://dl.acm.org/doi/10.1145/2433396.2433413">Deng et al (2013)</a></em></p>
 
 <p>Once it reaches a stable point, we can recalculate the required sample. In the example above, we can see that  the variance reduction has stabilized over the last 5 days at day 15. Hence, at day 15, we can then re-calculate the required sample size. Let’s say, at day 15, the variance reduction applied to the original sample size ($N_{original} = 4$) is to be 3 weeks ($N_{new} = 3$). Then we can run let the experiment run until the 21st day and stop there instead of waiting until the 28th day according to the original sample size calculation.</p>
 
@@ -197,7 +198,7 @@
 
 <p>Before we go to the sample size calculation, we start off by varying sample size and see how it affects the distributions of the control and treatment groups.</p>
 
-<p>We begin with two distributions of a conversion metrics, one for the control group and one for the treatment group. Here is the detail of our distributions:</p>
+<p>We begin with two distributions of a conversion metrics, one for the control group and one for the treatment group. We can do the same with continuous metrics as well, but in continuous metrics, the standard error between the control and treatment group are typically the same. In conversion metrics, it is given by the formula below:</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">p_base</span> <span class="o">=</span> <span class="mf">0.1</span>
 <span class="n">p_treat</span> <span class="o">=</span> <span class="mf">0.12</span>
@@ -256,7 +257,22 @@
 
 <p>As mentioned above, in an AB test what we want is to determine the minimum sample size to be able to conclude an experiment given the experiment config. Hence, what we usually do is that we set alpha, beta (power), and our MDE to calculate how many samples do we need to run the AB test.</p>
 
-<p>Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and MDE of 0.02</p>
+<p>Below is the formula to calculate sample size of proportion metrics:</p>
+
+\[n = \frac{(Z_{\alpha / 2} + Z_{\beta})^2 \cdot (p_1(1-p_1) + p_2(1-p_2))}{MDE^2}\]
+
+<p>Where:</p>
+
+<ul>
+  <li>$n$ is the sample size</li>
+  <li>$Z_{\alpha / 2}$ is the z-score for the desired alpha level</li>
+  <li>$Z_{\beta}$ is the z-score for the desired beta level</li>
+  <li>$p_1$ is the baseline conversion rate</li>
+  <li>$p_2$ is the target conversion rate</li>
+  <li>$MDE$ is the minimum detectable effect, given by $p_2 - p_1$</li>
+</ul>
+
+<p>In this case, we set alpha = 5%, beta = 20%, and MDE = 0.02. We can calculate the sample size using the formula above. Here is how the image looks if we do one-tail test with alpha=5%, beta=20%, and MDE of 0.02</p>
 
 <p><img src="/assets/img/one-tail-min-sample-size.png" alt="Min sample size" />
 <em>Figure 4: Distribution of mean difference when by setting alpha=5%, beta=20%, and MDE of 0.02</em></p>
@@ -266,6 +282,25 @@
 <p>At $n=3,024$, the significant threshold is positioned perfectly so that 5% of the Blue Curve is to its right (our $\alpha$ or False Positive risk) and 20% of the Green Curve is to its left (our $\beta$ or False Negative risk)</p>
 
 <p>We can also observe that he curves are just “skinny” enough that the Green Shaded Area (Power) covers exactly 80% of the Treatment distribution. This means if the 2% lift is  real, we will correctly identify it 4 out of 5 times.</p>
+
+<p>For calculating sample size with continuous metrics, we use the formula below:</p>
+
+\[n = \frac{(Z_{\alpha / 2} + Z_{\beta})^2 \cdot (\sigma_1^2 + \sigma_2^2)}{MDE^2}\]
+
+<p>Where:</p>
+
+<ul>
+  <li>$n$ is the sample size</li>
+  <li>$Z_{\alpha / 2}$ is the z-score for the desired alpha level</li>
+  <li>$Z_{\beta}$ is the z-score for the desired beta level</li>
+  <li>$\sigma_1$ is the standard deviation of the baseline group</li>
+  <li>$\sigma_2$ is the standard deviation of the treatment group</li>
+  <li>$MDE$ is the minimum detectable effect, given by $\mu_2 - \mu_1$</li>
+</ul>
+
+<p>Typically we can assume that $\sigma_1 = \sigma_2 = \sigma$, so the formula can be simplified to:</p>
+
+\[n = \frac{2 \cdot (Z_{\alpha / 2} + Z_{\beta})^2 \cdot \sigma^2}{MDE^2}\]
 
 <h1 id="concluding-the-experiment">Concluding the experiment</h1>
 
@@ -300,7 +335,45 @@
 
 <p>From the formula above, a tiny sample in either group will blow up the total error.</p>
 
-<p>Same case can also be said if we have 10% control and 90% treatment. Even though here we are aggresively rolling out to new users and impacting the main metrics already, the changes cannot be fully trusted until we have enough sample to reach statistical significance.</p>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><category term="experimentation" /><summary type="html"><![CDATA[AB testing is a common method used in tech companies to evaluate the effectiveness of different strategies. In this post I try to go over the concept and visualize it to make it easier to remember.]]></summary></entry><entry><title type="html">How to interpret confidence intervals (correctly)</title><link href="http://localhost:4000/confidence-intervals/" rel="alternate" type="text/html" title="How to interpret confidence intervals (correctly)" /><published>2026-01-18T00:00:00+07:00</published><updated>2026-01-18T00:00:00+07:00</updated><id>http://localhost:4000/confidence-intervals</id><content type="html" xml:base="http://localhost:4000/confidence-intervals/"><![CDATA[<h1 id="confidence-intervals">Confidence intervals</h1>
+<p>Same case can also be said if we have 10% control and 90% treatment. Even though here we are aggresively rolling out to new users and impacting the main metrics already, the changes cannot be fully trusted until we have enough sample to reach statistical significance.</p>
+
+<p>For the sample size calculation, in case where we will have unequal split between control and treatment, we need to adjust our sample size calculation. For proportion metrics, it is given by:</p>
+
+\[n_0 = \frac{(Z_{\alpha/2} + Z_{\beta})^2 \cdot \left( p_1(1-p_1) + \frac{p_2(1-p_2)}{k} \right)}{MDE^2}\]
+
+\[n_1 = n_0 \cdot k\]
+
+<p>Where:</p>
+
+<ul>
+  <li>$n_0$ is the sample size for control group</li>
+  <li>$n_1$ is the sample size for treatment group</li>
+  <li>$Z_{\alpha/2}$ is the z-score for the desired alpha level</li>
+  <li>$Z_{\beta}$ is the z-score for the desired beta level</li>
+  <li>$p_1$ is the baseline conversion rate</li>
+  <li>$p_2$ is the target conversion rate</li>
+  <li>$k$ is the ratio of treatment group to control group</li>
+  <li>$MDE$ is the minimum detectable effect, given by $p_2 - p_1$</li>
+</ul>
+
+<p>We can also do the same for continuous metrics:</p>
+
+\[n_0 = \frac{(Z_{\alpha/2} + Z_{\beta})^2 \cdot \left( \sigma^2_1 + \frac{\sigma^2_2}{k} \right)}{MDE^2}\]
+
+\[n_1 = n_0 \cdot k\]
+
+<p>Where:</p>
+
+<ul>
+  <li>$n_0$ is the sample size for control group</li>
+  <li>$n_1$ is the sample size for treatment group</li>
+  <li>$Z_{\alpha/2}$ is the z-score for the desired alpha level</li>
+  <li>$Z_{\beta}$ is the z-score for the desired beta level</li>
+  <li>$\sigma^2_1$ is the variance of the control group</li>
+  <li>$\sigma^2_2$ is the variance of the treatment group</li>
+  <li>$k$ is the ratio of treatment group to control group</li>
+  <li>$MDE$ is the minimum detectable effect, given by $\mu_2 - \mu_1$</li>
+</ul>]]></content><author><name>Rezka Leonandya</name></author><category term="statistics" /><category term="experimentation" /><summary type="html"><![CDATA[AB testing is a common method used in tech companies to evaluate the effectiveness of different strategies. In this post I try to go over the concept and visualize it to make it easier to remember.]]></summary></entry><entry><title type="html">How to interpret confidence intervals (correctly)</title><link href="http://localhost:4000/confidence-intervals/" rel="alternate" type="text/html" title="How to interpret confidence intervals (correctly)" /><published>2026-01-18T00:00:00+07:00</published><updated>2026-01-18T00:00:00+07:00</updated><id>http://localhost:4000/confidence-intervals</id><content type="html" xml:base="http://localhost:4000/confidence-intervals/"><![CDATA[<h1 id="confidence-intervals">Confidence intervals</h1>
 
 <p>Confidence interval is a range of values that is likely to contain an unknown population parameter. If we were to repeat an experiment or a sampling process many times and calculate a confidence interval each time, 95% of those generated intervals would contain the true population parameter.</p>
 
