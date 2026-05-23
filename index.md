@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Rezka Leonandya
-description: "Rezka Leonandya's personal site and blog about data science, NLP, and engineering."
+description: "Personal site and blog by Rezka Leonandya — data science, machine learning, statistics, causal inference, and AB testing."
 ---
 # Hi, I'm Rezka.
 

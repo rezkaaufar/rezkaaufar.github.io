@@ -12,5 +12,5 @@ layout: default
     {% for tag in page.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
     {% endif %}
 </p>
-{% if page.image %}\n<p><img src="{{ page.image }}" alt=""></p>\n{% endif %}
+{% if page.image %}<p><img src="{{ page.image }}" alt="{{ page.image_alt | default: page.title }}"></p>{% endif %}
 {{ content }}
